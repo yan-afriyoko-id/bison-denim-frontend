@@ -299,7 +299,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Karsindo - Login",
+  title: "Login",
 });
 
 const route = useRoute();

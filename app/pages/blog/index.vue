@@ -282,171 +282,6 @@ const getPageNumbers = computed(() => {
   return pages;
 });
 
-// Mock blog data matching the image
-const mockBlogs = [
-  {
-    id: 1,
-    title: "5 Rekomendasi Jenis Lemari Kantor Terbaik Dan Tips Memili...",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "5-rekomendasi-jenis-lemari-kantor-terbaik",
-  },
-  {
-    id: 2,
-    title: "Apa Saja Motif Keramik Dinding Paling Populer untuk Kamar Ma...",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "motif-keramik-dinding-populer-kamar-mandi",
-  },
-  {
-    id: 3,
-    title: "9 Cara Membuat Kamar Mandi Selalu Nyaman, Aman, Bersih, d...",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "cara-membuat-kamar-mandi-nyaman",
-  },
-  {
-    id: 4,
-    title: "7 Tips Jitu dan Praktis Mengatasi Kamar Mandi Licin",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-mengatasi-kamar-mandi-licin",
-  },
-  {
-    id: 5,
-    title: "7 Tips Jitu dan Praktis Mengatasi Kamar Mandi Licin",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-mengatasi-kamar-mandi-licin-2",
-  },
-  {
-    id: 6,
-    title: "7 Tips Jitu dan Praktis Mengatasi Kamar Mandi Licin",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-mengatasi-kamar-mandi-licin-3",
-  },
-  {
-    id: 7,
-    title: "7 Tips Jitu dan Praktis Mengatasi Kamar Mandi Licin",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-mengatasi-kamar-mandi-licin-4",
-  },
-  {
-    id: 8,
-    title: "7 Tips Jitu dan Praktis Mengatasi Kamar Mandi Licin",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-mengatasi-kamar-mandi-licin-5",
-  },
-  // Additional blogs for pagination (pages 2-5)
-  {
-    id: 9,
-    title: "Panduan Lengkap Memilih Furniture untuk Ruang Tamu Modern",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-24",
-    slug: "panduan-memilih-furniture-ruang-tamu",
-  },
-  {
-    id: 10,
-    title: "Tips Merawat Lemari Kayu Agar Tetap Awet dan Berkilau",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-23",
-    slug: "tips-merawat-lemari-kayu",
-  },
-  {
-    id: 11,
-    title: "Inspirasi Desain Dapur Minimalis dengan Storage Maksimal",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-22",
-    slug: "desain-dapur-minimalis-storage",
-  },
-  {
-    id: 12,
-    title: "Cara Memilih Kasur yang Tepat untuk Kualitas Tidur Optimal",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-21",
-    slug: "cara-memilih-kasur-tepat",
-  },
-  {
-    id: 13,
-    title: "Rekomendasi Warna Cat Dinding untuk Kamar Tidur yang Tenang",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-20",
-    slug: "warna-cat-dinding-kamar-tidur",
-  },
-  {
-    id: 14,
-    title: "Ide Dekorasi Ruang Keluarga dengan Budget Terbatas",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-19",
-    slug: "ide-dekorasi-ruang-keluarga-budget",
-  },
-  {
-    id: 15,
-    title: "Panduan Memilih Sofa yang Nyaman untuk Keluarga",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-18",
-    slug: "panduan-memilih-sofa-nyaman",
-  },
-  {
-    id: 16,
-    title: "Tips Organisasi Storage untuk Kamar Tidur yang Rapi",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-17",
-    slug: "tips-organisasi-storage-kamar-tidur",
-  },
-  {
-    id: 17,
-    title: "Cara Membersihkan dan Merawat Meja Makan Kayu",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-16",
-    slug: "cara-merawat-meja-makan-kayu",
-  },
-  {
-    id: 18,
-    title: "Desain Kamar Mandi Kecil yang Fungsional dan Estetik",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-15",
-    slug: "desain-kamar-mandi-kecil-fungsional",
-  },
-  {
-    id: 19,
-    title: "Panduan Memilih Lampu Penerangan untuk Setiap Ruangan",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-14",
-    slug: "panduan-memilih-lampu-penerangan",
-  },
-  {
-    id: 20,
-    title: "Tips Menata Ruang Kerja di Rumah yang Produktif",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-13",
-    slug: "tips-menata-ruang-kerja-rumah",
-  },
-];
-
 const fetchBlogs = async () => {
   try {
     isLoading.value = true;
@@ -501,8 +336,8 @@ const fetchBlogs = async () => {
 
 const fetchCategories = async () => {
   try {
-    const { getActiveCategories } = useBlogApi();
-    const { data: response, error: apiError } = await getActiveCategories();
+    const { getCategories } = useBlogApi();
+    const { data: response, error: apiError } = await getCategories();
 
     if (apiError || !response?.success) {
       console.error(
@@ -596,18 +431,18 @@ onUnmounted(() => {
 
 // SEO Meta Tags
 useHead({
-  title: 'Aktivitas & Update - Karsindo',
+  title: "Aktivitas & Update",
 });
 
 useSeoMeta({
-  title: 'Aktivitas & Update - Karsindo',
-  description: 'Temukan artikel, tips, dan update terbaru seputar furniture dan dekorasi rumah dari Karsindo',
-  ogTitle: 'Aktivitas & Update - Karsindo',
-  ogDescription: 'Temukan artikel, tips, dan update terbaru seputar furniture dan dekorasi rumah dari Karsindo',
+  title: "Aktivitas & Update",
+  description: "Temukan artikel, tips, dan update terbaru dari website kami",
+  ogTitle: "Aktivitas & Update",
+  ogDescription: "Temukan artikel, tips, dan update terbaru dari website kami",
   ogType: 'website',
   twitterCard: 'summary',
-  twitterTitle: 'Aktivitas & Update - Karsindo',
-  twitterDescription: 'Temukan artikel, tips, dan update terbaru seputar furniture dan dekorasi rumah dari Karsindo',
+  twitterTitle: "Aktivitas & Update",
+  twitterDescription: "Temukan artikel, tips, dan update terbaru dari website kami",
 });
 </script>
 

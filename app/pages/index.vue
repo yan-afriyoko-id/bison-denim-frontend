@@ -30,14 +30,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Karsindo - Toko Furnitur Online Terpercaya",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Temukan berbagai pilihan furnitur berkualitas dengan harga terbaik di Karsindo. Berbagai produk mebel, kursi, meja, lemari dan banyak lagi.",
-    },
-  ],
+  title: "",
 });
 
 const { getProductGroups } = useProductGroupApi();

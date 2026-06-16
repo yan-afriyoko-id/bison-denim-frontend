@@ -148,14 +148,14 @@ export const useConfigApi = () => {
 
   const getMultiplePublicConfigs = async (keys: string[]) => {
     try {
-      const responses = await Promise.all(
+      const results = await Promise.allSettled(
         keys.map((key) => $fetch(`${baseURL}/public-configs/${key}`)),
       );
 
       const result = Object.fromEntries(
-        responses.map((res: any, index) => [
+        results.map((res, index) => [
           keys[index],
-          res?.data?.value || null,
+          res.status === "fulfilled" ? (res.value as any)?.data?.value || null : null,
         ]),
       );
 

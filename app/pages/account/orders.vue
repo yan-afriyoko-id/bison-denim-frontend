@@ -259,7 +259,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Daftar Pesanan - Karsindo",
+  title: "Daftar Pesanan",
 });
 
 const {

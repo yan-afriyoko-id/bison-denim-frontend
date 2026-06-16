@@ -54,7 +54,7 @@
           </div>
           <div class="flex items-center gap-2.5">
             <p
-              class="text-sm sm:text-base md:text-xl font-semibold text-[#1A1919]"
+              class="text-sm sm:text-base md:text-xl font-semibold text-[var(--color-brand-black-soft)]"
             >
               {{ formatPrice(finalPrice) }}
             </p>
@@ -77,7 +77,7 @@
               fill="#FFCC00"
             />
           </svg>
-          <p class="text-[10px] sm:text-xs md:text-sm text-[#1A1919]">
+          <p class="text-[10px] sm:text-xs md:text-sm text-[var(--color-brand-black-soft)]">
             {{ rating.toFixed(1) }}
           </p>
           <div class="w-[0.6px] h-3 sm:h-4 md:h-[16px] bg-[#E6E9F0]"></div>

@@ -66,6 +66,15 @@ export interface Product {
   package_tall?: number | null
   sku?: string | null
   base_price?: number | null
+  featured_image?: {
+    id: number
+    path: string
+  } | null
+  final_price?: number | null
+  discount_percent?: number | null
+  average_rating?: number | null
+  review_count?: number | null
+  is_new_arrival?: boolean
   base_strike_price?: number | null
   discount?: number | null
   sort?: number | null
@@ -95,6 +104,7 @@ export interface Product {
     id: number
     path: string
     order_number: number
+    is_featured?: boolean
   }>
   timestamps?: {
     created_at: string

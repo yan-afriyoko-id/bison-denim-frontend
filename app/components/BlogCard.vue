@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { formatBlogDate } from '~/utils/blogHelpers'
 import type { Blog } from '~/types/blog'
+import { useApiBase } from '~/composables/useApiBase'
 
 withDefaults(
   defineProps<{
@@ -50,13 +51,23 @@ withDefaults(
   }
 );
 
+const { baseURL } = useApiBase();
+const baseImageUrl = baseURL.replace(/\/api\/?$/, "");
+
 const formatDate = (date: string | null | undefined) => {
   return formatBlogDate(date);
 };
 
-// Get cover URL with fallback
+// Get cover URL with fallback and base URL prepending for relative paths
 const getCoverUrl = (blog: Blog | any) => {
-  return blog?.cover_url || blog?.coverUrl || blog?.featured_image || blog?.featuredImage || null;
+  const raw = blog?.cover_url || blog?.coverUrl || blog?.featured_image || blog?.featuredImage || blog?.cover || null;
+  if (!raw) return null;
+  // If it's already an absolute URL, return as is
+  if (typeof raw === 'string' && raw.startsWith('http')) {
+    return raw;
+  }
+  // Otherwise, prepend base image URL
+  return `${baseImageUrl}${raw}`;
 };
 
 // Get title with fallback

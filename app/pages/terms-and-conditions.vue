@@ -17,7 +17,7 @@
             </p>
 
             <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-6 sm:mb-7.5">
-              Dengan mengakses website Karsindo, Anda menyetujui seluruh syarat dan ketentuan berikut:
+              Dengan mengakses website {{ appName }}, Anda menyetujui seluruh syarat dan ketentuan berikut:
             </p>
 
             <!-- Section 1 -->
@@ -36,7 +36,7 @@
                 2. Informasi Produk
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                Karsindo berusaha menampilkan informasi produk seakurat mungkin, namun kami tidak menjamin seluruh informasi selalu bebas dari kesalahan penulisan, warna, ukuran, maupun stok.
+                {{ appName }} berusaha menampilkan informasi produk seakurat mungkin, namun kami tidak menjamin seluruh informasi selalu bebas dari kesalahan penulisan, warna, ukuran, maupun stok.
               </p>
             </section>
 
@@ -57,7 +57,7 @@
                 <li>Grafis</li>
               </ul>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                merupakan milik Karsindo dan tidak boleh digunakan tanpa izin tertulis.
+                merupakan milik {{ appName }} dan tidak boleh digunakan tanpa izin tertulis.
               </p>
             </section>
 
@@ -77,7 +77,7 @@
                 5. Pembatasan Tanggung Jawab
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                Karsindo tidak bertanggung jawab atas kerugian langsung maupun tidak langsung akibat penggunaan website.
+                {{ appName }} tidak bertanggung jawab atas kerugian langsung maupun tidak langsung akibat penggunaan website.
               </p>
             </section>
 
@@ -109,16 +109,18 @@
 </template>
 
 <script setup lang="ts">
+const { appName } = useAppIdentity();
+
 definePageMeta({
   layout: "default",
 });
 
 useHead({
-  title: "Terms & Conditions - Karsindo",
+  title: "Terms & Conditions",
   meta: [
     {
       name: "description",
-      content: "Syarat dan ketentuan penggunaan website Karsindo Furniture.",
+      content: "Syarat dan ketentuan penggunaan website kami.",
     },
   ],
 });

@@ -3,7 +3,145 @@
 @theme {
   --color-primary: #012970;
   --color-primary-dark: #080c63;
+  --color-brand-black: #000000;
+  --color-brand-black-soft: #1a1a1a;
+  --color-brand-black-muted: #6b7280;
   --font-sans: 'Open Sans', 'Nunito', 'Poppins', sans-serif;
   --font-poppins: 'Poppins', sans-serif;
   --max-width-8xl: 1424px;
+}
+
+@layer base {
+  body {
+    color: var(--color-brand-black-soft);
+  }
+}
+
+@layer utilities {
+  [class*="text-[#E9322B]"] {
+    color: var(--color-brand-black) !important;
+  }
+
+  [class*="bg-[#E9322B]"],
+  [class*="bg-[#C4282B]"],
+  [class*="bg-[#D0282B]"],
+  [class*="bg-[#D32A24]"] {
+    background-color: var(--color-brand-black) !important;
+  }
+
+  [class*="border-[#E9322B]"],
+  [class*="border-[#C4282B]"],
+  [class*="border-[#D0282B]"],
+  [class*="border-[#D32A24]"] {
+    border-color: var(--color-brand-black) !important;
+  }
+
+  [class*="focus:ring-[#E9322B]"]:focus,
+  [class*="focus:border-[#E9322B]"]:focus {
+    --tw-ring-color: var(--color-brand-black) !important;
+    border-color: var(--color-brand-black) !important;
+  }
+
+  [class*="hover:bg-[#C4282B]"]:hover,
+  [class*="hover:bg-[#D0282B]"]:hover,
+  [class*="hover:bg-[#D32A24]"]:hover,
+  [class*="hover:bg-[#E9322B]"]:hover {
+    background-color: var(--color-brand-black-soft) !important;
+  }
+
+  [class*="hover:text-[#E9322B]"]:hover {
+    color: var(--color-brand-black) !important;
+  }
+
+  [class*="hover:border-[#E9322B]"]:hover {
+    border-color: var(--color-brand-black) !important;
+  }
+
+  [class*="ring-[#E9322B]"] {
+    --tw-ring-color: color-mix(
+      in srgb,
+      var(--color-brand-black) 20%,
+      transparent
+    ) !important;
+  }
+
+  [class*="bg-[#E9322B14]"] {
+    background-color: color-mix(
+      in srgb,
+      var(--color-brand-black) 8%,
+      white
+    ) !important;
+  }
+
+  [class*="border-l-4 border-[#E9322B]"] {
+    border-left-color: var(--color-brand-black) !important;
+  }
+
+  [class*="bg-red-50"] {
+    background-color: #f5f5f5 !important;
+  }
+
+  [class*="bg-red-100"] {
+    background-color: #e5e7eb !important;
+  }
+
+  [class*="border-red-200"],
+  [class*="border-red-300"],
+  [class*="border-red-500"] {
+    border-color: #111827 !important;
+  }
+
+  [class*="text-red-500"],
+  [class*="text-red-600"],
+  [class*="text-red-700"],
+  [class*="text-red-800"] {
+    color: var(--color-brand-black) !important;
+  }
+
+  [class*="hover:text-red-600"]:hover,
+  [class*="hover:text-red-800"]:hover,
+  [class*="hover:bg-red-50"]:hover,
+  [class*="hover:bg-red-100"]:hover {
+    color: var(--color-brand-black) !important;
+    background-color: #f3f4f6 !important;
+  }
+
+  [stroke="#E9322B"],
+  [stroke="#C4282B"],
+  [stroke="#D0282B"],
+  [stroke="#D32A24"] {
+    stroke: var(--color-brand-black) !important;
+  }
+
+  [fill="#E9322B"],
+  [fill="#C4282B"],
+  [fill="#D0282B"],
+  [fill="#D32A24"] {
+    fill: var(--color-brand-black) !important;
+  }
+
+  [class*="focus:ring-red-500"]:focus,
+  [class*="focus:border-red-500"]:focus,
+  [class*="focus:ring-red-600"]:focus,
+  [class*="focus:border-red-600"]:focus {
+    --tw-ring-color: var(--color-brand-black) !important;
+    border-color: var(--color-brand-black) !important;
+  }
+
+  [class*="accent-[#E9322B]"],
+  [class*="text-[#E9322B]"][type="checkbox"],
+  [class*="text-[#E9322B]"][type="radio"] {
+    accent-color: var(--color-brand-black) !important;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }

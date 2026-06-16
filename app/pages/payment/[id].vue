@@ -552,7 +552,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Detail Pembayaran - Karsindo",
+  title: "Detail Pembayaran",
 });
 
 const route = useRoute();

@@ -215,7 +215,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Poin Saya - Karsindo",
+  title: "Poin Saya",
 });
 
 const { getPoints, getPointTransactions } = usePointApi();

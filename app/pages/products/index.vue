@@ -38,7 +38,7 @@
               stroke-linecap="round"
             />
           </svg>
-          <span class="font-medium text-[#1A1919]">Filter</span>
+          <span class="font-medium text-[var(--color-brand-black-soft)]">Filter</span>
         </button>
 
         <div class="flex gap-4 lg:gap-8">
@@ -48,7 +48,7 @@
               <!-- Filter Header -->
               <div class="flex items-center justify-between mb-6">
                 <h3
-                  class="text-2xl font-semibold text-[#1A1919] flex items-center gap-[7px]"
+                  class="text-2xl font-semibold text-[var(--color-brand-black-soft)] flex items-center gap-[7px]"
                 >
                   <svg
                     width="24"
@@ -82,7 +82,7 @@
                 </h3>
                 <button
                   @click="resetFilters"
-                  class="text-lg font-medium text-[#7B7B7B] hover:text-[#1A1919] transition bg-[#F8F8F8] px-2.5 py-1.5 rounded-lg hover:cursor-pointer"
+                  class="text-lg font-medium text-[var(--color-brand-black-muted)] hover:text-[var(--color-brand-black-soft)] transition bg-[#F8F8F8] px-2.5 py-1.5 rounded-lg hover:cursor-pointer"
                 >
                   Reset Filter
                 </button>
@@ -131,29 +131,59 @@
                     Tidak ada kategori
                   </div>
                   <template v-else>
-                    <label
-                      v-for="category in categories"
-                      :key="category.id"
-                      class="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        :value="category.id"
-                        v-model="selectedCategories"
-                        class="w-4.5 h-4.5 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer"
-                      />
-                      <span
-                        :class="{
-                          'text-[#E9322B]': selectedCategories.includes(
-                            category.id,
-                          ),
-                          'text-[#808080]': !selectedCategories.includes(
-                            category.id,
-                          ),
-                        }"
-                        >{{ category.name }}</span
-                      >
-                    </label>
+                    <template v-for="cat in parentCategories" :key="cat.id">
+                      <div>
+                        <label
+                          class="flex items-center gap-2 cursor-pointer py-1"
+                        >
+                          <input
+                            type="checkbox"
+                            :value="cat.id"
+                            v-model="selectedCategories"
+                            class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer shrink-0"
+                          />
+                          <span
+                            :class="{
+                              'text-[#E9322B]': selectedCategories.includes(
+                                cat.id,
+                              ),
+                              'text-[#808080]': !selectedCategories.includes(
+                                cat.id,
+                              ),
+                            }"
+                            >{{ cat.name }}</span
+                          >
+                        </label>
+                        <div
+                          v-if="selectedCategories.includes(cat.id) && getChildren(cat.id).length"
+                          class="ml-6 space-y-0.5"
+                        >
+                          <label
+                            v-for="child in getChildren(cat.id)"
+                            :key="child.id"
+                            class="flex items-center gap-2 cursor-pointer py-0.5"
+                          >
+                            <input
+                              type="checkbox"
+                              :value="child.id"
+                              v-model="selectedCategories"
+                              class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer shrink-0"
+                            />
+                            <span
+                              :class="{
+                                'text-[#E9322B]': selectedCategories.includes(
+                                  child.id,
+                                ),
+                                'text-[#808080]': !selectedCategories.includes(
+                                  child.id,
+                                ),
+                              }"
+                              >{{ child.name }}</span
+                            >
+                          </label>
+                        </div>
+                      </div>
+                    </template>
                   </template>
                 </div>
               </div>
@@ -384,13 +414,13 @@
                 <p class="text-sm sm:text-base text-[#7B7B7B]">
                   Menampilkan
                   <span class="text-[#1A1919] font-bold">{{
-                    paginatedProducts.length
+                    allProducts.length
                   }}</span>
                   produk
                 </p>
 
                 <!-- Sort Dropdown -->
-                <!-- <div class="flex justify-end">
+                <div class="flex justify-end">
                   <div class="relative rounded-lg text-[#7B7B7B]">
                     <div class="flex items-center gap-2 sm:gap-2.5">
                       <p
@@ -445,7 +475,7 @@
                       </button>
                     </div>
                   </div>
-                </div> -->
+                </div>
               </div>
 
               <!-- Active Filters -->
@@ -480,7 +510,7 @@
               <div
                 class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#E9322B]"
               ></div>
-              <p class="mt-4 text-[#808080]">Memuat produk...</p>
+              <p class="mt-4 text-[#1A1919] text-base">Memuat produk...</p>
             </div>
 
             <!-- Error State -->
@@ -496,7 +526,7 @@
 
             <!-- Empty State -->
             <div
-              v-else-if="paginatedProducts.length === 0"
+              v-else-if="allProducts.length === 0"
               class="text-center py-12"
             >
               <p class="text-[#808080] text-lg">Tidak ada produk ditemukan</p>
@@ -508,14 +538,14 @@
               class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5 items-stretch"
             >
               <NuxtLink
-                v-for="product in paginatedProducts"
+                v-for="product in allProducts"
                 :key="product.id"
                 :to="`/products/${product.slug || product.id}`"
                 class="block h-full"
               >
                 <Product
                   :name="product.name"
-                  :image="product.image || '/placeholder-product.png'"
+                  :image="product.image"
                   :finalPrice="product.final_price || product.base_price || 0"
                   :strikePrice="product.base_strike_price"
                   :rating="product.average_rating || 0"
@@ -567,7 +597,7 @@
           @click="showMobileFilter = false"
         ></div>
         <div
-          class="absolute left-0 top-0 bottom-0 w-[85%] max-w-sm bg-white overflow-y-auto"
+          class="no-scrollbar absolute left-0 top-0 bottom-0 w-[85%] max-w-sm bg-white overflow-y-auto"
           @click.stop
         >
           <div
@@ -668,31 +698,59 @@
                 v-show="expandedSections.kategori"
                 class="space-y-1 transition-all"
               >
-                <label
-                  v-for="category in categories"
-                  :key="category.id"
-                  class="flex items-center gap-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    :value="category.id"
-                    v-model="selectedCategories"
-                    class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer"
-                  />
-                  <span
-                    class="text-sm"
-                    :class="{
-                      'text-[#E9322B]': selectedCategories.includes(
-                        category.id,
-                      ),
-                      'text-[#808080]': !selectedCategories.includes(
-                        category.id,
-                      ),
-                    }"
-                  >
-                    {{ category.name }}
-                  </span>
-                </label>
+                <template v-for="cat in parentCategories" :key="cat.id">
+                  <div>
+                    <label class="flex items-center gap-2 cursor-pointer py-1">
+                      <input
+                        type="checkbox"
+                        :value="cat.id"
+                        v-model="selectedCategories"
+                        class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer shrink-0"
+                      />
+                      <span
+                        :class="{
+                          'text-[#E9322B]': selectedCategories.includes(
+                            cat.id,
+                          ),
+                          'text-[#808080]': !selectedCategories.includes(
+                            cat.id,
+                          ),
+                        }"
+                      >
+                        {{ cat.name }}
+                      </span>
+                    </label>
+                    <div
+                      v-if="selectedCategories.includes(cat.id) && getChildren(cat.id).length"
+                      class="ml-6 space-y-0.5"
+                    >
+                      <label
+                        v-for="child in getChildren(cat.id)"
+                        :key="child.id"
+                        class="flex items-center gap-2 cursor-pointer py-0.5"
+                      >
+                        <input
+                          type="checkbox"
+                          :value="child.id"
+                          v-model="selectedCategories"
+                          class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer shrink-0"
+                        />
+                        <span
+                          :class="{
+                            'text-[#E9322B]': selectedCategories.includes(
+                              child.id,
+                            ),
+                            'text-[#808080]': !selectedCategories.includes(
+                              child.id,
+                            ),
+                          }"
+                        >
+                          {{ child.name }}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </template>
               </div>
             </div>
 
@@ -947,6 +1005,8 @@ definePageMeta({
 
 const route = useRoute();
 const router = useRouter();
+const { baseURL } = useApiBase();
+const baseImageUrl = baseURL.replace(/\/api\/?$/, "");
 const { getProducts } = useProductApi();
 const { getTaxoListsByType } = useProductRelationsApi();
 const { getActiveBrands } = useBrandApi();
@@ -966,6 +1026,7 @@ const priceRange = ref({
   max: null as number | null,
 });
 const searchQuery = ref<string>("");
+const searchInput = ref<string>("");
 
 // Collapse State for Filters
 const expandedSections = ref({
@@ -1005,7 +1066,9 @@ const pagination = ref<{
 } | null>(null);
 
 // Data
-const categories = ref<Array<{ id: number; name: string }>>([]);
+const categories = ref<Array<{ id: number; name: string; parent: number | null }>>([]);
+const parentCategories = computed(() => categories.value.filter((c) => !c.parent));
+const getChildren = (parentId: number) => categories.value.filter((c) => c.parent === parentId);
 
 // Computed category name based on selected categories
 const currentCategory = computed(() => {
@@ -1048,11 +1111,11 @@ const transformProduct = (product: Product) => {
     ? Math.round(product.discount_percent)
     : 0;
 
-  let image = "/assets/img/products/placeholder.png";
-  if (product.featured_image?.path) {
-    image = product.featured_image.path;
-  } else if (product.images?.length > 0 && product.images[0]?.path) {
-    image = product.images[0].path;
+  let image = "/assets/img/not-found.svg";
+  const featured = product.images?.find((img) => img.is_featured);
+  const rawPath = featured?.path || product.images?.[0]?.path || product.featured_image?.path;
+  if (rawPath) {
+    image = rawPath.startsWith("http") ? rawPath : `${baseImageUrl}${rawPath}`;
   }
 
   return {
@@ -1076,19 +1139,27 @@ const loadProducts = async (page: number = currentPage.value) => {
   currentPage.value = page;
 
   try {
-    // Determine sort by and direction
+    // Determine sort by and direction — fully integrated with BE
     let sortBy: string | undefined = undefined;
     let sortDirection: "asc" | "desc" = "desc";
 
-    if (selectedSort.value.value === "newest") {
-      sortBy = "created_at";
-      sortDirection = "desc";
-    } else if (selectedSort.value.value === "price_low") {
-      sortBy = "created_at"; // We'll sort by price on frontend since price is in variant
-      sortDirection = "asc";
-    } else if (selectedSort.value.value === "price_high") {
-      sortBy = "created_at";
-      sortDirection = "desc";
+    switch (selectedSort.value.value) {
+      case "newest":
+        sortBy = "created_at";
+        sortDirection = "desc";
+        break;
+      case "price_low":
+        sortBy = "final_price";
+        sortDirection = "asc";
+        break;
+      case "price_high":
+        sortBy = "final_price";
+        sortDirection = "desc";
+        break;
+      case "reviews":
+        sortBy = "review_count";
+        sortDirection = "desc";
+        break;
     }
 
     // Build filters object
@@ -1143,21 +1214,6 @@ const loadProducts = async (page: number = currentPage.value) => {
         .filter((p: Product) => p.status === "PUBLISH")
         .map(transformProduct);
 
-      // Apply client-side sorting for price (using base_price)
-      if (selectedSort.value.value === "price_low") {
-        transformedProducts.sort((a, b) => {
-          const priceA = parseInt(a.discountedPrice.replace(/[^\d]/g, ""));
-          const priceB = parseInt(b.discountedPrice.replace(/[^\d]/g, ""));
-          return priceA - priceB;
-        });
-      } else if (selectedSort.value.value === "price_high") {
-        transformedProducts.sort((a, b) => {
-          const priceA = parseInt(a.discountedPrice.replace(/[^\d]/g, ""));
-          const priceB = parseInt(b.discountedPrice.replace(/[^\d]/g, ""));
-          return priceB - priceA;
-        });
-      }
-
       allProducts.value = transformedProducts;
 
       if (data.data.pagination) {
@@ -1195,6 +1251,7 @@ const loadCategories = async () => {
       .map((cat) => ({
         id: cat.id,
         name: cat.taxonomy_name,
+        parent: cat.parent ?? null,
       }));
   } catch (err) {
     console.error("Error loading categories:", err);
@@ -1280,17 +1337,8 @@ const activeFilters = computed(() => {
   return filters;
 });
 
-const filteredProducts = computed(() => {
-  return allProducts.value;
-});
-
 const totalPages = computed(() => {
   return pagination.value?.last_page || 1;
-});
-
-const paginatedProducts = computed(() => {
-  // Since we're using API pagination, return filtered products directly
-  return filteredProducts.value;
 });
 
 const resetFilters = () => {
@@ -1332,6 +1380,12 @@ const selectSort = (sort: { value: string; label: string }) => {
   loadProducts(1);
 };
 
+const handleSearch = () => {
+  searchQuery.value = searchInput.value;
+  currentPage.value = 1;
+  loadProducts(1);
+};
+
 const changePage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     loadProducts(page);
@@ -1352,6 +1406,7 @@ onMounted(async () => {
   const searchParam = route.query.search as string | undefined;
   if (searchParam) {
     searchQuery.value = searchParam;
+    searchInput.value = searchParam;
   }
 
   // Read category_ids from URL
@@ -1382,34 +1437,21 @@ onMounted(async () => {
   await Promise.all([loadProducts(1), loadCategories(), loadBrands()]);
 });
 
-watch(
-  selectedBrands,
-  () => {
-    if (route.query.brand) {
-      router.replace({
-        query: {
-          ...route.query,
-          brand: undefined,
-        },
-      });
-    }
-
-    loadProducts(1);
-  },
-  { deep: true },
-);
-
-// Watch for route query changes (when navigating from search)
+// Watch URL search param changes (navigated from header search etc.)
 watch(
   () => route.query.search,
   (newSearch) => {
-    searchQuery.value = (newSearch as string) || "";
-    currentPage.value = 1;
-    loadProducts(1);
+    const search = (newSearch as string) || "";
+    if (searchQuery.value !== search) {
+      searchInput.value = search;
+      searchQuery.value = search;
+      currentPage.value = 1;
+      loadProducts(1);
+    }
   },
 );
 
-// Watch for category_ids changes in route query
+// Watch URL category_ids changes
 watch(
   () => route.query.category_ids,
   (newCategoryIds) => {
@@ -1433,23 +1475,35 @@ watch(
   },
 );
 
-// Watch for filter changes and reload
+// Single consolidated watcher for all filter changes
 watch(
-  [selectedCategories, selectedBrands],
+  [selectedCategories, selectedBrands, selectedPromos, selectedRatings, priceRange],
   () => {
-    // Reload products when category filter changes (backend filtering)
     currentPage.value = 1;
     loadProducts(1);
   },
   { deep: true },
 );
 
-// Watch for filter changes and reload products from backend
+// When a parent category is unchecked, also remove its children
 watch(
-  [selectedPromos, selectedRatings, priceRange],
-  () => {
-    currentPage.value = 1;
-    loadProducts(1);
+  selectedCategories,
+  (newVal, oldVal) => {
+    if (oldVal.length <= newVal.length) return;
+    const removed = oldVal.filter((id) => !newVal.includes(id));
+    let changed = false;
+    const next = [...newVal];
+    for (const id of removed) {
+      const children = getChildren(id).map((c) => c.id);
+      for (const childId of children) {
+        const idx = next.indexOf(childId);
+        if (idx !== -1) {
+          next.splice(idx, 1);
+          changed = true;
+        }
+      }
+    }
+    if (changed) selectedCategories.value = next;
   },
   { deep: true },
 );

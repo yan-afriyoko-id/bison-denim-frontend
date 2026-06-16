@@ -4,15 +4,13 @@
       class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-11 py-2 sm:py-10 md:py-12"
     >
       <h2
-        class="text-center text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 sm:mb-6 md:mb-7.5 text-[#1A1919]"
+        class="text-center text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 sm:mb-6 md:mb-7.5 text-[var(--color-brand-black-soft)]"
       >
         Our Brand
       </h2>
 
       <div v-if="loading" class="text-center py-8">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
+        <p class="text-[#1A1919] text-sm">Loading...</p>
       </div>
 
       <div v-else-if="brands.length === 0" class="text-center py-8">

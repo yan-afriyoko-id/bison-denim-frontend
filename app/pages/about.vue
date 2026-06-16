@@ -6,7 +6,7 @@
     <section class="w-full">
       <NuxtImg
         src="/assets/img/about/banner.jpg"
-        alt="KARSINDO Showroom"
+        :alt="appName ? `${appName} Showroom` : 'Showroom'"
         class="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[565px] object-cover"
         fit="cover"
       />
@@ -34,7 +34,7 @@
         <div class="w-full lg:w-1/2">
           <NuxtImg
             src="/assets/img/about/about-1.jpg"
-            alt="KARSINDO Team"
+            :alt="appName ? `${appName} Team` : 'Team'"
             class="w-full h-auto object-cover rounded-[14px] object-right aspect-square"
             fit="cover"
           />
@@ -93,10 +93,10 @@
           fit="cover"
         />
 
-        <!-- Brand 2: KARSINDO -->
+        <!-- Brand 2 -->
           <NuxtImg
             src="/assets/img/brand/karsindo-no-bg.png"
-            alt="Karsindo"
+            :alt="appName || 'Brand Logo'"
             class="w-auto h-[70px] object-cover"
             fit="cover"
           />
@@ -116,6 +116,8 @@
 </template>
 
 <script setup lang="ts">
+const { appName } = useAppIdentity();
+
 definePageMeta({
   layout: "default",
 });

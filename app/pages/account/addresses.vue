@@ -148,7 +148,7 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Alamat Saya - Karsindo',
+  title: 'Alamat Saya',
 });
 
 const { getAddresses, getAddress, createAddress, updateAddress, deleteAddress } = useShippingAddressApi()

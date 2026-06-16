@@ -208,106 +208,6 @@ const blogTags = computed(() => {
   return extractBlogTags(blog.value)
 });
 
-// Mock related blogs data - More articles for carousel testing
-const mockRelatedBlogs = [
-  {
-    id: 1,
-    title: "6 Tips Belanja Ornamen Natal dan Jenis-jenisny...",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-belanja-ornamen-natal",
-  },
-  {
-    id: 2,
-    title: "Panduan Lengkap Memilih Furniture untuk Ruang Tamu Modern",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "panduan-memilih-furniture-ruang-tamu",
-  },
-  {
-    id: 3,
-    title: "Tips Merawat Lemari Kayu Agar Tetap Awet dan Berkilau",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "tips-merawat-lemari-kayu",
-  },
-  {
-    id: 4,
-    title: "Inspirasi Desain Dapur Minimalis dengan Storage Maksimal",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-25",
-    slug: "desain-dapur-minimalis-storage",
-  },
-  {
-    id: 5,
-    title: "Cara Memilih Kasur yang Tepat untuk Kualitas Tidur Optimal",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-24",
-    slug: "cara-memilih-kasur-tepat",
-  },
-  {
-    id: 6,
-    title: "Rekomendasi Warna Cat Dinding untuk Kamar Tidur yang Tenang",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-23",
-    slug: "warna-cat-dinding-kamar-tidur",
-  },
-  {
-    id: 7,
-    title: "Ide Dekorasi Ruang Keluarga dengan Budget Terbatas",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-22",
-    slug: "ide-dekorasi-ruang-keluarga-budget",
-  },
-  {
-    id: 8,
-    title: "Panduan Memilih Sofa yang Nyaman untuk Keluarga",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-21",
-    slug: "panduan-memilih-sofa-nyaman",
-  },
-  {
-    id: 9,
-    title: "Tips Organisasi Storage untuk Kamar Tidur yang Rapi",
-    cover_url:
-      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400&h=300&fit=crop",
-    created_at: "2025-11-20",
-    slug: "tips-organisasi-storage-kamar-tidur",
-  },
-  {
-    id: 10,
-    title: "Cara Membersihkan dan Merawat Meja Makan Kayu",
-    cover_url:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
-    created_at: "2025-11-19",
-    slug: "cara-merawat-meja-makan-kayu",
-  },
-  {
-    id: 11,
-    title: "Desain Kamar Mandi Kecil yang Fungsional dan Estetik",
-    cover_url:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
-    created_at: "2025-11-18",
-    slug: "desain-kamar-mandi-kecil-fungsional",
-  },
-  {
-    id: 12,
-    title: "Panduan Memilih Lampu Penerangan untuk Setiap Ruangan",
-    cover_url:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
-    created_at: "2025-11-17",
-    slug: "panduan-memilih-lampu-penerangan",
-  },
-];
-
 const fetchBlog = async (slug: string) => {
   if (!slug) return;
 
@@ -359,8 +259,6 @@ const fetchAllBlogs = async () => {
     } else if (response.data?.blogs) {
       blogsData = response.data.blogs;
     }
-
-    console.log(blogsData);
 
     // Apply default values to each blog
     allBlogs.value = blogsData.map((blog) => normalizeBlog(blog));
@@ -416,13 +314,13 @@ const siteUrl = computed(() => {
   if (process.client && typeof window !== 'undefined') {
     return window.location.origin;
   }
-  // Fallback for SSR
-  return 'https://karsindo.vercel.app';
+
+  return '';
 });
 
 const pageTitle = computed(() => {
-  if (!blog.value) return 'Blog - Karsindo';
-  return blog.value.meta_title || blog.value.title || 'Blog - Karsindo';
+  if (!blog.value) return "Blog";
+  return blog.value.meta_title || blog.value.title || "Blog";
 });
 
 const pageDescription = computed(() => {
@@ -485,7 +383,7 @@ useSeoMeta({
   ogDescription: pageDescription,
   ogImage: pageImage,
   ogUrl: pageUrl,
-  ogSiteName: 'Karsindo',
+  ogSiteName: '',
   ogType: 'article',
   articlePublishedTime: publishedTime,
   articleModifiedTime: modifiedTime,

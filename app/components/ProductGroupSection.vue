@@ -2,7 +2,7 @@
   <section class="bg-white" v-if="hasAnyProduct">
     <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-11 py-12 md:py-10">
       <h2
-        class="text-lg sm:text-xl md:text-2xl font-semibold mb-5 text-[#1A1919]"
+        class="text-lg sm:text-xl md:text-2xl font-semibold mb-5 text-[var(--color-brand-black-soft)]"
       >
         {{ groupTitle || "Rekomendasi Untukmu" }}
       </h2>

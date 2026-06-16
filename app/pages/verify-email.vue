@@ -67,7 +67,7 @@ definePageMeta({
 })
 
 useHead({
-  title: "Verifikasi Email - Karsindo",
+  title: "Verifikasi Email",
 })
 
 // Router

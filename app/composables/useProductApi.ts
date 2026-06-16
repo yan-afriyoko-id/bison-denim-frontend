@@ -40,11 +40,11 @@ export const useProductApi = () => {
       }
 
       if (categoryIds && categoryIds.length > 0) {
-        params.category_ids = categoryIds.join(",");
+        params.category_ids = categoryIds;
       }
 
       if (brandSlugs && brandSlugs.length > 0) {
-        params.brand_slugs = brandSlugs.join(",");
+        params.brand_slugs = brandSlugs;
       }
 
       if (filters) {

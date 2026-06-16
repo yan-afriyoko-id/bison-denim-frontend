@@ -341,7 +341,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Keranjang Belanja - Karsindo",
+  title: "Keranjang Belanja",
 });
 
 const {

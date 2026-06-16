@@ -102,7 +102,7 @@ definePageMeta({
 })
 
 useHead({
-  title: "Lupa Password - Karsindo",
+  title: "Lupa Password",
 })
 
 const { forgotPassword } = useAuthApi()

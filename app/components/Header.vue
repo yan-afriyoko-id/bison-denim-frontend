@@ -37,10 +37,10 @@
           <NuxtImg
             v-if="logoUrl"
             :src="logoUrl"
-            alt="Karsindo Logo"
-            width="144"
-            height="46"
-            class="w-24 sm:w-32 md:w-36 h-[46px] object-contain"
+            :alt="`${appName} Logo`"
+            width="180"
+            height="60"
+            class="w-36 sm:w-40 md:w-[180px] h-[50px] sm:h-[56px] md:h-[60px] object-contain"
           />
         </NuxtLink>
 
@@ -103,7 +103,7 @@
               type="text"
               placeholder="Cari Produk"
               @keyup.enter="handleSearch"
-              class="flex-1 outline-none px-1.5 sm:px-2 md:px-2.5 py-1.5 sm:py-2 md:py-2.5 lg:py-3.5 h-full placeholder:text-[#808080] text-xs sm:text-sm md:text-base min-w-0"
+              class="flex-1 outline-none px-1.5 sm:px-2 md:px-2.5 py-1.5 sm:py-2 md:py-2.5 lg:py-3.5 h-full placeholder:text-[var(--color-brand-black-muted)] text-xs sm:text-sm md:text-base min-w-0 text-[var(--color-brand-black-soft)]"
             />
             <!-- Search Button -->
             <button
@@ -181,7 +181,7 @@
           <div v-else class="relative">
             <button
               @click="isProfileMenuOpen = !isProfileMenuOpen"
-              class="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-[#F8F8F8] transition"
+              class="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-[#F8F8F8] transition cursor-pointer"
             >
               <div
                 class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E9322B] flex items-center justify-center text-white font-semibold text-sm sm:text-base"
@@ -196,11 +196,11 @@
                 <span v-else>{{ userName.charAt(0).toUpperCase() }}</span>
               </div>
               <span
-                class="hidden sm:block text-sm sm:text-base font-medium text-[#1A1919]"
+                class="hidden sm:block text-sm sm:text-base font-medium text-[var(--color-brand-black-soft)]"
                 >{{ userName }}</span
               >
               <svg
-                class="w-4 h-4 text-[#808080]"
+                class="w-4 h-4 text-[var(--color-brand-black-muted)]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -220,7 +220,7 @@
               class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E6E9F0] py-2 z-50"
             >
               <div class="px-4 py-2 border-b border-[#E6E9F0]">
-                <p class="text-sm font-semibold text-[#1A1919]">
+                <p class="text-sm font-semibold text-[var(--color-brand-black-soft)]">
                   {{ userName }}
                 </p>
                 <!-- <p class="text-xs text-[#808080]">{{ userEmail }}</p> -->
@@ -228,7 +228,7 @@
               <NuxtLink
                 to="/account"
                 @click="isProfileMenuOpen = false"
-                class="block px-4 py-2 text-sm text-[#1A1919] hover:bg-[#F8F8F8] transition cursor-pointer"
+                class="block px-4 py-2 text-sm text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition cursor-pointer"
               >
                 <span class="flex items-center gap-2">
                   <div class="w-4 h-4 shrink-0">
@@ -252,7 +252,7 @@
               <NuxtLink
                 to="/account/orders"
                 @click="isProfileMenuOpen = false"
-                class="block px-4 py-2 text-sm text-[#1A1919] hover:bg-[#F8F8F8] transition cursor-pointer"
+                class="block px-4 py-2 text-sm text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition cursor-pointer"
               >
                 <span class="flex items-center gap-2">
                   <div class="w-4 h-4 shrink-0">
@@ -281,7 +281,7 @@
               <NuxtLink
                 to="/account/points"
                 @click="isProfileMenuOpen = false"
-                class="block px-4 py-2 text-sm text-[#1A1919] hover:bg-[#F8F8F8] transition cursor-pointer"
+                class="block px-4 py-2 text-sm text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition cursor-pointer"
               >
                 <span class="flex items-center gap-2">
                   <div class="w-4 h-4 shrink-0">
@@ -305,7 +305,7 @@
               </NuxtLink>
               <button
                 @click="handleLogout"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 cursor-pointer"
                 :disabled="isLoggingOut"
               >
                 <svg
@@ -331,17 +331,21 @@
       <!-- Secondary Navigation: Category List -->
       <div v-if="isCategoryOpen" class="pt-4 sm:pt-5">
         <nav
-          class="flex items-center gap-4 sm:gap-6 md:gap-10 overflow-x-auto justify-start sm:justify-center pb-2"
+          class="category-menu-scroll overflow-x-auto pb-2"
         >
-          <NuxtLink
-            v-for="category in categories"
-            :key="category.id"
-            :to="category.href"
-            @click="isCategoryOpen = false"
-            class="font-medium text-sm sm:text-base text-[#1A1919] hover:cursor-pointer transition whitespace-nowrap"
+          <div
+            class="flex w-max min-w-full items-center justify-center gap-4 px-1 sm:gap-6 sm:px-2 md:gap-10"
           >
-            {{ category.name }}
-          </NuxtLink>
+            <NuxtLink
+              v-for="category in categories"
+              :key="category.id"
+              :to="category.href"
+              @click="isCategoryOpen = false"
+              class="font-medium text-sm sm:text-base text-[var(--color-brand-black-soft)] hover:cursor-pointer transition whitespace-nowrap shrink-0"
+            >
+              {{ category.name }}
+            </NuxtLink>
+          </div>
         </nav>
       </div>
     </div>
@@ -372,10 +376,10 @@
           >
             <NuxtImg
               :src="logoUrl"
-              alt="Karsindo Logo"
-              width="144"
-              height="46"
-              class="w-min h-[46px] object-contain"
+            :alt="`${appName} Logo`"
+              width="180"
+              height="60"
+              class="w-min h-[56px] sm:h-[60px] object-contain"
             />
           </NuxtLink>
           <button
@@ -437,17 +441,17 @@
                   <span v-else>{{ userName.charAt(0).toUpperCase() }}</span>
                 </div>
                 <div>
-                  <p class="text-sm font-semibold text-[#1A1919]">
+                  <p class="text-sm font-semibold text-[var(--color-brand-black-soft)]">
                     {{ userName }}
                   </p>
-                  <p class="text-xs text-[#808080]">{{ userEmail }}</p>
+                  <p class="text-xs text-[var(--color-brand-black-muted)]">{{ userEmail }}</p>
                 </div>
               </div>
             </div>
             <NuxtLink
               to="/account"
               @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[#1A1919] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
+              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
             >
               <svg
                 class="w-5 h-5"
@@ -467,7 +471,7 @@
             <NuxtLink
               to="/account/orders"
               @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[#1A1919] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
+              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
             >
               <svg
                 class="w-5 h-5"
@@ -493,7 +497,7 @@
             <NuxtLink
               to="/account/points"
               @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[#1A1919] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
+              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
             >
               <svg
                 class="w-5 h-5"
@@ -545,6 +549,7 @@
 const router = useRouter();
 const route = useRoute();
 const auth = useAuth();
+const { appName, logoUrl, loadAppIdentity } = useAppIdentity();
 const { logout } = auth;
 const { getCartItemCount, togglePopupCart, loadCart } = useCart();
 const { getTaxoListsByType } = useProductRelationsApi();
@@ -555,7 +560,6 @@ const isCategoryOpen = ref(false);
 const isSidebarOpen = ref(false);
 const isProfileMenuOpen = ref(false);
 const isLoggingOut = ref(false);
-const logoUrl = ref<string | null>(null);
 const categories = ref<Array<{ id: number; name: string; href: string }>>([]);
 const bannerText = ref<Record<string, string | null>>({});
 
@@ -636,7 +640,7 @@ const loadCategories = async () => {
     const categories3 = type3.data?.data?.taxo_lists || [];
 
     categories.value = [...categories2, ...categories3]
-      .filter((cat) => cat.taxonomy_status === "ACTIVE")
+      .filter((cat) => cat.taxonomy_status === "ACTIVE" && !cat.parent)
       .map((cat) => ({
         id: cat.id,
         name: cat.taxonomy_name,
@@ -645,26 +649,6 @@ const loadCategories = async () => {
       .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
   } catch (err) {
     categories.value = [];
-  }
-};
-
-const loadLogo = async () => {
-  try {
-    const { fetchPublicConfig } = useConfig();
-
-    const res = await fetchPublicConfig("store_logo_website");
-    if (!res) return;
-
-    const configData = res?.data;
-    if (configData) {
-      const data = configData as any;
-
-      if (data.value_image) {
-        logoUrl.value = data.value_image;
-      }
-    }
-  } catch (error) {
-    console.error("Failed to load logo from config:", error);
   }
 };
 
@@ -706,7 +690,7 @@ onMounted(async () => {
   // Load categories from database
   await loadCategories();
 
-  loadLogo();
+  await loadAppIdentity();
 
   // Sync cart on mount
   await loadCart();
@@ -738,3 +722,28 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.category-menu-scroll {
+  touch-action: pan-x;
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af transparent;
+}
+
+.category-menu-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.category-menu-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.category-menu-scroll::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 9999px;
+}
+
+.category-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+</style>

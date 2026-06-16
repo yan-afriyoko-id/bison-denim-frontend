@@ -518,7 +518,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Karsindo - Daftar",
+  title: "Daftar",
 });
 
 const { isLoading, error, clearError } = useAuth();

@@ -18,7 +18,7 @@
         />
         <NuxtImg
           src="/assets/img/promo-partners/partner-2.png"
-          alt="Karsindo"
+          :alt="appName || 'Brand Partner'"
           width="462"
           height="266"
           class="w-full h-full object-cover rounded-lg aspect-462/266"
@@ -36,5 +36,5 @@
 </template>
 
 <script setup lang="ts">
-// BrandShowcase component
+const { appName } = useAppIdentity();
 </script>

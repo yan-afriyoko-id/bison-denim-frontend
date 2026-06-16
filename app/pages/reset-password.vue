@@ -169,7 +169,7 @@ definePageMeta({
 })
 
 useHead({
-  title: "Reset Password - Karsindo",
+  title: "Reset Password",
 })
 
 const { resetPassword } = useAuthApi()

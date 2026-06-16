@@ -10,7 +10,7 @@
           <div
             class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#E9322B]"
           ></div>
-          <p class="mt-4 text-[#808080]">Memuat produk...</p>
+          <p class="mt-4 text-[#1A1919] text-base">Memuat produk...</p>
         </div>
 
         <!-- Error State -->
@@ -71,7 +71,7 @@
           <div>
             <div class="flex items-start gap-2 sm:gap-2.5 mb-2 sm:mb-2.5">
               <h1
-                class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[#1A1919] flex-1"
+                class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[var(--color-brand-black-soft)] flex-1"
               >
                 {{ product.name }}
               </h1>
@@ -156,7 +156,7 @@
 
             <!-- Product Detail Section -->
             <div class="mb-6">
-              <h3 class="text-lg sm:text-xl font-semibold text-[#1A1919] mb-4">
+              <h3 class="text-lg sm:text-xl font-semibold text-[var(--color-brand-black-soft)] mb-4">
                 Informasi Produk
               </h3>
               <!-- Spesifikasi -->
@@ -747,7 +747,7 @@
             </div>
           </div>
 
-          <div v-else class="text-center py-8 mb-8">
+          <div v-else-if="!loadingProduct" class="text-center py-8 mb-8">
             <p class="text-[#808080] text-lg">
               Belum ada rating untuk produk ini
             </p>
@@ -834,7 +834,7 @@
           </div>
 
           <!-- No Reviews Message -->
-          <div v-else class="text-center py-12">
+          <div v-else-if="!loadingProduct" class="text-center py-12">
             <p class="text-[#808080] text-lg">
               Belum ada ulasan untuk produk ini
             </p>
@@ -924,7 +924,7 @@
         <!-- Mungkin kamu suka Section -->
         <div v-if="relatedProducts.length > 0">
           <h2
-            class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-6"
+            class="text-xl sm:text-2xl font-semibold text-[var(--color-brand-black-soft)] mb-4 sm:mb-6"
           >
             Mungkin kamu suka
           </h2>
@@ -1589,7 +1589,9 @@ const loadProductAttributes = async (id: number) => {
     }
   } catch (err) {
     console.error("Error loading attributes:", err);
-    attributes.value = null;
+    attributes.value = [];
+  } finally {
+    loadingProductAttributes.value = false;
   }
 };
 
@@ -2095,74 +2097,6 @@ const getPageNumbers = computed(() => {
   return pages;
 });
 
-// Recommendations
-const recommendationFilters = ref([
-  { id: 1, label: "Spesial Online" },
-  { id: 2, label: "Weekend Special" },
-  { id: 3, label: "Pasti Termurah" },
-  { id: 4, label: "Beli 1 gratis 1" },
-]);
-
-const selectedRecommendationFilter = ref(1);
-
-const recommendedProducts = ref([
-  {
-    id: 1,
-    name: "Rana Lemari Pakaian 2 Pintu Ayun - Putih",
-    image: "/assets/img/products/product-1.png",
-    price: "Rp 74.500",
-    finalPrice: "Rp 54.500",
-    rating: 4.8,
-    reviews: 57,
-    discount: 25,
-    newArrival: true,
-  },
-  {
-    id: 2,
-    name: "Rana Lemari Pakaian 2 Pintu Ayun - Putih",
-    image: "/assets/img/products/product-2.png",
-    price: "Rp 74.500",
-    finalPrice: "Rp 54.500",
-    rating: 4.8,
-    reviews: 57,
-    discount: 25,
-    newArrival: true,
-  },
-  {
-    id: 3,
-    name: "Rana Lemari Pakaian 2 Pintu Ayun - Putih",
-    image: "/assets/img/products/product-3.png",
-    price: "Rp 74.500",
-    finalPrice: "Rp 54.500",
-    rating: 4.8,
-    reviews: 57,
-    discount: 25,
-    newArrival: false,
-  },
-  {
-    id: 4,
-    name: "Tulen-6 Sofa Recliner Fabric 1 Seater",
-    image: "/assets/img/products/product-4.png",
-    price: "Rp 74.500",
-    finalPrice: "Rp 54.500",
-    rating: 4.8,
-    reviews: 57,
-    discount: 25,
-    newArrival: false,
-  },
-  {
-    id: 5,
-    name: "Mahoney-2 Sofa Fabric 3 Seater",
-    image: "/assets/img/products/product-5.png",
-    price: "Rp 74.500",
-    finalPrice: "Rp 54.500",
-    rating: 4.8,
-    reviews: 57,
-    discount: 25,
-    newArrival: true,
-  },
-]);
-
 // Watch for variant selection changes to update price/stock/image and location options
 watch(
   selectedVariant,
@@ -2279,12 +2213,10 @@ onMounted(async () => {
   await loadProduct();
 });
 
-const currentUrl = computed(
-  () => `https://karsindofurniture.co.id/${route.fullPath}`,
-);
+const currentUrl = computed(() => route.fullPath);
 
 useHead({
-  title: product.value.meta_title || `${product.value.name} | Karsindo`,
+  title: product.value.meta_title || product.value.name,
   meta: [
     {
       name: "description",

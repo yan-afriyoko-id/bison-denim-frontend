@@ -82,7 +82,7 @@ definePageMeta({
 })
 
 useHead({
-  title: "Kirim Ulang Email Verifikasi - Karsindo",
+  title: "Kirim Ulang Email Verifikasi",
 })
 
 // Auth composable

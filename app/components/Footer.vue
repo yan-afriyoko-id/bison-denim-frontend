@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#C4282B] text-white">
+  <footer class="bg-[var(--color-brand-black)] text-white">
     <div
       class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-11 lg:px-22.5 pt-8 sm:pt-12 md:pt-15"
     >
@@ -16,7 +16,7 @@
               Aktivitas & Update
             </h4>
             <ul
-              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-[#F3D4D5]"
+              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-white"
             >
               <li>
                 <NuxtLink href="/blogs" class="hover:text-white transition"
@@ -34,11 +34,11 @@
               Informasi
             </h4>
             <ul
-              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-[#F3D4D5]"
+              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-white"
             >
               <li>
                 <NuxtLink href="/about" class="hover:text-white transition"
-                  >Tentang Karsindo</NuxtLink
+                  >Tentang {{ appName || "Kami" }}</NuxtLink
                 >
               </li>
               <li>
@@ -64,7 +64,7 @@
               Hubungi Kami
             </h4>
             <ul
-              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-[#F3D4D5]"
+              class="space-y-2 sm:space-y-2.5 text-sm sm:text-base text-white"
             >
               <li class="flex gap-2 sm:gap-2.5 items-center">
                 <svg
@@ -75,22 +75,22 @@
                 >
                   <path
                     d="M9.75 16.5C9.75 17.0967 9.98705 17.669 10.409 18.091C10.831 18.5129 11.4033 18.75 12 18.75C12.5967 18.75 13.169 18.5129 13.591 18.091C14.0129 17.669 14.25 17.0967 14.25 16.5C14.25 15.9033 14.0129 15.331 13.591 14.909C13.169 14.4871 12.5967 14.25 12 14.25C11.4033 14.25 10.831 14.4871 10.409 14.909C9.98705 15.331 9.75 15.9033 9.75 16.5Z"
-                    fill="#F3D4D5"
+                    fill="white"
                   />
                   <path
                     d="M15 10.64V9C15 8.73478 14.8946 8.48043 14.7071 8.29289C14.5196 8.10536 14.2652 8 14 8C13.7348 8 13.4804 8.10536 13.2929 8.29289C13.1054 8.48043 13 8.73478 13 9V10.5H11V9C11 8.73478 10.8946 8.48043 10.7071 8.29289C10.5196 8.10536 10.2652 8 10 8C9.73478 8 9.48043 8.10536 9.29289 8.29289C9.10536 8.48043 9 8.73478 9 9V10.64C7.03909 10.9935 5.26441 12.024 3.98524 13.5517C2.70606 15.0794 2.0035 17.0075 2 19V21C2 21.3978 2.15804 21.7794 2.43934 22.0607C2.72064 22.342 3.10218 22.5 3.5 22.5H20.5C20.8978 22.5 21.2794 22.342 21.5607 22.0607C21.842 21.7794 22 21.3978 22 21V19C21.9965 17.0075 21.2939 15.0794 20.0148 13.5517C18.7356 12.024 16.9609 10.9935 15 10.64ZM12 12.75C12.7417 12.75 13.4667 12.9699 14.0834 13.382C14.7001 13.794 15.1807 14.3797 15.4645 15.0649C15.7484 15.7502 15.8226 16.5042 15.6779 17.2316C15.5333 17.959 15.1761 18.6272 14.6517 19.1517C14.1272 19.6761 13.459 20.0332 12.7316 20.1779C12.0042 20.3226 11.2502 20.2484 10.5649 19.9645C9.87971 19.6807 9.29404 19.2001 8.88199 18.5834C8.46993 17.9667 8.25 17.2417 8.25 16.5C8.25 15.5054 8.64509 14.5516 9.34835 13.8483C10.0516 13.1451 11.0054 12.75 12 12.75Z"
-                    fill="#F3D4D5"
+                    fill="white"
                   />
                   <path
                     d="M21.1 2.42001C15.0958 1.18877 8.9042 1.18877 2.9 2.42001C2.09694 2.5956 1.37551 3.03432 0.850146 3.66657C0.324785 4.29881 0.0255817 5.08838 0 5.91001L0 7.91001C0 8.23832 0.0646644 8.56341 0.190301 8.86672C0.315938 9.17003 0.500087 9.44563 0.732233 9.67778C1.20107 10.1466 1.83696 10.41 2.5 10.41H5.5C5.8283 10.41 6.15339 10.3453 6.45671 10.2197C6.76002 10.0941 7.03562 9.90992 7.26777 9.67778C7.49991 9.44563 7.68406 9.17003 7.8097 8.86672C7.93534 8.56341 8 8.23832 8 7.91001V7.10001C7.9998 7.03703 8.02337 6.9763 8.06602 6.92995C8.10866 6.8836 8.16722 6.85505 8.23 6.85001C10.7389 6.63908 13.2611 6.63908 15.77 6.85001C15.8328 6.85505 15.8913 6.8836 15.934 6.92995C15.9766 6.9763 16.0002 7.03703 16 7.10001V7.91001C16 8.23832 16.0647 8.56341 16.1903 8.86672C16.3159 9.17003 16.5001 9.44563 16.7322 9.67778C17.2011 10.1466 17.837 10.41 18.5 10.41H21.5C21.8283 10.41 22.1534 10.3453 22.4567 10.2197C22.76 10.0941 23.0356 9.90992 23.2678 9.67778C23.4999 9.44563 23.6841 9.17003 23.8097 8.86672C23.9353 8.56341 24 8.23832 24 7.91001V5.91001C23.9744 5.08838 23.6752 4.29881 23.1499 3.66657C22.6245 3.03432 21.9031 2.5956 21.1 2.42001Z"
-                    fill="#F3D4D5"
+                    fill="white"
                   />
                 </svg>
 
                 <a
-                  href="tel:123456789"
+                  :href="phoneLink"
                   class="hover:text-white transition break-all"
-                  >123456789</a
+                  >{{ footerPhone }}</a
                 >
               </li>
               <li class="flex gap-2 sm:gap-2.5 items-center">
@@ -103,11 +103,11 @@
                   <g clip-path="url(#clip0_264_3194)">
                     <path
                       d="M21.5531 3.99994C21.4622 3.99058 21.3706 3.99058 21.2798 3.99994H2.6131C2.49346 4.00179 2.37462 4.01972 2.25977 4.05328L11.8931 13.6466L21.5531 3.99994Z"
-                      fill="#F3D4D5"
+                      fill="white"
                     />
                     <path
                       d="M22.54 4.92676L12.8333 14.5934C12.5835 14.8418 12.2455 14.9811 11.8933 14.9811C11.541 14.9811 11.2031 14.8418 10.9533 14.5934L1.33329 5.00009C1.30371 5.10878 1.28803 5.22079 1.28662 5.33342V18.6668C1.28662 19.0204 1.4271 19.3595 1.67715 19.6096C1.92719 19.8596 2.26633 20.0001 2.61995 20.0001H21.2866C21.6402 20.0001 21.9794 19.8596 22.2294 19.6096C22.4795 19.3595 22.62 19.0204 22.62 18.6668V5.33342C22.6146 5.19453 22.5877 5.05731 22.54 4.92676ZM3.53329 18.6668H2.60662V17.7134L7.45329 12.9068L8.39329 13.8468L3.53329 18.6668ZM21.2733 18.6668H20.34L15.48 13.8468L16.42 12.9068L21.2666 17.7134L21.2733 18.6668Z"
-                      fill="#F3D4D5"
+                      fill="white"
                     />
                   </g>
                   <defs>
@@ -118,9 +118,9 @@
                 </svg>
 
                 <a
-                  href="mailto:karsindo@gmail.com"
+                  :href="emailLink"
                   class="hover:text-white transition break-all"
-                  >karsindo@gmail.com</a
+                  >{{ footerEmail }}</a
                 >
               </li>
             </ul>
@@ -222,32 +222,75 @@
       <div
         class="border-t border-[#FFFFFF1A] py-3 sm:py-[14.5px] text-center text-xs sm:text-sm"
       >
-        <p>&copy; Karsindo 2025</p>
+        <p>&copy; {{ appName || "Website" }} 2025</p>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useConfigApi } from "~/composables/useConfigApi";
 
-const { getMultiplePublicConfigs } = useConfigApi();
+const { getPublicConfig } = useConfigApi();
+const { appName, loadAppIdentity } = useAppIdentity();
 
 const socials = ref<Record<string, string | null>>({});
+const footerEmail = ref("info@example.com");
+const footerPhone = ref("+62");
+
+const emailLink = computed(() => `mailto:${footerEmail.value}`);
+const phoneLink = computed(() => {
+  const sanitizedPhone = footerPhone.value.replace(/[^\d+]/g, "");
+  return `tel:${sanitizedPhone}`;
+});
 
 onMounted(async () => {
+  await loadAppIdentity();
+
+  // Fetch all public configs with Promise.allSettled for resilience
   const keys = [
+    "store_email",
+    "store_phone",
+    "social_whatsapp",
     "social_instagram",
     "social_tiktok",
     "social_facebook",
     "social_youtube",
   ];
 
-  const { data } = await getMultiplePublicConfigs(keys);
+  const results = await Promise.allSettled(
+    keys.map((key) => getPublicConfig(key))
+  );
 
-  if (data) {
-    socials.value = data;
+  const configMap: Record<string, string | null> = {};
+  results.forEach((res, idx) => {
+    if (res.status === "fulfilled" && res.value?.data?.data?.value) {
+      configMap[keys[idx]] = res.value.data.data.value;
+    } else {
+      configMap[keys[idx]] = null;
+    }
+  });
+
+  // Email
+  if (configMap.store_email) {
+    footerEmail.value = configMap.store_email;
   }
+
+  // Phone: prefer store_phone if long enough (>11 digits), fallback to social_whatsapp
+  const phoneCandidates = [configMap.store_phone, configMap.social_whatsapp].filter(Boolean);
+  const bestPhone = phoneCandidates.reduce<string>(
+    (best, curr) => (curr && curr.length > best.length ? curr : best),
+    ""
+  );
+  footerPhone.value = bestPhone.length >= 12 ? bestPhone : "6281234567890";
+
+  // Socials
+  socials.value = {
+    social_instagram: configMap.social_instagram || null,
+    social_tiktok: configMap.social_tiktok || null,
+    social_facebook: configMap.social_facebook || null,
+    social_youtube: configMap.social_youtube || null,
+  };
 });
 </script>

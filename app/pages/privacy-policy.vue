@@ -17,7 +17,7 @@
             </p>
 
             <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-6 sm:mb-7.5">
-              Selamat datang di website Karsindo Furniture. <br> Karsindo menghargai dan melindungi privasi setiap pengunjung, pelanggan, dan pengguna layanan kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat menggunakan website kami.
+              Selamat datang di website {{ appName }}. <br> {{ appName }} menghargai dan melindungi privasi setiap pengunjung, pelanggan, dan pengguna layanan kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat menggunakan website kami.
             </p>
             <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-6 sm:mb-7.5">
               Dengan mengakses dan menggunakan website ini, Anda dianggap telah membaca, memahami, dan menyetujui isi Kebijakan Privasi ini.
@@ -85,7 +85,7 @@
                 3. Perlindungan Data Pengguna
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-3">
-                Karsindo berkomitmen menjaga keamanan data pengguna dengan menerapkan langkah-langkah perlindungan yang wajar untuk mencegah:
+                {{ appName }} berkomitmen menjaga keamanan data pengguna dengan menerapkan langkah-langkah perlindungan yang wajar untuk mencegah:
               </p>
               <ul class="list-disc list-inside text-sm sm:text-lg text-[#696969] leading-relaxed space-y-1 mb-3">
                 <li>Akses tanpa izin</li>
@@ -123,7 +123,7 @@
                 5. Pembagian Informasi kepada Pihak Ketiga
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-3">
-                Karsindo tidak menjual atau menyewakan data pribadi pengguna kepada pihak lain.
+                {{ appName }} tidak menjual atau menyewakan data pribadi pengguna kepada pihak lain.
               </p>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed mb-3">
                 Informasi dapat dibagikan kepada pihak ketiga hanya apabila:
@@ -131,7 +131,7 @@
               <ul class="list-disc list-inside text-sm sm:text-lg text-[#696969] leading-relaxed space-y-1">
                 <li>Dibutuhkan untuk proses pengiriman atau layanan tertentu</li>
                 <li>Diperlukan oleh hukum atau pemerintah yang berwenang</li>
-                <li>Dibutuhkan untuk perlindungan hak dan keamanan Karsindo</li>
+                <li>Dibutuhkan untuk perlindungan hak dan keamanan {{ appName }}</li>
               </ul>
             </section>
 
@@ -141,7 +141,7 @@
                 6. Tautan ke Situs Lain
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                Website kami dapat mengandung tautan menuju website pihak ketiga. Karsindo tidak bertanggung jawab atas isi maupun kebijakan privasi website pihak ketiga tersebut.
+                Website kami dapat mengandung tautan menuju website pihak ketiga. {{ appName }} tidak bertanggung jawab atas isi maupun kebijakan privasi website pihak ketiga tersebut.
               </p>
             </section>
 
@@ -160,7 +160,7 @@
                 <li>Menarik persetujuan penggunaan data</li>
               </ul>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                Permintaan dapat disampaikan melalui kontak resmi Karsindo.
+                Permintaan dapat disampaikan melalui kontak resmi {{ appName }}.
               </p>
             </section>
 
@@ -170,7 +170,7 @@
                 8. Perubahan Kebijakan Privasi
               </h2>
               <p class="text-sm sm:text-lg text-[#696969] leading-relaxed">
-                Karsindo dapat memperbarui Kebijakan Privasi ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Perubahan akan berlaku sejak dipublikasikan di halaman ini.
+                {{ appName }} dapat memperbarui Kebijakan Privasi ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Perubahan akan berlaku sejak dipublikasikan di halaman ini.
               </p>
             </section>
 
@@ -183,9 +183,9 @@
                 Jika Anda memiliki pertanyaan terkait Kebijakan Privasi ini, silakan hubungi:
               </p>
               <div class="text-sm sm:text-lg text-[#696969] leading-relaxed space-y-1">
-                <p class="font-medium text-[#1A1919]">Karsindo Furniture</p>
-                <p>Email: kingsejahteraabadi@gmail.com</p>
-                <p>WhatsApp: +62 821 3138 0720</p>
+                <p class="font-medium text-[#1A1919]">{{ appName }}</p>
+                <p>Email: {{ contactEmail }}</p>
+                <p>WhatsApp: {{ contactPhone }}</p>
                 <p>Alamat Operasional: Jalan Boulevard Raya Ruko Kuning No. 18 J, Medan Estate, Kec. Percut Sei Tuan, Kota Medan, Sumatera Utara 20371</p>
               </div>
             </section>
@@ -198,16 +198,43 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+const { appName } = useAppIdentity();
+
+const contactEmail = ref("");
+const contactPhone = ref("");
+
+onMounted(async () => {
+  const { getPublicConfig } = useConfigApi();
+
+  const [emailRes, waRes, phoneRes] = await Promise.allSettled([
+    getPublicConfig("store_email"),
+    getPublicConfig("social_whatsapp"),
+    getPublicConfig("store_phone"),
+  ]);
+
+  const email =
+    emailRes.status === "fulfilled" && emailRes.value?.data?.data?.value;
+  const wa =
+    waRes.status === "fulfilled" && waRes.value?.data?.data?.value;
+  const phone =
+    phoneRes.status === "fulfilled" && phoneRes.value?.data?.data?.value;
+
+  contactEmail.value = email || "";
+  contactPhone.value = wa || phone || "";
+});
+
 definePageMeta({
   layout: "default",
 });
 
 useHead({
-  title: "Privacy Policy - Karsindo",
+  title: "Privacy Policy",
   meta: [
     {
       name: "description",
-      content: "Kebijakan privasi penggunaan website Karsindo Furniture.",
+      content: "Kebijakan privasi penggunaan website kami.",
     },
   ],
 });

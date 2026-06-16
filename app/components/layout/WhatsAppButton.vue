@@ -1,5 +1,6 @@
 <template>
   <a
+    v-if="storePhone"
     :href="waLink"
     target="_blank"
     rel="noopener noreferrer"
@@ -22,16 +23,54 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useConfigApi } from "~/composables/useConfigApi";
+const { appName } = useAppIdentity();
+
 const { getPublicConfig } = useConfigApi();
 
-const waMessage = encodeURIComponent("Halo, saya ingin bertanya tentang produk Karsindo.");
-const waLink = ref(`https://wa.me/6281234567890?text=${waMessage}`);
+const storePhone = ref("");
 
-const { data: waConfig } = await useAsyncData("social_whatsapp", () =>
-  getPublicConfig("social_whatsapp").then((res) => res.data)
+const waMessage = computed(() =>
+  encodeURIComponent(
+    `Halo, saya ingin bertanya tentang produk ${appName.value || "di website ini"}.`,
+  ),
 );
+const waLink = computed(() => {
+  const phoneNumber = storePhone.value;
+  if (!phoneNumber) return "#";
+  const sanitized = phoneNumber.replace(/[^\d]/g, "");
+  return `https://wa.me/${sanitized}?text=${waMessage.value}`;
+});
 
-if (waConfig.value?.data?.value) {
-  waLink.value = `https://wa.me/${waConfig.value.data.value}?text=${waMessage}`;
-}
+onMounted(async () => {
+  const [storeRes, socialRes] = await Promise.allSettled([
+    getPublicConfig("store_phone"),
+    getPublicConfig("social_whatsapp"),
+  ]);
+
+  // Prefer store_phone, fallback to social_whatsapp only if store_phone is empty or too short
+  let phoneValue = storeRes.status === "fulfilled" && storeRes.value?.data?.value
+    ? storeRes.value.data.value
+    : socialRes.status === "fulfilled" && socialRes.value?.data?.value
+      ? socialRes.value.data.value
+      : '';
+
+  // Ensure we have a sufficiently long phone number
+  if (!phoneValue || phoneValue.length < 12) {
+    // If store_phone was empty or too short, try social_whatsapp
+    const socialValue = socialRes.status === "fulfilled" && socialRes.value?.data?.value
+      ? socialRes.value.data.value
+      : '';
+    if (socialValue && (phoneValue === '' || socialValue.length > phoneValue.length)) {
+      phoneValue = socialValue;
+    }
+  }
+
+  // If still empty or invalid, use default full Indonesian mobile prefix
+  if (!phoneValue || phoneValue.length < 12) {
+    phoneValue = '6281234567890'; // Default fallback full number
+  }
+  storePhone.value = phoneValue;
+});
 </script>
