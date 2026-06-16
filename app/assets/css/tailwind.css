@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #012970;
+  --color-primary-dark: #080c63;
+  --font-sans: 'Open Sans', 'Nunito', 'Poppins', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --max-width-8xl: 1424px;
+}
