@@ -84,30 +84,17 @@
       </div>
 
       <!-- Brand Logos -->
-      <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 md:gap-10 justify-center items-center mx-auto">
-        <!-- Brand 1: Karvium -->
+      <div class="flex flex-row gap-4 justify-center items-center mx-auto">
         <NuxtImg
-          src="/assets/img/brand/karvium-no-bg.png"
-          alt="Karvium"
-          class="w-auto h-[70px] object-cover"
-          fit="cover"
+          v-if="logoUrl"
+          :src="logoUrl"
+          :alt="`${appName} Logo`"
+          class="w-auto h-[70px] object-contain"
+          fit="contain"
         />
-
-        <!-- Brand 2 -->
-          <NuxtImg
-            src="/assets/img/brand/karsindo-no-bg.png"
-            :alt="appName || 'Brand Logo'"
-            class="w-auto h-[70px] object-cover"
-            fit="cover"
-          />
-
-        <!-- Brand 3: KARSTECH -->
-        <NuxtImg
-          src="/assets/img/brand/karstech-no-bg.png"
-          alt="Karstech"
-          class="w-auto h-[70px] object-cover"
-          fit="cover"
-        />
+        <span v-if="appName" class="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#1A1919]">
+          {{ appName }}
+        </span>
       </div>
     </section>
     </div>
@@ -116,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-const { appName } = useAppIdentity();
+const { appName, logoUrl } = useAppIdentity();
 
 definePageMeta({
   layout: "default",
