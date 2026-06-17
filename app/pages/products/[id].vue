@@ -218,18 +218,29 @@
 
             <!-- Categories -->
             <div v-if="product.categories && product.categories.length > 0" class="mb-6">
-              <h3 class="text-lg sm:text-xl font-semibold text-[var(--color-brand-black-soft)] mb-4">
-                Kategori
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                <NuxtLink
-                  v-for="cat in product.categories"
-                  :key="cat.id"
-                  :to="`/products?category_ids=${cat.category_id}`"
-                  class="px-3 py-1.5 bg-[#F8F8F8] text-sm text-[#7B7B7B] rounded-lg hover:bg-[#E9322B] hover:text-white transition"
-                >
-                  {{ cat.category_name || cat.category_id }}
-                </NuxtLink>
+              <div v-if="mainCategories.length > 0" class="mb-3">
+                <p class="text-base sm:text-lg text-[#1A1919] mb-3 sm:mb-4">Kategori</p>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="cat in mainCategories"
+                    :key="cat.id"
+                    class="px-3 py-1.5 bg-[#E6E9F0] text-sm text-[#7B7B7B] rounded-lg"
+                  >
+                    {{ cat.category_name || cat.category_id }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="subCategories.length > 0">
+                <p class="text-base sm:text-lg text-[#1A1919] mb-3 sm:mb-4">Sub Kategori</p>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="cat in subCategories"
+                    :key="cat.id"
+                    class="px-3 py-1.5 bg-[#E6E9F0] text-sm text-[#7B7B7B] rounded-lg"
+                  >
+                    {{ cat.category_name || cat.category_id }}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -994,7 +1005,7 @@ const route = useRoute();
 const router = useRouter();
 const { showToast } = useToast();
 const { getProduct, getRelatedProducts } = useProductApi();
-const { getProductAttributes } = useProductRelationsApi();
+const { getProductAttributes, getTaxoListsByType } = useProductRelationsApi();
 const {
   addToCart,
   loadCart,
@@ -1014,6 +1025,46 @@ const relatedError = ref<string | null>(null);
 
 const attributes = ref<Attribute[]>([]);
 const loadingProductAttributes = ref(false);
+
+const taxonomyMap = ref<Record<number, { name: string; parent: number | null; type: number }>>({});
+
+const loadTaxonomies = async () => {
+  try {
+    const [type2, type3] = await Promise.all([
+      getTaxoListsByType(2),
+      getTaxoListsByType(3),
+    ]);
+    const map: Record<number, { name: string; parent: number | null; type: number }> = {};
+    const lists = [
+      ...(type2.data?.data?.taxo_lists || []),
+      ...(type3.data?.data?.taxo_lists || []),
+    ];
+    lists.forEach((item: any) => {
+      map[item.id] = {
+        name: item.taxonomy_name,
+        parent: item.parent || null,
+        type: item.taxonomy_type,
+      };
+    });
+    taxonomyMap.value = map;
+  } catch (err) {
+    console.warn("Failed to load taxonomies:", err);
+  }
+};
+
+const mainCategories = computed(() => {
+  return (product.value.categories || []).filter((cat) => {
+    const info = taxonomyMap.value[cat.category_id];
+    return info && info.parent === null;
+  });
+});
+
+const subCategories = computed(() => {
+  return (product.value.categories || []).filter((cat) => {
+    const info = taxonomyMap.value[cat.category_id];
+    return info && info.parent !== null;
+  });
+});
 
 // Buy handler - add to cart and redirect to payment
 const handleBuy = async () => {
@@ -1590,6 +1641,7 @@ const loadProduct = async () => {
     if (apiProduct?.id) {
       await loadProductAttributes(apiProduct.id);
     }
+    await loadTaxonomies();
     // Update reviews
     updateReviews(reviews);
   } catch (err) {
