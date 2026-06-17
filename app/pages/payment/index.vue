@@ -822,10 +822,43 @@
                 </div>
               </div>
 
+              <!-- Payment Method Selection -->
+              <div v-if="!isReadonlyMode" class="mb-4">
+                <h3 class="text-sm font-semibold text-[#1A1919] mb-3">
+                  Pilih Metode Pembayaran
+                </h3>
+                <div class="space-y-2">
+                  <label
+                    v-for="gw in paymentMethods"
+                    :key="gw.key"
+                    class="flex items-center gap-3 p-3 border rounded-lg transition"
+                    :class="[
+                      selectedGateway === gw.key ? 'border-[#E9322B] bg-[#E9322B14]' : 'border-[#E6E9F0]',
+                      gw.active ? 'cursor-pointer hover:border-[#E9322B]' : 'opacity-50'
+                    ]"
+                  >
+                    <input
+                      type="radio"
+                      name="paymentGateway"
+                      :value="gw.key"
+                      v-model="selectedGateway"
+                      :disabled="!gw.active"
+                      class="accent-[#E9322B]"
+                    />
+                    <div>
+                      <span class="text-sm font-medium text-[#1A1919] capitalize">{{ gw.label }}</span>
+                      <p class="text-xs text-[#ACACAC]">
+                        {{ gw.description }}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               <button
                 v-if="!isReadonlyMode"
                 @click="handlePayment"
-                :disabled="isSubmitting || !canSubmit"
+                :disabled="isSubmitting || !canSubmit || !selectedGateway"
                 class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 <div
@@ -849,7 +882,7 @@
               </button>
               <button
                 v-else-if="orderIdFromQuery && existingOrder"
-                @click="payWithMidtrans(orderIdFromQuery)"
+                @click="processExistingPayment"
                 :disabled="isSubmitting"
                 class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
@@ -1152,6 +1185,7 @@ import type {
 } from "~/types/checkout";
 import type { CartItemResponse } from "~/types/cart";
 import { useOrder } from "~/composables/useOrder";
+import { useOrderApi } from "~/composables/useOrderApi";
 import { useVoucher } from "~/composables/useVoucherApi";
 import { usePointApi } from "~/composables/usePointApi";
 import { useConfigApi } from "~/composables/useConfigApi";
@@ -1187,7 +1221,8 @@ const { getShippingCost } = useShippingApi();
 const { getPoints } = usePointApi();
 const { getPublicConfig } = useConfigApi();
 
-const { getSnapToken, createPaymentGroup } = usePaymentApi();
+const { getSnapToken, getXenditInvoice, createPaymentGroup, getActivePaymentGateways } = usePaymentApi();
+const { checkPaymentStatus } = useOrderApi();
 
 const isLoadingCart = ref(true);
 const isLoadingAddresses = ref(false);
@@ -1258,6 +1293,19 @@ const voucherError = ref<string | null>(null);
 const userPoint = ref<UserPoint | null>(null);
 const usePoints = ref(false);
 const globalProtectionPercent = ref<number>(0);
+const allPaymentMethods = [
+  { key: "midtrans", label: "Midtrans", description: "Kartu Kredit / Transfer / E-Wallet" },
+  { key: "xendit", label: "Xendit", description: "Virtual Account / Retail / E-Wallet" },
+];
+const activeGateways = ref<string[]>([]);
+const selectedGateway = ref<string>("");
+
+const paymentMethods = computed(() =>
+  allPaymentMethods.map((m) => ({
+    ...m,
+    active: activeGateways.value.includes(m.key),
+  })),
+);
 const showNoteModal = ref(false);
 const currentNoteVariantId = ref<number | null>(null);
 const noteDraft = ref("");
@@ -1372,6 +1420,21 @@ const loadUserPoints = async () => {
   }
 
   userPoint.value = data.data;
+};
+
+const loadPaymentGateways = async () => {
+  try {
+    const gateways = await getActivePaymentGateways();
+    activeGateways.value = gateways;
+    const firstActive = gateways[0] || "midtrans";
+    if (!selectedGateway.value || !gateways.includes(selectedGateway.value)) {
+      selectedGateway.value = firstActive;
+    }
+  } catch (err) {
+    console.warn("Failed to load payment gateways, using midtrans fallback:", err);
+    activeGateways.value = ["midtrans"];
+    selectedGateway.value = "midtrans";
+  }
 };
 
 const loadProtectionPercent = async () => {
@@ -1567,6 +1630,7 @@ onMounted(async () => {
   }
 
   await loadProtectionPercent();
+  await loadPaymentGateways();
   await fetchApplicableVouchers();
 });
 watch(
@@ -2180,9 +2244,10 @@ const payWithMidtrans = async (orderId: number) => {
   try {
     await loadMidtransSnap();
 
-    const { snap_token } = await getSnapToken(orderId);
+    const { snap_token } = await getSnapToken(orderId, selectedGateway.value || null);
     (window as any).snap.pay(snap_token, {
       onSuccess: async () => {
+        await checkPaymentStatus(orderId);
         await loadCart();
         await navigateTo("/account/orders?tab=paid");
       },
@@ -2204,6 +2269,21 @@ const payWithMidtrans = async (orderId: number) => {
   }
 };
 
+const payWithXenditReadonly = async (orderId: number) => {
+  try {
+    const redirectUrl = window.location.origin + "/account/orders?tab=paid";
+    const { invoice_url } = await getXenditInvoice(orderId, redirectUrl);
+    if (!invoice_url) {
+      alert("Gagal mendapatkan invoice pembayaran");
+      return;
+    }
+    window.location.href = invoice_url;
+  } catch (err) {
+    console.error("Xendit error:", err);
+    alert("Gagal memulai pembayaran Xendit");
+  }
+};
+
 const payWithMidtransWithCart = async (
   orderId: number,
   variantIdsToRemove: number[],
@@ -2211,10 +2291,11 @@ const payWithMidtransWithCart = async (
   try {
     await loadMidtransSnap();
 
-    const { snap_token } = await getSnapToken(orderId);
+    const { snap_token } = await getSnapToken(orderId, selectedGateway.value || null);
 
     (window as any).snap.pay(snap_token, {
       onSuccess: async () => {
+        await checkPaymentStatus(orderId);
         for (const variantId of variantIdsToRemove) {
           await removeFromCart(variantId);
         }
@@ -2239,6 +2320,35 @@ const payWithMidtransWithCart = async (
   } catch (err) {
     console.error(err);
     alert("Gagal memulai pembayaran");
+  }
+};
+
+const payWithXendit = async (orderId: number, variantIdsToRemove: number[]) => {
+  try {
+    const redirectUrl = window.location.origin + "/account/orders?tab=paid";
+    const { invoice_url } = await getXenditInvoice(orderId, redirectUrl);
+    if (!invoice_url) {
+      alert("Gagal mendapatkan invoice pembayaran");
+      return;
+    }
+    for (const variantId of variantIdsToRemove) {
+      await removeFromCart(variantId);
+    }
+    await loadCart();
+    window.location.href = invoice_url;
+  } catch (err) {
+    console.error("Xendit error:", err);
+    alert("Gagal memulai pembayaran Xendit");
+  }
+};
+
+const processExistingPayment = async () => {
+  if (!orderIdFromQuery.value) return;
+  const gw = existingOrder.value?.payment?.method || selectedGateway.value || "midtrans";
+  if (gw === "xendit") {
+    await payWithXenditReadonly(orderIdFromQuery.value);
+  } else {
+    await payWithMidtrans(orderIdFromQuery.value);
   }
 };
 
@@ -2271,7 +2381,7 @@ const handlePayment = async () => {
 
   try {
     if (orderIdFromQuery.value) {
-      if (existingOrder.value?.payment?.snap_token) {
+      if (existingOrder.value?.payment?.snap_token || existingOrder.value?.payment?.method) {
         alert(
           'Pesanan ini sudah memiliki token pembayaran dan tidak dapat diubah. Silakan gunakan tombol "Bayar Sekarang" untuk melanjutkan pembayaran.',
         );
@@ -2280,7 +2390,7 @@ const handlePayment = async () => {
       }
       // For existing order, pay immediately
       isSubmitting.value = false;
-      await payWithMidtrans(orderIdFromQuery.value);
+      await processExistingPayment();
       return;
     }
 
@@ -2330,7 +2440,7 @@ const handlePayment = async () => {
           note: notePerItem.value[item.variant_id] || null,
           is_protected: !!protectionPerItem.value[item.variant_id],
         })),
-        payment_method: null,
+        payment_method: selectedGateway.value || null,
         voucher_id: selectedVoucher.value?.id || null,
         voucher_discount: Math.round(
           (discountAmount.value * storeSubtotal) /
@@ -2372,31 +2482,45 @@ const handlePayment = async () => {
     // If multiple orders, create a payment group so user pays once
     if (createdOrderIds.length > 1) {
       try {
-        const { snap_token } = await createPaymentGroup(createdOrderIds);
-        await loadMidtransSnap();
-        (window as any).snap.pay(snap_token, {
-          onSuccess: async () => {
-            for (const variantId of variantIdsToRemove) {
-              await removeFromCart(variantId);
-            }
-            await loadCart();
-            await navigateTo("/account/orders?tab=paid");
-          },
-          onPending: async () => {
-            for (const variantId of variantIdsToRemove) {
-              await removeFromCart(variantId);
-            }
-            await loadCart();
-            await navigateTo("/account/orders?tab=unpaid");
-          },
-          onError: (err: any) => {
-            console.error("Midtrans error:", err);
-            alert("Pembayaran gagal. Silakan coba lagi.");
-          },
-          onClose: () => {
-            alert("Pembayaran dibatalkan");
-          },
-        });
+        const gw = selectedGateway.value;
+        if (gw === "xendit") {
+          const redirectUrl = window.location.origin + "/account/orders?tab=paid";
+          const { invoice_url } = await createPaymentGroup(createdOrderIds, gw, redirectUrl);
+          for (const variantId of variantIdsToRemove) {
+            await removeFromCart(variantId);
+          }
+          await loadCart();
+          window.location.href = invoice_url;
+        } else {
+          const { snap_token } = await createPaymentGroup(createdOrderIds, gw);
+          await loadMidtransSnap();
+          (window as any).snap.pay(snap_token, {
+            onSuccess: async () => {
+              for (const orderId of createdOrderIds) {
+                await checkPaymentStatus(orderId);
+              }
+              for (const variantId of variantIdsToRemove) {
+                await removeFromCart(variantId);
+              }
+              await loadCart();
+              await navigateTo("/account/orders?tab=paid");
+            },
+            onPending: async () => {
+              for (const variantId of variantIdsToRemove) {
+                await removeFromCart(variantId);
+              }
+              await loadCart();
+              await navigateTo("/account/orders?tab=unpaid");
+            },
+            onError: (err: any) => {
+              console.error("Midtrans error:", err);
+              alert("Pembayaran gagal. Silakan coba lagi.");
+            },
+            onClose: () => {
+              alert("Pembayaran dibatalkan");
+            },
+          });
+        }
       } catch (err) {
         console.error(err);
         alert("Gagal memulai pembayaran grup. Silakan coba lagi.");
@@ -2407,8 +2531,12 @@ const handlePayment = async () => {
     // Single order: proceed to payment for first order
     if (createdOrderIds.length > 0) {
       const firstOrderId: number = createdOrderIds[0];
-      // Pass variant IDs to remove after payment succeeds
-      await payWithMidtransWithCart(firstOrderId, variantIdsToRemove);
+      const gw = selectedGateway.value;
+      if (gw === "xendit") {
+        await payWithXendit(firstOrderId, variantIdsToRemove);
+      } else {
+        await payWithMidtransWithCart(firstOrderId, variantIdsToRemove);
+      }
     }
   } catch (err) {
     errorMessage.value =

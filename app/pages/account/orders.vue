@@ -47,9 +47,20 @@
             </div>
 
             <!-- Loading State -->
-            <div v-if="isLoading" class="text-center py-10">
+            <div v-if="isLoading && !isPolling" class="text-center py-10">
               <p class="text-sm sm:text-base text-[#7B7B7B]">
                 Memuat data pesanan...
+              </p>
+            </div>
+
+            <!-- Polling State -->
+            <div v-if="isPolling" class="text-center py-10">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#E9322B] mb-3"></div>
+              <p class="text-sm sm:text-base text-[#7B7B7B]">
+                Menunggu konfirmasi pembayaran...
+              </p>
+              <p class="text-xs text-[#ACACAC] mt-1">
+                Halaman akan diperbarui secara otomatis
               </p>
             </div>
 
@@ -185,7 +196,7 @@
                     </button>
                     <NuxtLink
                       :to="`/payment/${order.id}`"
-                      class="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 border border-[#E9322B] text-[#E9322B] rounded-lg text-sm sm:text-base md:text-lg font-medium hover:bg-[#E9322B] hover:text-white transition text-center hover:cursor-pointer"
+                      class="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 bg-[#E9322B] text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:bg-[#C4282B] transition text-center hover:cursor-pointer"
                     >
                       Detail
                     </NuxtLink>
@@ -195,7 +206,7 @@
                         order.status !== 'CANCELLED'
                       "
                       :disabled="isPaying"
-                      @click="handlePay(order.id)"
+                      @click="openPaymentModal(order)"
                       class="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 bg-[#E9322B] text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:bg-[#D32A24] transition hover:cursor-pointer"
                     >
                       {{ isPaying ? "Memproses..." : "Bayar" }}
@@ -236,6 +247,59 @@
     </div>
     <Footer />
 
+    <!-- Payment Method Selection Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showPaymentModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        @click.self="showPaymentModal = false"
+      >
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-xl">
+          <h3 class="text-lg font-semibold text-[#1A1919] mb-2">Pilih Metode Pembayaran</h3>
+          <p class="text-sm text-[#7B7B7B] mb-4">Pilih metode pembayaran untuk melanjutkan</p>
+          <div class="space-y-3">
+            <label
+              v-for="gw in paymentMethods"
+              :key="gw.key"
+              class="flex items-center gap-3 p-4 border rounded-lg transition"
+              :class="[
+                selectedPaymentMethod === gw.key ? 'border-[#E9322B] bg-[#E9322B14]' : 'border-[#E6E9F0]',
+                gw.active ? 'cursor-pointer hover:border-[#E9322B]' : 'opacity-50'
+              ]"
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                :value="gw.key"
+                v-model="selectedPaymentMethod"
+                :disabled="!gw.active"
+                class="accent-[#E9322B]"
+              />
+              <div>
+                <span class="text-sm font-medium text-[#1A1919] capitalize">{{ gw.label }}</span>
+                <p class="text-xs text-[#ACACAC]">{{ gw.description }}</p>
+              </div>
+            </label>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button
+              @click="showPaymentModal = false"
+              class="flex-1 px-4 py-2.5 border border-[#E6E9F0] text-[#7B7B7B] rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              @click="proceedPayment"
+              :disabled="!selectedPaymentMethod"
+              class="flex-1 px-4 py-2.5 bg-[#E9322B] text-white rounded-lg text-sm font-medium hover:bg-[#C4282B] transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Lanjutkan
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Cancel Order Confirmation Modal -->
     <ConfirmModal
       v-model="showCancelConfirmModal"
@@ -269,8 +333,8 @@ const {
   formatOrderStatus,
   isLoading,
 } = useOrder();
-const { cancelOrder, completeOrder } = useOrderApi();
-const { getSnapToken } = usePaymentApi();
+const { cancelOrder, completeOrder, checkPaymentStatus } = useOrderApi();
+const { getSnapToken, getXenditInvoice, getActivePaymentGateways } = usePaymentApi();
 
 const route = useRoute();
 const router = useRouter();
@@ -282,6 +346,46 @@ const activeTab = ref<"unpaid" | "paid" | "cancelled">(
   validTabs.has(initialTab) ? (initialTab as any) : "unpaid",
 );
 const isPaying = ref(false);
+const isPolling = ref(false);
+
+const allPaymentMethods = [
+  { key: "midtrans", label: "Midtrans", description: "Kartu Kredit / Transfer / E-Wallet" },
+  { key: "xendit", label: "Xendit", description: "Virtual Account / Retail / E-Wallet" },
+];
+const showPaymentModal = ref(false);
+const payingOrderId = ref<number | null>(null);
+const activeGateways = ref<string[]>([]);
+const selectedPaymentMethod = ref<string>("");
+
+const paymentMethods = computed(() =>
+  allPaymentMethods.map((m) => ({
+    ...m,
+    active: activeGateways.value.includes(m.key),
+  })),
+);
+
+const openPaymentModal = async (order: any) => {
+  payingOrderId.value = order.id;
+  selectedPaymentMethod.value = "";
+  try {
+    const gateways = await getActivePaymentGateways();
+    activeGateways.value = gateways;
+  } catch {
+    activeGateways.value = ["midtrans"];
+  }
+  showPaymentModal.value = true;
+};
+
+const proceedPayment = async () => {
+  if (!payingOrderId.value || !selectedPaymentMethod.value) return;
+  showPaymentModal.value = false;
+  if (selectedPaymentMethod.value === "xendit") {
+    await handlePayXendit(payingOrderId.value);
+  } else {
+    await handlePay(payingOrderId.value);
+  }
+  payingOrderId.value = null;
+};
 
 // Keep activeTab in sync with the URL query param
 watch(
@@ -313,8 +417,34 @@ const loadOrders = async () => {
   }
 };
 
-onMounted(() => {
-  loadOrders();
+onMounted(async () => {
+  await loadOrders();
+
+  if (activeTab.value !== "paid" || paidOrders.value.length > 0) return;
+
+  // Poll payment status after redirect from payment page
+  isPolling.value = true;
+  let retries = 0;
+  const maxRetries = 5;
+
+  const poll = async () => {
+    retries++;
+
+    for (const order of unpaidOrders.value) {
+      await checkPaymentStatus(order.id);
+    }
+
+    await loadOrders();
+
+    if (paidOrders.value.length > 0 || retries >= maxRetries) {
+      isPolling.value = false;
+      return;
+    }
+
+    setTimeout(poll, 3000);
+  };
+
+  setTimeout(poll, 3000);
 });
 
 // Filter orders by payment status
@@ -410,6 +540,7 @@ const handlePay = async (orderId: number) => {
     isPaying.value = false;
     (window as any).snap.pay(snap_token, {
       onSuccess: async () => {
+        await checkPaymentStatus(orderId);
         await loadOrders();
         await navigateTo("/account/orders?tab=paid");
       },
@@ -427,6 +558,24 @@ const handlePay = async (orderId: number) => {
   } catch (error) {
     console.error("Error processing payment:", error);
     alert("Gagal memproses pembayaran");
+  }
+};
+
+const handlePayXendit = async (orderId: number) => {
+  try {
+    isPaying.value = true;
+    const redirectUrl = window.location.origin + "/account/orders?tab=paid";
+    const { invoice_url } = await getXenditInvoice(orderId, redirectUrl);
+    isPaying.value = false;
+    if (!invoice_url) {
+      alert("Gagal mendapatkan invoice pembayaran");
+      return;
+    }
+    window.location.href = invoice_url;
+  } catch (error) {
+    isPaying.value = false;
+    console.error("Error processing Xendit payment:", error);
+    alert("Gagal memproses pembayaran Xendit");
   }
 };
 
