@@ -1,7 +1,8 @@
 import type { MaybeRefOrGetter } from "vue";
 
-const DEFAULT_APP_NAME = "";
-const DEFAULT_APP_LOGO = "/assets/img/images.png";
+const DEFAULT_APP_NAME = "Bison Denim";
+const DEFAULT_APP_LOGO = "/assets/img/logo/logo.png";
+const DEFAULT_APP_FAVICON = "/assets/img/favicon.png";
 
 const getConfigImageOrValue = (configData: any): string | null => {
   if (!configData) return null;
@@ -22,7 +23,7 @@ export const useAppIdentity = () => {
 
   const appName = useState<string>("app-name", () => DEFAULT_APP_NAME);
   const logoUrl = useState<string>("app-logo-url", () => DEFAULT_APP_LOGO);
-  const faviconUrl = useState<string>("app-favicon-url", () => DEFAULT_APP_LOGO);
+  const faviconUrl = useState<string>("app-favicon-url", () => DEFAULT_APP_FAVICON);
   const isLoaded = useState<boolean>("app-identity-loaded", () => false);
 
   const loadAppIdentity = async () => {
@@ -40,12 +41,12 @@ export const useAppIdentity = () => {
 
       logoUrl.value = getConfigImageOrValue(logoRes?.data) || DEFAULT_APP_LOGO;
       faviconUrl.value =
-        getConfigImageOrValue(faviconRes?.data) || DEFAULT_APP_LOGO;
+        getConfigImageOrValue(faviconRes?.data) || DEFAULT_APP_FAVICON;
       isLoaded.value = true;
     } catch (error) {
       console.error("Failed to load app identity:", error);
       logoUrl.value = DEFAULT_APP_LOGO;
-      faviconUrl.value = DEFAULT_APP_LOGO;
+      faviconUrl.value = DEFAULT_APP_FAVICON;
     }
   };
 

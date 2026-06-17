@@ -216,6 +216,23 @@
               </div>
             </div>
 
+            <!-- Categories -->
+            <div v-if="product.categories && product.categories.length > 0" class="mb-6">
+              <h3 class="text-lg sm:text-xl font-semibold text-[var(--color-brand-black-soft)] mb-4">
+                Kategori
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                <NuxtLink
+                  v-for="cat in product.categories"
+                  :key="cat.id"
+                  :to="`/products?category_ids=${cat.category_id}`"
+                  class="px-3 py-1.5 bg-[#F8F8F8] text-sm text-[#7B7B7B] rounded-lg hover:bg-[#E9322B] hover:text-white transition"
+                >
+                  {{ cat.category_name || cat.category_id }}
+                </NuxtLink>
+              </div>
+            </div>
+
             <!-- Dynamic Attribute Options -->
             <template v-for="attribute in dynamicAttributes">
               <div
@@ -1139,6 +1156,13 @@ const product = ref<{
   package_tall?: number | null;
   sku?: string | null;
   product_information?: string | null;
+  categories?: Array<{
+    id: number;
+    product_id: number;
+    category_id: number;
+    category_name?: string | null;
+    category_slug?: string | null;
+  }>;
 }>({
   id: 0,
   name: "",
@@ -1558,6 +1582,7 @@ const loadProduct = async () => {
       sku: apiProduct.sku,
       product_information: apiProduct.product_information,
       baseStrikePrice: baseStrikePrice,
+      categories: apiProduct.categories || [],
     };
     if (apiProduct?.slug) {
       await loadRelatedProducts();

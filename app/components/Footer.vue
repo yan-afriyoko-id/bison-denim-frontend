@@ -236,8 +236,8 @@ const { getPublicConfig } = useConfigApi();
 const { appName, loadAppIdentity } = useAppIdentity();
 
 const socials = ref<Record<string, string | null>>({});
-const footerEmail = ref("info@example.com");
-const footerPhone = ref("+62");
+const footerEmail = ref("store@bisondenim.com");
+const footerPhone = ref("6281234567890");
 
 const emailLink = computed(() => `mailto:${footerEmail.value}`);
 const phoneLink = computed(() => {

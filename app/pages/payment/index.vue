@@ -874,7 +874,7 @@
               </button>
               <NuxtLink
                 to="/cart"
-                class="w-full bg-white text-[#E9322B] border border-[#E9322B] py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#E9322B] hover:text-white transition hover:cursor-pointer mt-2"
+                class="w-full bg-[#C4282B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#a32223] transition hover:cursor-pointer mt-2"
               >
                 Kembali ke Keranjang
               </NuxtLink>
