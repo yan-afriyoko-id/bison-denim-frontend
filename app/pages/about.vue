@@ -18,7 +18,7 @@
         Tentang Kami
       </h2>
       <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-medium text-[#1A1919] text-center mb-2 sm:mb-4 mx-auto">
-        Menciptakan Furnitur Berkualitas untuk Setiap Ruang
+        Merekomendasikan Fashion Berkualitas 
       </h3>
       <div class="mx-auto space-y-2 sm:space-y-3">
         <p class="text-sm sm:text-base md:text-lg text-[#696969] text-center leading-relaxed">
@@ -75,7 +75,7 @@
         Brand Kami
       </h2>
       <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-medium text-[#1A1919] text-center mb-2 sm:mb-4 mx-auto">
-        Rangkaian Brand untuk Beragam Kebutuhan Furnitur
+        Rangkaian Brand untuk Beragam Kebutuhan Fashion
       </h3>
       <div class="mx-auto space-y-2 sm:space-y-3 mb-10">
         <p class="text-sm sm:text-base md:text-lg text-[#696969] text-center leading-relaxed">
