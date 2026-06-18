@@ -31,7 +31,7 @@
                     : 'bg-[#F8F8F8] text-[#7B7B7B] hover:bg-[#7B7B7B]/9',
                 ]"
               >
-                Sudah Bayar
+                Sudah Bayar ({{ paidOrders.length }})
               </button>
               <button
                 @click="setTab('cancelled')"
@@ -205,11 +205,11 @@
                         order.payment.status === 'PENDING' &&
                         order.status !== 'CANCELLED'
                       "
-                      :disabled="isPaying"
+                      :disabled="isOrderPaying(order.id)"
                       @click="openPaymentModal(order)"
                       class="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 bg-[#E9322B] text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:bg-[#D32A24] transition hover:cursor-pointer"
                     >
-                      {{ isPaying ? "Memproses..." : "Bayar" }}
+                      {{ isOrderPaying(order.id) ? "Memproses..." : "Bayar" }}
                     </button>
                     <button
                       v-if="
@@ -284,14 +284,14 @@
           <div class="flex gap-3 mt-6">
             <button
               @click="showPaymentModal = false"
-              class="flex-1 px-4 py-2.5 border border-[#E6E9F0] text-[#7B7B7B] rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2.5 border border-[#E6E9F0] text-[#7B7B7B] rounded-lg text-sm font-medium hover:bg-gray-50 transition hover:cursor-pointer"
             >
               Batal
             </button>
             <button
               @click="proceedPayment"
               :disabled="!selectedPaymentMethod"
-              class="flex-1 px-4 py-2.5 bg-[#E9322B] text-white rounded-lg text-sm font-medium hover:bg-[#C4282B] transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2.5 bg-[#E9322B] text-white rounded-lg text-sm font-medium hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Lanjutkan
             </button>
@@ -333,7 +333,7 @@ const {
   formatOrderStatus,
   isLoading,
 } = useOrder();
-const { cancelOrder, completeOrder, checkPaymentStatus } = useOrderApi();
+const { cancelOrder, completeOrder, confirmPayment } = useOrderApi();
 const { getSnapToken, getXenditInvoice, getActivePaymentGateways } = usePaymentApi();
 
 const route = useRoute();
@@ -345,7 +345,7 @@ const initialTab = initialTabRaw ? String(initialTabRaw) : "unpaid";
 const activeTab = ref<"unpaid" | "paid" | "cancelled">(
   validTabs.has(initialTab) ? (initialTab as any) : "unpaid",
 );
-const isPaying = ref(false);
+const processingPaymentOrderId = ref<number | null>(null);
 const isPolling = ref(false);
 
 const allPaymentMethods = [
@@ -364,25 +364,51 @@ const paymentMethods = computed(() =>
   })),
 );
 
+const isXenditInvoiceUrl = (value?: string | null) => {
+  return typeof value === "string" && /^https?:\/\/.+xendit\.co/i.test(value);
+};
+
+const getOrderPaymentGateway = (order: any) => {
+  if (order?.payment?.method === "xendit" || isXenditInvoiceUrl(order?.payment?.snap_token)) {
+    return "xendit";
+  }
+
+  if (order?.payment?.method === "midtrans") {
+    return "midtrans";
+  }
+
+  return null;
+};
+
+const isOrderPaying = (orderId: number) => processingPaymentOrderId.value === orderId;
+
 const openPaymentModal = async (order: any) => {
+  const gateway = getOrderPaymentGateway(order);
   payingOrderId.value = order.id;
-  selectedPaymentMethod.value = "";
   try {
     const gateways = await getActivePaymentGateways();
     activeGateways.value = gateways;
   } catch {
     activeGateways.value = ["midtrans"];
   }
+
+  const gatewayStillActive = gateway && activeGateways.value.includes(gateway);
+  selectedPaymentMethod.value = gatewayStillActive
+    ? gateway
+    : activeGateways.value[0] || "";
   showPaymentModal.value = true;
 };
 
 const proceedPayment = async () => {
   if (!payingOrderId.value || !selectedPaymentMethod.value) return;
+  const orderId = payingOrderId.value;
+  const paymentMethod = selectedPaymentMethod.value;
+
   showPaymentModal.value = false;
-  if (selectedPaymentMethod.value === "xendit") {
-    await handlePayXendit(payingOrderId.value);
+  if (paymentMethod === "xendit") {
+    await handlePayXendit(orderId);
   } else {
-    await handlePay(payingOrderId.value);
+    await handlePay(orderId, paymentMethod);
   }
   payingOrderId.value = null;
 };
@@ -417,12 +443,36 @@ const loadOrders = async () => {
   }
 };
 
+const isXenditSuccessReturn = () => {
+  return route.query.xendit_return === "success" || route.query.status === "PAID";
+};
+
+const syncPendingXenditOrders = async () => {
+  const returnedOrderId = Number(route.query.order_id);
+  const hasReturnedOrderId = Number.isFinite(returnedOrderId) && returnedOrderId > 0;
+
+  const candidates = orders.value.filter((order) => {
+    if (order.payment.status !== "PENDING") return false;
+    if (hasReturnedOrderId) return order.id === returnedOrderId;
+
+    return order.payment.method === "xendit";
+  });
+
+  await Promise.all(candidates.map((order) => confirmPayment(order.id)));
+};
+
 onMounted(async () => {
+  const shouldSyncXendit = isXenditSuccessReturn();
+
   await loadOrders();
+
+  if (shouldSyncXendit) {
+    await syncPendingXenditOrders();
+    await loadOrders();
+  }
 
   if (activeTab.value !== "paid" || paidOrders.value.length > 0) return;
 
-  // Poll payment status after redirect from payment page
   isPolling.value = true;
   let retries = 0;
   const maxRetries = 5;
@@ -430,8 +480,8 @@ onMounted(async () => {
   const poll = async () => {
     retries++;
 
-    for (const order of unpaidOrders.value) {
-      await checkPaymentStatus(order.id);
+    if (shouldSyncXendit) {
+      await syncPendingXenditOrders();
     }
 
     await loadOrders();
@@ -526,21 +576,33 @@ const handleCompleted = async (orderId: number) => {
   }
 };
 
-const handlePay = async (orderId: number) => {
+const handlePay = async (orderId: number, paymentMethod = "midtrans") => {
   try {
-    isPaying.value = true;
-    const { snap_token } = await getSnapToken(orderId);
+    processingPaymentOrderId.value = orderId;
+    const { snap_token } = await getSnapToken(orderId, paymentMethod);
 
     if (!snap_token) {
-      isPaying.value = false;
+      processingPaymentOrderId.value = null;
       alert("Gagal mendapatkan token pembayaran");
       return;
     }
+
+    if (isXenditInvoiceUrl(snap_token)) {
+      processingPaymentOrderId.value = null;
+      window.location.href = snap_token;
+      return;
+    }
+
     await loadMidtransSnap();
-    isPaying.value = false;
+    processingPaymentOrderId.value = null;
     (window as any).snap.pay(snap_token, {
-      onSuccess: async () => {
-        await checkPaymentStatus(orderId);
+      onSuccess: async (result: any) => {
+        await confirmPayment(orderId, {
+          transaction_status: result?.transaction_status,
+          transaction_id: result?.transaction_id,
+          payment_type: result?.payment_type,
+          gross_amount: result?.gross_amount,
+        });
         await loadOrders();
         await navigateTo("/account/orders?tab=paid");
       },
@@ -549,31 +611,35 @@ const handlePay = async (orderId: number) => {
         await navigateTo("/account/orders?tab=unpaid");
       },
       onError: (err: any) => {
+        processingPaymentOrderId.value = null;
         alert("Pembayaran gagal. Silakan coba lagi.");
       },
       onClose: () => {
-        alert("Pembayaran dibatalkan");
+        processingPaymentOrderId.value = null;
+        loadOrders();
+        navigateTo("/account/orders?tab=unpaid");
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    processingPaymentOrderId.value = null;
     console.error("Error processing payment:", error);
-    alert("Gagal memproses pembayaran");
+    alert(error?.data?.message || "Gagal memproses pembayaran");
   }
 };
 
 const handlePayXendit = async (orderId: number) => {
   try {
-    isPaying.value = true;
+    processingPaymentOrderId.value = orderId;
     const redirectUrl = window.location.origin + "/account/orders?tab=paid";
     const { invoice_url } = await getXenditInvoice(orderId, redirectUrl);
-    isPaying.value = false;
+    processingPaymentOrderId.value = null;
     if (!invoice_url) {
       alert("Gagal mendapatkan invoice pembayaran");
       return;
     }
     window.location.href = invoice_url;
   } catch (error) {
-    isPaying.value = false;
+    processingPaymentOrderId.value = null;
     console.error("Error processing Xendit payment:", error);
     alert("Gagal memproses pembayaran Xendit");
   }

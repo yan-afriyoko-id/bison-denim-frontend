@@ -334,7 +334,7 @@
               </h3>
               <NuxtLink to="/products">
                 <button
-                  class="px-5 py-3 bg-[#E9322B] text-white rounded-lg font-medium text-base hover:bg-[#C4282B] transition"
+                  class="px-5 py-3 bg-[#E9322B] text-white rounded-lg font-medium text-base hover:bg-[#C4282B] transition cursor-pointer"
                   @click="closePopupCart"
                 >
                   Start Shopping
@@ -363,7 +363,7 @@
             Lihat Keranjang
           </NuxtLink>
           <button
-            class="flex-1 bg-[#E9322B] text-white px-5 py-3 rounded-lg font-medium text-base transition-all hover:bg-[#C4282B]"
+            class="flex-1 bg-[#E9322B] text-white px-5 py-3 rounded-lg font-medium text-base transition-all hover:bg-[#C4282B] cursor-pointer"
             @click="checkoutAndRefreshCart"
           >
             Pembayaran

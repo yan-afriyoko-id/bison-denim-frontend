@@ -127,13 +127,19 @@ export const useOrderApi = () => {
     }
   };
 
-  const checkPaymentStatus = async (id: number) => {
+  const confirmPayment = async (id: number, transactionData?: {
+    transaction_status?: string;
+    transaction_id?: string;
+    payment_type?: string;
+    gross_amount?: number;
+  }) => {
     try {
       const response = await $fetch<OrderResponse>(
-        `${baseURL}/orders/${id}/check-payment`,
+        `${baseURL}/orders/${id}/confirm-payment`,
         {
           method: "POST",
           headers: getHeaders(),
+          body: transactionData || {},
         },
       );
       return { data: response, error: null };
@@ -153,6 +159,6 @@ export const useOrderApi = () => {
     getOrderByOrderNumber,
     cancelOrder,
     completeOrder,
-    checkPaymentStatus,
+    confirmPayment,
   };
 };

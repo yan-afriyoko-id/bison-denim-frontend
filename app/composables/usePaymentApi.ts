@@ -47,7 +47,7 @@ export const usePaymentApi = () => {
     }
     try {
       const res = await $fetch<{
-        snap_token: string;
+        snap_token?: string;
         payment_group_id: number;
         invoice_url?: string;
       }>(`${baseURL}/payments/groups`, {

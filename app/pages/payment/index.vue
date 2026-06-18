@@ -1222,7 +1222,7 @@ const { getPoints } = usePointApi();
 const { getPublicConfig } = useConfigApi();
 
 const { getSnapToken, getXenditInvoice, createPaymentGroup, getActivePaymentGateways } = usePaymentApi();
-const { checkPaymentStatus } = useOrderApi();
+const { confirmPayment } = useOrderApi();
 
 const isLoadingCart = ref(true);
 const isLoadingAddresses = ref(false);
@@ -2240,14 +2240,32 @@ const totalAmount = computed<number>(() => {
   return checkoutCalculation.value.sub_total - discountAmount.value;
 });
 
+const isXenditInvoiceUrl = (value?: string | null) => {
+  return typeof value === "string" && /^https?:\/\/.+xendit\.co/i.test(value);
+};
+
+const isXenditPayment = (payment?: { method?: string | null; snap_token?: string | null } | null) => {
+  return payment?.method === "xendit" || isXenditInvoiceUrl(payment?.snap_token);
+};
+
 const payWithMidtrans = async (orderId: number) => {
   try {
     await loadMidtransSnap();
 
     const { snap_token } = await getSnapToken(orderId, selectedGateway.value || null);
+    if (isXenditInvoiceUrl(snap_token)) {
+      window.location.href = snap_token;
+      return;
+    }
+
     (window as any).snap.pay(snap_token, {
-      onSuccess: async () => {
-        await checkPaymentStatus(orderId);
+      onSuccess: async (result: any) => {
+        await confirmPayment(orderId, {
+          transaction_status: result?.transaction_status,
+          transaction_id: result?.transaction_id,
+          payment_type: result?.payment_type,
+          gross_amount: result?.gross_amount,
+        });
         await loadCart();
         await navigateTo("/account/orders?tab=paid");
       },
@@ -2260,7 +2278,8 @@ const payWithMidtrans = async (orderId: number) => {
         alert("Pembayaran gagal. Silakan coba lagi.");
       },
       onClose: () => {
-        alert("Pembayaran dibatalkan");
+        loadCart();
+        navigateTo("/account/orders?tab=unpaid");
       },
     });
   } catch (err) {
@@ -2292,10 +2311,23 @@ const payWithMidtransWithCart = async (
     await loadMidtransSnap();
 
     const { snap_token } = await getSnapToken(orderId, selectedGateway.value || null);
+    if (isXenditInvoiceUrl(snap_token)) {
+      for (const variantId of variantIdsToRemove) {
+        await removeFromCart(variantId);
+      }
+      await loadCart();
+      window.location.href = snap_token;
+      return;
+    }
 
     (window as any).snap.pay(snap_token, {
-      onSuccess: async () => {
-        await checkPaymentStatus(orderId);
+      onSuccess: async (result: any) => {
+        await confirmPayment(orderId, {
+          transaction_status: result?.transaction_status,
+          transaction_id: result?.transaction_id,
+          payment_type: result?.payment_type,
+          gross_amount: result?.gross_amount,
+        });
         for (const variantId of variantIdsToRemove) {
           await removeFromCart(variantId);
         }
@@ -2314,7 +2346,8 @@ const payWithMidtransWithCart = async (
         alert("Pembayaran gagal. Silakan coba lagi.");
       },
       onClose: () => {
-        alert("Pembayaran dibatalkan");
+        loadCart();
+        navigateTo("/account/orders?tab=unpaid");
       },
     });
   } catch (err) {
@@ -2345,7 +2378,7 @@ const payWithXendit = async (orderId: number, variantIdsToRemove: number[]) => {
 const processExistingPayment = async () => {
   if (!orderIdFromQuery.value) return;
   const gw = existingOrder.value?.payment?.method || selectedGateway.value || "midtrans";
-  if (gw === "xendit") {
+  if (isXenditPayment(existingOrder.value?.payment) || gw === "xendit") {
     await payWithXenditReadonly(orderIdFromQuery.value);
   } else {
     await payWithMidtrans(orderIdFromQuery.value);
@@ -2493,11 +2526,21 @@ const handlePayment = async () => {
           window.location.href = invoice_url;
         } else {
           const { snap_token } = await createPaymentGroup(createdOrderIds, gw);
+          if (!snap_token) {
+            alert("Gagal mendapatkan token pembayaran");
+            return;
+          }
+
           await loadMidtransSnap();
           (window as any).snap.pay(snap_token, {
-            onSuccess: async () => {
+            onSuccess: async (result: any) => {
               for (const orderId of createdOrderIds) {
-                await checkPaymentStatus(orderId);
+                await confirmPayment(orderId, {
+                  transaction_status: result?.transaction_status,
+                  transaction_id: result?.transaction_id,
+                  payment_type: result?.payment_type,
+                  gross_amount: result?.gross_amount,
+                });
               }
               for (const variantId of variantIdsToRemove) {
                 await removeFromCart(variantId);
@@ -2517,7 +2560,8 @@ const handlePayment = async () => {
               alert("Pembayaran gagal. Silakan coba lagi.");
             },
             onClose: () => {
-              alert("Pembayaran dibatalkan");
+              loadCart();
+              navigateTo("/account/orders?tab=unpaid");
             },
           });
         }
