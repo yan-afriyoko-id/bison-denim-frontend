@@ -34,13 +34,12 @@
           to="/"
           class="hidden sm:flex items-center gap-2 sm:gap-3 shrink-0 cursor-pointer"
         >
-          <NuxtImg
+          <img
             v-if="logoUrl"
             :src="logoUrl"
             :alt="`${appName} Logo`"
-            width="180"
-            height="60"
-            class="w-36 sm:w-40 md:w-[180px] h-[50px] sm:h-[56px] md:h-[60px] object-contain"
+            @error="handleLogoError"
+            class="block h-10 w-auto max-w-[96px] object-contain sm:h-11 sm:max-w-[104px]"
           />
         </NuxtLink>
 
@@ -374,12 +373,11 @@
             @click="isSidebarOpen = false"
             class="flex items-center gap-2 sm:gap-3"
           >
-            <NuxtImg
+            <img
               :src="logoUrl"
-            :alt="`${appName} Logo`"
-              width="180"
-              height="60"
-              class="w-min h-[56px] sm:h-[60px] object-contain"
+              :alt="`${appName} Logo`"
+              @error="handleLogoError"
+              class="block h-11 w-auto max-w-[104px] object-contain"
             />
           </NuxtLink>
           <button
@@ -546,6 +544,8 @@
 </template>
 
 <script setup lang="ts">
+import { DEFAULT_APP_LOGO } from "~/composables/useAppIdentity";
+
 const router = useRouter();
 const route = useRoute();
 const auth = useAuth();
@@ -562,6 +562,18 @@ const isProfileMenuOpen = ref(false);
 const isLoggingOut = ref(false);
 const categories = ref<Array<{ id: number; name: string; href: string }>>([]);
 const bannerText = ref<Record<string, string | null>>({});
+
+const handleLogoError = (event: Event) => {
+  const img = event.target as HTMLImageElement | null;
+
+  if (logoUrl.value !== DEFAULT_APP_LOGO) {
+    logoUrl.value = DEFAULT_APP_LOGO;
+  }
+
+  if (img && !img.src.endsWith(DEFAULT_APP_LOGO)) {
+    img.src = DEFAULT_APP_LOGO;
+  }
+};
 
 const isAuthenticated = auth.isAuthenticated;
 const user = auth.user;

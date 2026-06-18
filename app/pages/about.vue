@@ -89,6 +89,7 @@
           v-if="logoUrl"
           :src="logoUrl"
           :alt="`${appName} Logo`"
+          @error="handleLogoError"
           class="w-auto h-[70px] object-contain"
           fit="contain"
         />
@@ -103,7 +104,21 @@
 </template>
 
 <script setup lang="ts">
+import { DEFAULT_APP_LOGO } from "~/composables/useAppIdentity";
+
 const { appName, logoUrl } = useAppIdentity();
+
+const handleLogoError = (event: Event) => {
+  const img = event.target as HTMLImageElement | null;
+
+  if (logoUrl.value !== DEFAULT_APP_LOGO) {
+    logoUrl.value = DEFAULT_APP_LOGO;
+  }
+
+  if (img && !img.src.endsWith(DEFAULT_APP_LOGO)) {
+    img.src = DEFAULT_APP_LOGO;
+  }
+};
 
 definePageMeta({
   layout: "default",

@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from "vue";
 
 const DEFAULT_APP_NAME = "Bison Denim";
-const DEFAULT_APP_LOGO = "/assets/img/logo/logo.png";
+export const DEFAULT_APP_LOGO = "/assets/img/logo/logo.png";
 const DEFAULT_APP_FAVICON = "/assets/img/favicon.png";
 
 const getConfigImageOrValue = (configData: any): string | null => {
@@ -77,6 +77,10 @@ export const useAppIdentity = () => {
 
 export const useAppTitle = (pageTitle?: MaybeRefOrGetter<string>) => {
   const { appName } = useAppIdentity();
+  const requestUrl = useRequestURL();
+  const defaultLogoMetaUrl = computed(
+    () => new URL(DEFAULT_APP_LOGO, requestUrl.origin).href,
+  );
   const fullTitle = computed(() => {
     const title = pageTitle ? toValue(pageTitle) : "";
     return title ? `${title} - ${appName.value}` : appName.value;
@@ -100,6 +104,36 @@ export const useAppTitle = (pageTitle?: MaybeRefOrGetter<string>) => {
         key: "og:description",
         property: "og:description",
         content: description,
+      },
+      {
+        key: "og:image",
+        property: "og:image",
+        content: defaultLogoMetaUrl,
+      },
+      {
+        key: "og:image:secure_url",
+        property: "og:image:secure_url",
+        content: defaultLogoMetaUrl,
+      },
+      {
+        key: "og:image:width",
+        property: "og:image:width",
+        content: "512",
+      },
+      {
+        key: "og:image:height",
+        property: "og:image:height",
+        content: "512",
+      },
+      {
+        key: "twitter:image",
+        name: "twitter:image",
+        content: defaultLogoMetaUrl,
+      },
+      {
+        key: "twitter:card",
+        name: "twitter:card",
+        content: "summary",
       },
     ],
   });
