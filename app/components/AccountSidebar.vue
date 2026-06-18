@@ -105,35 +105,6 @@
           <span>Pesanan</span>
         </NuxtLink>
 
-        <NuxtLink
-          to="/account/points"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition whitespace-nowrap shrink-0"
-          :class="
-            $route.path === '/account/points'
-              ? 'bg-[#E9322B] text-white'
-              : 'bg-[#F8F8F8] text-[#1A1919] hover:bg-[#E6E9F0]'
-          "
-        >
-          <div class="w-4 h-4 shrink-0">
-            <svg
-              class="w-full h-full"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                :stroke="
-                  $route.path === '/account/points' ? '#FFFFFF' : '#1A1919'
-                "
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <span>Poin</span>
-        </NuxtLink>
       </nav>
     </div>
 
@@ -241,35 +212,6 @@
           <span>Pesanan Saya</span>
         </NuxtLink>
 
-        <NuxtLink
-          to="/account/points"
-          class="flex items-center gap-2.5 font-medium transition text-base"
-          :class="
-            $route.path === '/account/points'
-              ? 'text-[#E9322B]'
-              : 'text-[#1A1919]'
-          "
-        >
-          <div class="w-6 h-6 shrink-0">
-            <svg
-              class="w-full h-full"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                :stroke="
-                  $route.path === '/account/points' ? '#E9322B' : '#1A1919'
-                "
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <span>Poin Saya</span>
-        </NuxtLink>
       </nav>
     </div>
   </aside>

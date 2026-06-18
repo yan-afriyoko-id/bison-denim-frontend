@@ -211,7 +211,7 @@ import type { UserPoint, UserPointTransaction } from "~/types/point";
 
 definePageMeta({
   layout: "default",
-  middleware: "auth",
+  middleware: ["auth", "hide-points"],
 });
 
 useHead({

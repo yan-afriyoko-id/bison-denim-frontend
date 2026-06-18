@@ -277,31 +277,6 @@
                   Pesanan Saya
                 </span>
               </NuxtLink>
-              <NuxtLink
-                to="/account/points"
-                @click="isProfileMenuOpen = false"
-                class="block px-4 py-2 text-sm text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition cursor-pointer"
-              >
-                <span class="flex items-center gap-2">
-                  <div class="w-4 h-4 shrink-0">
-                    <svg
-                      class="w-full h-full"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                        stroke="#1A1919"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </div>
-                  Poin Saya
-                </span>
-              </NuxtLink>
               <button
                 @click="handleLogout"
                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 cursor-pointer"
@@ -492,27 +467,6 @@
               Pesanan Saya
             </NuxtLink>
 
-            <NuxtLink
-              to="/account/points"
-              @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded-lg font-medium text-center text-base text-[var(--color-brand-black-soft)] hover:bg-[#F8F8F8] transition flex items-center justify-center gap-2"
-            >
-              <svg
-                class="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                  stroke="#1A1919"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              Poin Saya
-            </NuxtLink>
             <button
               @click="handleLogout"
               class="w-full bg-red-50 text-red-600 px-5 py-3 rounded-lg font-medium text-center text-base hover:bg-red-100 transition flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
