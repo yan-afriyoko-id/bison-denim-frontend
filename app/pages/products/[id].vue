@@ -950,14 +950,31 @@
         </div>
 
         <!-- Mungkin kamu suka Section -->
-        <div v-if="relatedProducts.length > 0">
+        <div v-if="relatedLoading || relatedProducts.length > 0">
           <h2
             class="text-xl sm:text-2xl font-semibold text-[var(--color-brand-black-soft)] mb-4 sm:mb-6"
           >
             Mungkin kamu suka
           </h2>
+          <!-- Loading placeholders -->
+          <div
+            v-if="relatedLoading && relatedProducts.length === 0"
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+          >
+            <div
+              v-for="n in 5"
+              :key="`related-skeleton-${n}`"
+              class="rounded-lg border border-[#E6E9F0] p-3 animate-pulse"
+            >
+              <div class="aspect-square bg-[#F3F4F6] rounded-md mb-3"></div>
+              <div class="h-4 bg-[#F3F4F6] rounded w-4/5 mb-2"></div>
+              <div class="h-4 bg-[#F3F4F6] rounded w-2/3"></div>
+            </div>
+          </div>
+
           <!-- Products -->
           <div
+            v-else
             class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
           >
             <NuxtLink
@@ -1530,9 +1547,11 @@ const loadProduct = async () => {
       }
     >();
 
-    allVariants.value.forEach((variant: any) => {
-      if (variant.stock_relations && Array.isArray(variant.stock_relations)) {
-        variant.stock_relations.forEach((stock: any) => {
+    (apiProduct.variants || []).forEach((variant: any) => {
+      const stockRelations = variant.stock_relations || variant.stockRelations || [];
+
+      if (Array.isArray(stockRelations)) {
+        stockRelations.forEach((stock: any) => {
           if (stock.store && stock.store.id) {
             const storeId = String(stock.store.id);
             if (!storesMap.has(storeId)) {
@@ -1636,12 +1655,12 @@ const loadProduct = async () => {
       categories: apiProduct.categories || [],
     };
     if (apiProduct?.slug) {
-      await loadRelatedProducts();
+      void loadRelatedProducts();
     }
     if (apiProduct?.id) {
-      await loadProductAttributes(apiProduct.id);
+      void loadProductAttributes(apiProduct.id);
     }
-    await loadTaxonomies();
+    void loadTaxonomies();
     // Update reviews
     updateReviews(reviews);
   } catch (err) {

@@ -20,6 +20,7 @@ export const useProductApi = () => {
     categoryIds?: number[],
     brandSlugs?: string[],
     search?: string,
+    storeId?: number,
     filters?: {
       isNewArrival?: boolean;
       minRating?: number;
@@ -45,6 +46,10 @@ export const useProductApi = () => {
 
       if (brandSlugs && brandSlugs.length > 0) {
         params.brand_slugs = brandSlugs;
+      }
+
+      if (storeId) {
+        params.store_id = storeId;
       }
 
       if (filters) {

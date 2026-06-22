@@ -653,65 +653,6 @@
           </div>
           <!-- Right Column -->
           <div class="lg:col-span-1 space-y-5 sm:space-y-6 md:space-y-7.5">
-            <!-- Section Poin -->
-            <div
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5 mt-5 lg:hidden block"
-            >
-              <h2 class="text-lg font-semibold text-[#1A1919] mb-3">
-                Gunakan Poin
-              </h2>
-              <div v-if="userPoint">
-                <p class="text-sm text-[#7B7B7B] mb-2">
-                  Poin saat ini:
-                  <strong class="text-[#1A1919]">{{
-                    formatNumber(userPoint.points)
-                  }}</strong>
-                </p>
-
-                <span
-                  v-if="!userPoint.can_use_points"
-                  class="inline-block px-3 sm:px-4 py-1.5 sm:py-2 border text-[#E9322B] rounded-lg text-xs sm:text-sm"
-                >
-                  Perlu belanja sebanyak
-                  {{
-                    formatPrice(
-                      Math.ceil(
-                        (userPoint.minimum_usable_points - userPoint.points) /
-                          userPoint.points_per_million,
-                      ) *
-                        userPoint.million_threshold -
-                        (userPoint.cumulative_total %
-                          userPoint.million_threshold),
-                    )
-                  }}
-                  lagi agar poin dapat digunakan
-                </span>
-
-                <template v-else>
-                  <!-- Checkbox + label -->
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      v-model="usePoints"
-                      class="w-4 h-4"
-                    />
-                    <span class="text-sm text-[#1A1919]">
-                      Gunakan Poin
-                      <!-- Tampilkan maks selalu -->
-                      <span class="text-xs text-gray-500">
-                        (maks {{ formatPrice(maxPointUsed) }})
-                      </span>
-                    </span>
-                  </label>
-
-                  <!-- Sisa poin selalu tampil selama poin bisa digunakan -->
-                  <div class="text-xs text-gray-500 mt-2 ml-6">
-                    Sisa poin setelah transaksi:
-                    {{ formatPrice(remainingPoint) }}
-                  </div>
-                </template>
-              </div>
-            </div>
             <!-- Detail Pembayaran Section -->
             <div
               class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5"
@@ -756,16 +697,6 @@
                           : discountAmount,
                       )
                     }}
-                  </span>
-                </div>
-
-                <div
-                  v-if="usePoints && maxPointUsed > 0"
-                  class="flex justify-between text-sm sm:text-base text-[#E9322B]"
-                >
-                  <span>Gunakan Poin</span>
-                  <span class="text-base sm:text-lg font-semibold">
-                    -{{ formatPrice(maxPointUsed) }}
                   </span>
                 </div>
 
@@ -917,65 +848,6 @@
               class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
               {{ errorMessage }}
-            </div>
-            <!-- Section Poin -->
-            <div
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5 mt-5 hidden lg:block"
-            >
-              <h2 class="text-lg font-semibold text-[#1A1919] mb-3">
-                Gunakan Poin
-              </h2>
-              <div v-if="userPoint">
-                <p class="text-sm text-[#7B7B7B] mb-2">
-                  Poin saat ini:
-                  <strong class="text-[#1A1919]">{{
-                    formatNumber(userPoint.points)
-                  }}</strong>
-                </p>
-
-                <span
-                  v-if="!userPoint.can_use_points"
-                  class="inline-block px-3 sm:px-4 py-1.5 sm:py-2 border text-[#E9322B] rounded-lg text-xs sm:text-sm"
-                >
-                  Perlu belanja sebanyak
-                  {{
-                    formatPrice(
-                      Math.ceil(
-                        (userPoint.minimum_usable_points - userPoint.points) /
-                          userPoint.points_per_million,
-                      ) *
-                        userPoint.million_threshold -
-                        (userPoint.cumulative_total %
-                          userPoint.million_threshold),
-                    )
-                  }}
-                  lagi agar poin dapat digunakan
-                </span>
-
-                <template v-else>
-                  <!-- Checkbox + label -->
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      v-model="usePoints"
-                      class="w-4 h-4"
-                    />
-                    <span class="text-sm text-[#1A1919]">
-                      Gunakan Poin
-                      <!-- Tampilkan maks selalu -->
-                      <span class="text-xs text-gray-500">
-                        (maks {{ formatPrice(maxPointUsed) }})
-                      </span>
-                    </span>
-                  </label>
-
-                  <!-- Sisa poin selalu tampil selama poin bisa digunakan -->
-                  <div class="text-xs text-gray-500 mt-2 ml-6">
-                    Sisa poin setelah transaksi:
-                    {{ formatPrice(remainingPoint) }}
-                  </div>
-                </template>
-              </div>
             </div>
           </div>
         </div>

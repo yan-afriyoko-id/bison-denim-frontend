@@ -52,6 +52,25 @@ export const useStoreApi = () => {
     }
   }
 
+  const getPublicStores = async () => {
+    try {
+      const response = await $fetch<StoresResponse>(`${baseURL}/public/stores`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+      return { data: response, error: null }
+    } catch (error: any) {
+      return {
+        data: null,
+        error: error.data || {
+          message: error.message || 'An error occurred',
+        },
+      }
+    }
+  }
+
   const getStore = async (id: number) => {
     try {
       const response = await $fetch<StoreResponse>(`${baseURL}/stores/${id}`, {
@@ -127,6 +146,7 @@ export const useStoreApi = () => {
   return {
     getStores,
     getAllStores,
+    getPublicStores,
     getStore,
     createStore,
     updateStore,

@@ -241,6 +241,73 @@
                 </div>
               </div>
 
+              <!-- Store -->
+              <div class="mb-2.5 pb-5 border-b border-[#E6E9F0]">
+                <button
+                  @click="toggleSection('store')"
+                  class="w-full flex items-center justify-between mb-1.5 hover:cursor-pointer"
+                >
+                  <h4 class="text-lg font-medium text-[#1A1919]">Store</h4>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    :class="[
+                      'transition-transform',
+                      expandedSections.store ? 'rotate-180' : '',
+                    ]"
+                  >
+                    <path
+                      d="M5 7.5L10 12.5L15 7.5"
+                      stroke="#1A1919"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <div
+                  v-show="expandedSections.store"
+                  class="space-y-1 transition-all"
+                >
+                  <div v-if="loadingStores" class="text-center py-4">
+                    <div
+                      class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#E9322B]"
+                    ></div>
+                  </div>
+                  <div
+                    v-else-if="stores.length === 0"
+                    class="text-sm text-[#808080] py-2"
+                  >
+                    Tidak ada store
+                  </div>
+                  <template v-else>
+                    <label
+                      v-for="store in stores"
+                      :key="store.id"
+                      class="flex items-center gap-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        :checked="selectedStoreId === store.id"
+                        @change="toggleStoreFilter(store.id, store.name)"
+                        class="w-4.5 h-4.5 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer"
+                      />
+                      <span
+                        :class="{
+                          'text-[#E9322B]': selectedStoreId === store.id,
+                          'text-[#808080]': selectedStoreId !== store.id,
+                        }"
+                      >
+                        {{ store.name }}
+                      </span>
+                    </label>
+                  </template>
+                </div>
+              </div>
+
               <!-- Promo -->
               <!-- <div class="mb-2.5 pb-5 border-b border-[#E6E9F0]">
                 <button
@@ -529,7 +596,20 @@
               v-else-if="allProducts.length === 0"
               class="text-center py-12"
             >
-              <p class="text-[#808080] text-lg">Tidak ada produk ditemukan</p>
+              <p class="text-[#808080] text-lg">
+                {{
+                  selectedStoreId
+                    ? `Tidak ada produk ditemukan untuk store ${selectedStoreName || `Store ${selectedStoreId}`}`
+                    : "Tidak ada produk ditemukan"
+                }}
+              </p>
+              <button
+                v-if="selectedStoreId"
+                @click="toggleStoreFilter(selectedStoreId, selectedStoreName || `Store ${selectedStoreId}`)"
+                class="mt-4 px-4 py-2 border border-[#E6E9F0] rounded-lg text-sm text-[#1A1919] hover:bg-[#F6F9FF] transition cursor-pointer"
+              >
+                Hapus Filter Store
+              </button>
             </div>
 
             <!-- Products Grid -->
@@ -808,6 +888,74 @@
               </div>
             </div>
 
+            <!-- Store -->
+            <div class="mb-4 pb-4 border-b border-[#E6E9F0]">
+              <button
+                @click="toggleSection('store')"
+                class="w-full flex items-center justify-between mb-2 hover:cursor-pointer"
+              >
+                <h4 class="text-base font-medium text-[#1A1919]">Store</h4>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  :class="[
+                    'transition-transform',
+                    expandedSections.store ? 'rotate-180' : '',
+                  ]"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke="#1A1919"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <div
+                v-show="expandedSections.store"
+                class="space-y-1 transition-all"
+              >
+                <div v-if="loadingStores" class="text-center py-4">
+                  <div
+                    class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#E9322B]"
+                  ></div>
+                </div>
+                <div
+                  v-else-if="stores.length === 0"
+                  class="text-sm text-[#808080] py-2"
+                >
+                  Tidak ada store
+                </div>
+                <template v-else>
+                  <label
+                    v-for="store in stores"
+                    :key="store.id"
+                    class="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      :checked="selectedStoreId === store.id"
+                      @change="toggleStoreFilter(store.id, store.name)"
+                      class="w-4 h-4 text-[#E9322B] border-[#E6E9F0] rounded focus:ring-[#E9322B] hover:cursor-pointer"
+                    />
+                    <span
+                      :class="{
+                        'text-[#E9322B]': selectedStoreId === store.id,
+                        'text-[#808080]': selectedStoreId !== store.id,
+                      }"
+                      class="text-sm"
+                    >
+                      {{ store.name }}
+                    </span>
+                  </label>
+                </template>
+              </div>
+            </div>
+
             <!-- Promo -->
             <!-- <div class="mb-4 pb-4 border-b border-[#E6E9F0]">
               <button
@@ -995,9 +1143,11 @@ import { computed } from "vue";
 import { formatNumber } from "~/utils/helpers";
 import type { Product } from "~/types/product";
 import type { Brand } from "~/types/brand";
+import type { Store } from "~/types/store";
 import { useProductApi } from "~/composables/useProductApi";
 import { useProductRelationsApi } from "~/composables/useProductRelationsApi";
 import { useBrandApi } from "~/composables/useBrandApi";
+import { useStoreApi } from "~/composables/useStoreApi";
 
 definePageMeta({
   layout: "default",
@@ -1010,15 +1160,19 @@ const baseImageUrl = baseURL.replace(/\/api\/?$/, "");
 const { getProducts } = useProductApi();
 const { getTaxoListsByType } = useProductRelationsApi();
 const { getActiveBrands } = useBrandApi();
+const { getPublicStores } = useStoreApi();
 
 // Loading & Error States
 const loadingProducts = ref(false);
 const loadingCategories = ref(false);
+const loadingStores = ref(false);
 const errorProducts = ref<string | null>(null);
 
 // Filter State
 const selectedCategories = ref<number[]>([]);
 const selectedBrands = ref<string[]>([]);
+const selectedStoreId = ref<number | null>(null);
+const selectedStoreName = ref<string>("");
 const selectedPromos = ref<number[]>([]);
 const selectedRatings = ref<number[]>([]);
 const priceRange = ref({
@@ -1032,6 +1186,7 @@ const searchInput = ref<string>("");
 const expandedSections = ref({
   kategori: true,
   brand: true,
+  store: true,
   promo: true,
   rating: true,
   harga: true,
@@ -1085,6 +1240,7 @@ const currentCategory = computed(() => {
 });
 
 const brands = ref<Array<Brand>>([]);
+const stores = ref<Array<Store>>([]);
 
 const promos = ref([
   { id: 1, name: "New Arrivals" },
@@ -1198,6 +1354,7 @@ const loadProducts = async (page: number = currentPage.value) => {
       selectedCategories.value.length ? selectedCategories.value : undefined,
       selectedBrands.value.length ? selectedBrands.value : undefined,
       searchQuery.value || undefined,
+      selectedStoreId.value || undefined,
       Object.keys(filters).length ? filters : undefined,
     );
 
@@ -1275,6 +1432,25 @@ const loadBrands = async () => {
   }
 };
 
+const loadStores = async () => {
+  loadingStores.value = true;
+  try {
+    const { data, error } = await getPublicStores();
+    if (error || !data?.success) {
+      stores.value = [];
+      return;
+    }
+    stores.value = (data.data?.stores || []).filter(
+      (store) => store.status !== "INACTIVE",
+    );
+  } catch (err) {
+    console.error("Error loading stores:", err);
+    stores.value = [];
+  } finally {
+    loadingStores.value = false;
+  }
+};
+
 // Computed
 const activeFilters = computed(() => {
   const filters: Array<{ type: string; label: string; value: any }> = [];
@@ -1298,6 +1474,14 @@ const activeFilters = computed(() => {
           value: slug,
         });
       }
+    });
+  }
+
+  if (selectedStoreId.value) {
+    filters.push({
+      type: "store",
+      label: selectedStoreName.value || `Store ${selectedStoreId.value}`,
+      value: selectedStoreId.value,
     });
   }
 
@@ -1341,13 +1525,46 @@ const totalPages = computed(() => {
   return pagination.value?.last_page || 1;
 });
 
+const clearStoreQuery = async () => {
+  const nextQuery = { ...route.query };
+  delete nextQuery.store_id;
+  delete nextQuery.store_name;
+  await router.replace({ query: nextQuery });
+};
+
+const setStoreQuery = async (storeId: number, storeName: string) => {
+  await router.replace({
+    query: {
+      ...route.query,
+      store_id: String(storeId),
+      store_name: storeName,
+    },
+  });
+};
+
+const toggleStoreFilter = (storeId: number, storeName: string) => {
+  if (selectedStoreId.value === storeId) {
+    selectedStoreId.value = null;
+    selectedStoreName.value = "";
+    void clearStoreQuery();
+    return;
+  }
+
+  selectedStoreId.value = storeId;
+  selectedStoreName.value = storeName;
+  void setStoreQuery(storeId, storeName);
+};
+
 const resetFilters = () => {
   selectedCategories.value = [];
   selectedBrands.value = [];
+  selectedStoreId.value = null;
+  selectedStoreName.value = "";
   selectedPromos.value = [];
   selectedRatings.value = [];
   priceRange.value = { min: null, max: null };
   currentPage.value = 1;
+  void clearStoreQuery();
 };
 
 const removeFilter = (filter: { type: string; label: string; value: any }) => {
@@ -1359,6 +1576,10 @@ const removeFilter = (filter: { type: string; label: string; value: any }) => {
     selectedBrands.value = selectedBrands.value.filter(
       (slug) => slug !== filter.value,
     );
+  } else if (filter.type === "store") {
+    selectedStoreId.value = null;
+    selectedStoreName.value = "";
+    void clearStoreQuery();
   } else if (filter.type === "promo") {
     selectedPromos.value = selectedPromos.value.filter(
       (id) => id !== filter.value,
@@ -1433,8 +1654,19 @@ onMounted(async () => {
     selectedBrands.value = brandParam.split(",");
   }
 
+  const storeIdParam = route.query.store_id as string | undefined;
+  if (storeIdParam) {
+    const parsedStoreId = parseInt(storeIdParam, 10);
+    selectedStoreId.value = Number.isNaN(parsedStoreId) ? null : parsedStoreId;
+  }
+
+  const storeNameParam = route.query.store_name as string | undefined;
+  if (storeNameParam) {
+    selectedStoreName.value = storeNameParam;
+  }
+
   // Load initial data
-  await Promise.all([loadProducts(1), loadCategories(), loadBrands()]);
+  await Promise.all([loadProducts(1), loadCategories(), loadBrands(), loadStores()]);
 });
 
 // Watch URL search param changes (navigated from header search etc.)
@@ -1475,9 +1707,37 @@ watch(
   },
 );
 
+watch(
+  () => route.query.store_id,
+  (newStoreId) => {
+    if (newStoreId) {
+      const parsedStoreId = parseInt(newStoreId as string, 10);
+      selectedStoreId.value = Number.isNaN(parsedStoreId) ? null : parsedStoreId;
+    } else {
+      selectedStoreId.value = null;
+    }
+    currentPage.value = 1;
+    loadProducts(1);
+  },
+);
+
+watch(
+  () => route.query.store_name,
+  (newStoreName) => {
+    selectedStoreName.value = (newStoreName as string) || "";
+  },
+);
+
 // Single consolidated watcher for all filter changes
 watch(
-  [selectedCategories, selectedBrands, selectedPromos, selectedRatings, priceRange],
+  [
+    selectedCategories,
+    selectedBrands,
+    selectedStoreId,
+    selectedPromos,
+    selectedRatings,
+    priceRange,
+  ],
   () => {
     currentPage.value = 1;
     loadProducts(1);
