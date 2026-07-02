@@ -1,205 +1,110 @@
 <template>
   <section class="bg-white" v-if="hasAnyProduct">
-    <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-11 py-12 md:py-10">
-      <h2
-        class="text-lg sm:text-xl md:text-2xl font-semibold mb-5 text-[var(--color-brand-black-soft)]"
-      >
-        {{ groupTitle || "Rekomendasi Untukmu" }}
-      </h2>
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-[50px] py-8 md:py-12">
+      <!-- Section Header -->
+      <div class="text-center mb-[46px]">
+        <h3
+          class="text-[26px] font-semibold leading-[36px] mb-5 text-[#151515]"
+          style="letter-spacing: normal;text-transform:none"
+        >
+          {{ groupTitle || 'NEW ARRIVALS' }}
+        </h3>
+        <p
+          class="text-sm leading-[22.4px] text-[#151515] max-w-2xl mx-auto mb-5"
+        >
+          Explore the season's most coveted pieces, designed to effortlessly elevate your look with stylish verve. Each piece, including sleek card holders and durable real leather wallets, is crafted with modern elegance.
+        </p>
+        <NuxtLink
+          :to="`/products?group=${group?.key || ''}`"
+          class="link-underline-anim text-sm text-[#151515] font-medium"
+        >
+          View More
+        </NuxtLink>
+      </div>
 
+      <!-- Tabs (sub-groups) -->
+      <div v-if="subGroups.length > 1" class="flex justify-center gap-4 mb-8">
+        <button
+          v-for="sub in subGroups"
+          :key="sub.id"
+          @click="activeSubGroupId = sub.id"
+          :class="[
+            'text-sm font-medium pb-1 transition hover:cursor-pointer',
+            activeSubGroupId === sub.id
+              ? 'text-black border-b border-black'
+              : 'text-gray-400 hover:text-gray-600',
+          ]"
+        >
+          {{ sub.title }}
+        </button>
+      </div>
+
+      <!-- Loading -->
       <div v-if="loading" class="text-center py-10">
-        <div
-          class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E9322B] mx-auto"
-        ></div>
-        <p class="mt-4 text-gray-600">Memuat Rekomendasi Untukmu...</p>
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black mx-auto"></div>
       </div>
 
-      <div v-else-if="error" class="text-center py-10 text-red-600">
-        {{ error }}
+      <!-- Error -->
+      <div v-else-if="error" class="text-center py-10 text-gray-500">{{ error }}</div>
+
+      <!-- Empty -->
+      <div v-else-if="activeProducts.length === 0" class="text-center py-10 text-gray-400">
+        Belum ada produk
       </div>
 
-      <div v-else>
-        <div class="relative mb-7.5">
-          <!-- Left Arrow -->
-          <button
-            v-if="canScrollLeft"
-            @click="scrollTabsLeft"
-            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 bg-white rounded-full flex justify-center items-center hover:cursor-pointer shadow-[0px_4px_10px_0px_#0000000F]"
-            aria-label="Scroll tabs left"
-          >
-            <svg width="20" height="20" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19.2625 20.7375L13.5375 15L19.2625 9.2625L17.5 7.5L10 15L17.5 22.5L19.2625 20.7375Z" fill="#292929" />
-            </svg>
-          </button>
-
-          <!-- Scrollable Tab Container -->
-          <div
-            ref="tabsRef"
-            class="tabs-scroll flex gap-3 overflow-x-auto scroll-smooth"
-            :class="[canScrollLeft ? 'pl-9' : '', canScrollRight ? 'pr-9' : '']"
-            @scroll="updateScrollState"
-          >
-            <button
-              v-for="sub in subGroups"
-              :key="sub.id"
-              @click="activeSubGroupId = sub.id"
-              :class="[
-                'px-4 py-2 rounded-lg font-medium text-sm transition hover:cursor-pointer shrink-0',
-                activeSubGroupId === sub.id
-                  ? 'bg-[#E9322B] text-white'
-                  : 'bg-[#F8F8F8] text-[#7B7B7B] hover:bg-[#7B7B7B]/9',
-              ]"
-            >
-              {{ sub.title }}
-            </button>
-          </div>
-
-          <!-- Right Arrow -->
-          <button
-            v-if="canScrollRight"
-            @click="scrollTabsRight"
-            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 bg-white rounded-full flex justify-center items-center hover:cursor-pointer shadow-[0px_4px_10px_0px_#0000000F]"
-            aria-label="Scroll tabs right"
-          >
-            <svg width="20" height="20" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.7375 20.7375L16.4625 15L10.7375 9.2625L12.5 7.5L20 15L12.5 22.5L10.7375 20.7375Z" fill="#292929" />
-            </svg>
-          </button>
-        </div>
-
-        <div class="relative">
-          <div
-            :class="[
-              'flex flex-col',
-              groupImage ? 'lg:flex-row lg:gap-12' : '',
-            ]"
-          >
-            <NuxtImg
-              v-if="groupImage"
-              :src="groupImage"
-              :alt="groupTitle"
-              width="364"
-              height="436"
-              class="w-full lg:w-91 h-auto lg:h-109 object-cover rounded-lg shrink-0 mb-4 lg:mb-0"
-              fit="cover"
+      <!-- Product Grid -->
+      <div v-else class="flex flex-wrap gap-5 justify-start px-0 md:px-[6px]">
+        <NuxtLink
+          v-for="product in activeProducts"
+          :key="product.id"
+          :to="`/products/${product.slug || product.id}`"
+          class="flex flex-col p-0 text-left group"
+          style="width:calc(50% - 10px);"
+          :class="[
+            'sm:w-[calc(33.33%-14px)]',
+            'md:w-[calc(25%-15px)]',
+            'lg:w-[251.542px]'
+          ]"
+        >
+          <figure class="m-0 p-0 mb-5">
+            <img
+              :src="product.featured_image?.path || '/placeholder-product.png'"
+              :alt="product.name"
+              class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
             />
-
-            <div
-              :class="['flex-1 relative min-w-0', groupImage ? '' : 'w-full']"
-            >
-              <div
-                v-if="activeProducts.length === 0"
-                class="text-center py-10 text-gray-500"
-              >
-                Belum ada produk
-              </div>
-
-              <!-- Mobile grid (2 kolom) -->
-              <div class="grid grid-cols-2 lg:hidden gap-3 sm:gap-4">
-                <NuxtLink
-                  v-for="product in activeProducts"
-                  :key="product.id"
-                  :to="`/products/${product.slug || product.id}`"
-                  class="block h-full"
-                >
-                  <Product
-                    :name="product.name"
-                    :image="
-                      product.featured_image?.path || '/placeholder-product.png'
-                    "
-                    :finalPrice="product.final_price || product.base_price || 0"
-                    :strikePrice="product.base_strike_price"
-                    :rating="product.average_rating || 0"
-                    :reviews="product.review_count || 0"
-                    :discount="product.discount_percent || 0"
-                    :newArrival="product.is_new_arrival || false"
-                    size="large"
-                  />
-                </NuxtLink>
-              </div>
-
-              <!-- Desktop slider (hanya kalau > 3 produk) -->
-              <div
-                v-if="activeProducts.length > 0"
-                class="relative hidden lg:block"
-              >
-                <div
-                  ref="sliderRef"
-                  class="hide-scrollbar flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory"
-                  :class="{ 'justify-start': activeProducts.length > 5 }"
-                >
-                  <NuxtLink
-                    v-for="product in activeProducts"
-                    :key="product.id"
-                    :to="`/products/${product.slug || product.id}`"
-                    class="block shrink-0 snap-start"
-                  >
-                    <Product
-                      :name="product.name"
-                      :image="
-                        product.featured_image?.path ||
-                        '/placeholder-product.png'
-                      "
-                      :finalPrice="
-                        product.final_price || product.base_price || 0
-                      "
-                      :strikePrice="product.base_strike_price"
-                      :rating="product.average_rating || 0"
-                      :reviews="product.review_count || 0"
-                      :discount="product.discount_percent || 0"
-                      :newArrival="product.is_new_arrival || false"
-                      size="large"
-                    />
-                  </NuxtLink>
-                </div>
-
-                <button
-                  v-if="activeProducts.length > 5"
-                  @click="scrollLeft"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition z-10 hover:cursor-pointer"
-                >
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 30 30"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19.2625 9.2625L13.5375 15L19.2625 20.7375L17.5 22.5L10 15L17.5 7.5L19.2625 9.2625Z"
-                      fill="#292929"
-                    />
-                  </svg>
-                </button>
-                <button
-                  v-if="activeProducts.length > 5"
-                  @click="scrollRight"
-                  class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition z-10 hover:cursor-pointer"
-                >
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 30 30"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10.7375 20.7375L16.4625 15L10.7375 9.2625L12.5 7.5L20 15L12.5 22.5L10.7375 20.7375Z"
-                      fill="#292929"
-                    />
-                  </svg>
-                </button>
-              </div>
+          </figure>
+          <div class="product-card-info">
+            <h4
+              class="text-sm font-medium text-black m-0 mb-[5px] leading-[21px] truncate"
+              style="text-transform:uppercase;letter-spacing:normal;display:flow-root"
+            >{{ product.name }}</h4>
+            <p
+              class="text-sm font-medium text-black block m-0"
+              style="letter-spacing:0.28px"
+            >{{ formatPrice(product.final_price || product.base_price || 0) }}</p>
+            <div v-if="product.colors?.length" class="flex gap-1.5 mt-2 flex-wrap">
+              <span
+                v-for="(color, ci) in product.colors.slice(0, 5)"
+                :key="ci"
+                class="w-3.5 h-3.5 rounded-full border border-gray-300"
+                :style="{ backgroundColor: color.hex || '#ccc' }"
+                :title="color.name || ''"
+              ></span>
+              <span
+                v-if="product.colors.length > 5"
+                class="text-[10px] text-gray-500 self-center"
+              >+{{ product.colors.length - 5 }}</span>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useProductGroupApi } from "~/composables/useProductGroupApi";
 import { useProductSubGroupApi } from "~/composables/useProductSubGroupApi";
 import type { ProductGroup } from "~/types/product-group";
@@ -212,7 +117,6 @@ const { getProductGroupByKey } = useProductGroupApi();
 const { getSubGroups } = useProductSubGroupApi();
 
 const groupTitle = ref("");
-const groupImage = ref<string | null>(null);
 const subGroups = ref<any[]>([]);
 const activeSubGroupId = ref<number | null>(null);
 const productsBySubGroup = ref<Record<number, any[]>>({});
@@ -230,37 +134,13 @@ const hasAnyProduct = computed(() => {
   });
 });
 
-const sliderRef = ref<HTMLElement | null>(null);
-
-const scrollLeft = () => {
-  if (sliderRef.value) {
-    sliderRef.value.scrollBy({ left: -300, behavior: "smooth" });
-  }
-};
-
-const scrollRight = () => {
-  if (sliderRef.value) {
-    sliderRef.value.scrollBy({ left: 300, behavior: "smooth" });
-  }
-};
-
-const tabsRef = ref<HTMLElement | null>(null);
-const canScrollLeft = ref(false);
-const canScrollRight = ref(false);
-
-const updateScrollState = () => {
-  if (!tabsRef.value) return;
-  const { scrollLeft, scrollWidth, clientWidth } = tabsRef.value;
-  canScrollLeft.value = scrollLeft > 0;
-  canScrollRight.value = scrollLeft + clientWidth < scrollWidth - 1;
-};
-
-const scrollTabsLeft = () => {
-  tabsRef.value?.scrollBy({ left: -200, behavior: "smooth" });
-};
-
-const scrollTabsRight = () => {
-  tabsRef.value?.scrollBy({ left: 200, behavior: "smooth" });
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price).replace('IDR', 'IDR').trim() + ',00 IDR';
 };
 
 const loadData = async () => {
@@ -268,16 +148,14 @@ const loadData = async () => {
     loading.value = true;
     error.value = null;
 
-    const groupRes = await getProductGroupByKey(props.group.key);
-    if (!groupRes.data?.data) throw new Error("Group tidak ditemukan");
+    const groupRes: any = await getProductGroupByKey(props.group.key);
+    if (!groupRes?.data?.data) throw new Error("Group tidak ditemukan");
 
     const group = groupRes.data.data;
     groupTitle.value = group.title;
-    groupImage.value = group.image_url || null;
-    const productLimit = groupImage.value ? 8 : 10;
 
-    const subRes = await getSubGroups(group.id, productLimit);
-    if (subRes.data?.data) {
+    const subRes: any = await getSubGroups(group.id, 12);
+    if (subRes?.data?.data) {
       subGroups.value = subRes.data.data;
 
       subGroups.value.forEach((sub: any) => {
@@ -293,30 +171,10 @@ const loadData = async () => {
   } finally {
     loading.value = false;
     await nextTick();
-    updateScrollState();
   }
 };
 
 onMounted(() => {
   loadData();
-  window.addEventListener("resize", updateScrollState);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", updateScrollState);
 });
 </script>
-
-<style scoped>
-.overflow-x-auto::-webkit-scrollbar,
-.tabs-scroll::-webkit-scrollbar,
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.tabs-scroll,
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>
