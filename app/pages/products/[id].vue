@@ -783,10 +783,6 @@
 <script setup lang="ts">
 import type { Product } from "~/types/product";
 
-definePageMeta({
-  layout: "default",
-});
-
 const route = useRoute();
 const router = useRouter();
 const { showToast } = useToast();
@@ -799,6 +795,30 @@ const {
   clearSelectionForCheckout,
   setSelectedForCheckout,
 } = useCart();
+
+const productFetchCache = useState<{
+  slug: string;
+  response: Awaited<ReturnType<typeof getProduct>>;
+} | null>("product:route-cache", () => null);
+
+const fetchProductBySlug = async (slug: string) => {
+  if (productFetchCache.value?.slug === slug) {
+    return productFetchCache.value.response;
+  }
+
+  const response = await getProduct(slug);
+  productFetchCache.value = {
+    slug,
+    response,
+  };
+
+  return response;
+};
+
+definePageMeta({
+  layout: "default",
+  middleware: "product",
+});
 
 // Loading & Error States
 const loadingProduct = ref(false);
@@ -1333,10 +1353,24 @@ const loadProduct = async () => {
     const productSlug = route.params.id as string;
 
     // Use slug directly
-    const { data, error } = await getProduct(productSlug);
+    const { data, error } = await fetchProductBySlug(productSlug);
+
+    const statusCode = error?.statusCode || error?.response?.status || error?.data?.statusCode;
+
+    if (statusCode === 404) {
+      showError(
+        createError({
+          statusCode: 404,
+          statusMessage: "Produk tidak ditemukan",
+          message: "Produk tidak ditemukan",
+          fatal: true,
+        }),
+      );
+      return;
+    }
 
     if (error || !data?.success || !data.data?.product) {
-      errorProduct.value = error?.message || "Produk tidak ditemukan";
+      errorProduct.value = error?.message || "Terjadi kesalahan saat memuat produk";
       return;
     }
 
@@ -1496,6 +1530,18 @@ const loadProduct = async () => {
     // Update reviews
     updateReviews(reviews);
   } catch (err) {
+    const statusCode = (err as any)?.statusCode || (err as any)?.response?.status || (err as any)?.data?.statusCode;
+    if (statusCode === 404) {
+      showError(
+        createError({
+          statusCode: 404,
+          statusMessage: "Produk tidak ditemukan",
+          message: "Produk tidak ditemukan",
+          fatal: true,
+        }),
+      );
+      return;
+    }
     console.error("Error loading product:", err);
     errorProduct.value = "Terjadi kesalahan saat memuat produk";
   } finally {

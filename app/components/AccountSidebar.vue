@@ -2,6 +2,18 @@
   <aside class="w-full lg:w-64 shrink-0">
     <!-- Mobile: Horizontal Scroll Navigation -->
     <div class="lg:hidden bg-white border-b border-[#E6E9F0]">
+      <div class="px-4 pt-4">
+        <button
+          @click="handleBack"
+          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black transition cursor-pointer"
+          type="button"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+          </svg>
+          Back
+        </button>
+      </div>
       <nav
         class="flex gap-2 px-4 py-3 overflow-x-auto scroll-smooth"
         style="scrollbar-width: none; -ms-overflow-style: none"
@@ -112,6 +124,19 @@
     <div
       class="hidden lg:block bg-white border-r border-[#E6E9F0] px-5.5 py-10 h-full"
     >
+      <div class="mb-5">
+        <button
+          @click="handleBack"
+          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black transition cursor-pointer"
+          type="button"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+          </svg>
+          Back
+        </button>
+      </div>
+
       <nav class="flex flex-col gap-5">
         <NuxtLink
           to="/account"
@@ -220,5 +245,10 @@
 <script setup lang="ts">
 // Component untuk sidebar navigasi account
 // Menggunakan $route dari template untuk reactive route detection
+const router = useRouter()
+
+const handleBack = () => {
+  router.push("/")
+}
 </script>
 image.png

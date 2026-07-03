@@ -95,10 +95,25 @@ export const useProductApi = () => {
       );
       return { data: response, error: null };
     } catch (error: any) {
+      const statusCode =
+        error?.statusCode ||
+        error?.response?.status ||
+        error?.data?.statusCode ||
+        error?.data?.code ||
+        null;
+      const statusMessage =
+        error?.statusMessage ||
+        error?.data?.message ||
+        error?.message ||
+        "An error occurred";
+
       return {
         data: null,
-        error: error.data || {
-          message: error.message || "An error occurred",
+        error: {
+          ...error.data,
+          message: statusMessage,
+          statusCode,
+          statusMessage,
         },
       };
     }

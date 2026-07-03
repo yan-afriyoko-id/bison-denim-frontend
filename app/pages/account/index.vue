@@ -9,12 +9,6 @@
 
         <!-- Right Content: Profile Form -->
         <div class="flex-1 py-6 sm:py-8 md:py-10 px-3 sm:px-4 md:px-5">
-          <NuxtLink to="/" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black transition mb-4 cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
-            </svg>
-            Back
-          </NuxtLink>
           <h1 class="text-base sm:text-lg md:text-xl font-semibold text-[#1A1919] mb-6 sm:mb-8">
             Informasi Saya
           </h1>

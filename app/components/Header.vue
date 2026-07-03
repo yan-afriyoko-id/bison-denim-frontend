@@ -2,7 +2,7 @@
   <header
     ref="headerRef"
     class="sticky top-0 z-50 transition-all duration-300 group"
-    :class="isScrolled || route.path !== '/' ? 'bg-white shadow-sm' : 'bg-transparent hover:bg-white'"
+    :class="isScrolled || route.path !== '/' ? 'bg-white shadow-sm' : 'bg-transparent'"
   >
     <AnnouncementBar />
     <div
@@ -13,7 +13,7 @@
         <button
           @click="isSidebarOpen = !isSidebarOpen"
           class="xl:hidden flex items-center justify-center hover:cursor-pointer"
-          :class="isWhiteHeader ? 'text-black' : 'text-white group-hover:text-black'"
+          :class="isWhiteHeader ? 'text-black' : 'text-white'"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M3 6h18M3 12h18M3 18h18"/>
@@ -33,7 +33,7 @@
           />
           <span
             class="text-base sm:text-lg font-semibold tracking-tight"
-            :class="isWhiteHeader ? 'text-black' : 'text-white group-hover:text-black'"
+            :class="isWhiteHeader ? 'text-black' : 'text-white'"
           >Bison Denim</span>
         </NuxtLink>
       </div>
@@ -43,7 +43,7 @@
         <button
           @click="toggleSearch"
           class="hover:cursor-pointer"
-          :class="isWhiteHeader ? 'text-black' : 'text-white group-hover:text-black'"
+          :class="isWhiteHeader ? 'text-black' : 'text-white'"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
@@ -53,7 +53,7 @@
         <button
           @click="togglePopupCart()"
           class="relative hover:cursor-pointer"
-          :class="isWhiteHeader ? 'text-black' : 'text-white group-hover:text-black'"
+          :class="isWhiteHeader ? 'text-black' : 'text-white'"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
@@ -67,20 +67,25 @@
         </button>
 
         <template v-if="!isAuthenticated">
-          <NuxtLink
-            to="/login"
-            class="hidden sm:block hover:cursor-pointer"
-            :class="isWhiteHeader ? 'text-black' : 'text-white group-hover:text-black'"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-            </svg>
-          </NuxtLink>
+        <NuxtLink
+          to="/login"
+          class="hover:cursor-pointer"
+          :class="isWhiteHeader
+            ? 'text-black'
+            : 'text-white'"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+          </svg>
+        </NuxtLink>
         </template>
         <NuxtLink
           v-else
           to="/account"
-          class="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-black text-white text-xs font-semibold hover:cursor-pointer"
+          class="flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold hover:cursor-pointer transition-colors"
+          :class="isWhiteHeader
+            ? 'bg-black text-white'
+            : 'bg-white text-black'"
         >
           {{ userName.charAt(0).toUpperCase() }}
         </NuxtLink>
