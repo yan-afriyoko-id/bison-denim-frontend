@@ -4,6 +4,7 @@
     class="sticky top-0 z-50 transition-all duration-300 group"
     :class="isScrolled || route.path !== '/' ? 'bg-white shadow-sm' : 'bg-transparent hover:bg-white'"
   >
+    <AnnouncementBar />
     <div
       class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-[50px] flex items-center justify-between h-[75px]"
     >
@@ -228,7 +229,7 @@ const handleLogout = async () => {
 
 // Scroll detection for header style switch
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > (window.innerHeight * 0.6 + 40 - 75)
+  isScrolled.value = window.scrollY > (window.innerHeight * 0.6 + 40 - 115)
 }
 
 onMounted(async () => {

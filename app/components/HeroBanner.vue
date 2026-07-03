@@ -2,11 +2,11 @@
   <section class="relative overflow-hidden bg-gray-100">
     <div
       v-if="banner"
-      class="relative w-full min-h-screen md:min-h-screen bg-cover bg-[center_30%] flex items-end justify-center"
+      class="relative w-full min-h-[60vh] md:min-h-screen bg-cover bg-[center_30%] flex items-end justify-center"
       :style="{ backgroundImage: `url(${banner.image})` }"
     >
       <div class="absolute inset-0 bg-black/20"></div>
-      <div class="relative z-10 text-center text-white px-4 pb-[55px] pt-[75px] horizontal-slideshow--slide-content">
+      <div class="relative z-10 text-center text-white px-4 pb-10 sm:pb-[55px] pt-10 sm:pt-[75px] horizontal-slideshow--slide-content">
         <div class="flex items-center justify-center gap-6">
           <NuxtLink
             :to="banner.link_url || '/products'"

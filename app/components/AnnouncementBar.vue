@@ -26,9 +26,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const items = [
-  { text: 'Enjoy Up to 50% Off On Selected Products.', link: '/collections/limited-time', linkText: 'Shop Now' },
-  { text: 'Member Exclusive: Enjoy 10% Off All Full-Priced Finds —', link: '/account/register', linkText: 'Sign Up Now!' },
-  { text: 'Enjoy a 50,000 IDR shipping rebate on purchases of 2,000,000 IDR or more.', link: '/collections/new-arrival', linkText: 'Shop now' },
+  { text: 'Enjoy Up to 50% Off On Selected Products.', link: '/products', linkText: 'Shop Now' },
+  { text: 'Member Exclusive: Enjoy 10% Off All Full-Priced Finds —', link: '/register', linkText: 'Sign Up Now!' },
+  { text: 'Enjoy a 50,000 IDR shipping rebate on purchases of 2,000,000 IDR or more.', link: '/products', linkText: 'Shop now' },
 ]
 
 const current = ref(0)

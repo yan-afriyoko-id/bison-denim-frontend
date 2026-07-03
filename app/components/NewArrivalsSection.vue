@@ -8,7 +8,7 @@
         >
           {{ title }}
         </h3>
-        <p class="text-sm leading-[22.4px] text-black mb-5">
+        <p class="text-sm leading-[22.4px] text-black mb-5 font-medium">
           {{ description }}
         </p>
         <NuxtLink :to="shopMoreLink" class="link-underline-anim text-sm text-black font-medium">View More</NuxtLink>
@@ -35,8 +35,8 @@
                   :key="'main-' + pi + '-' + activeImages[pi]"
                   :src="activeImages[pi] || product.image"
                   :alt="product.name"
-                  class="w-full aspect-square object-cover transition-opacity duration-300 ease-out select-none pointer-events-none"
-                  :class="hoveredIndex === pi && product.hoverImage ? 'opacity-0' : 'opacity-100'"
+                  class="w-full aspect-square object-cover transition-all duration-300 ease-out select-none pointer-events-none"
+                  :class="hoveredIndex === pi && product.hoverImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'"
                   loading="lazy"
                   draggable="false"
                   ondragstart="return false"
@@ -46,20 +46,21 @@
                   :key="'hover-' + pi"
                   :src="product.hoverImage"
                   :alt="product.name"
-                  class="absolute inset-0 w-full h-full aspect-square object-cover transition-opacity duration-300 ease-out select-none pointer-events-none"
-                  :class="hoveredIndex === pi ? 'opacity-100' : 'opacity-0'"
+                  class="absolute inset-0 w-full h-full aspect-square object-cover transition-all duration-300 ease-out select-none pointer-events-none"
+                  :class="hoveredIndex === pi ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
                   loading="lazy"
                   draggable="false"
                   ondragstart="return false"
                 />
               </figure>
               <div class="px-3 product-card-info overflow-hidden">
-                <h4
-                  class="link-underline-anim text-sm font-medium text-black m-0 mb-[5px] leading-[21px]"
+                <NuxtLink
+                  :to="product.link"
+                  class="link-underline-anim text-sm font-medium text-black m-0 mb-[5px] leading-[21px] block truncate"
                   style="text-transform:uppercase;letter-spacing:normal"
                 >
-                  <a :href="product.link" class="text-black no-underline block truncate">{{ product.name }}</a>
-                </h4>
+                  {{ product.name }}
+                </NuxtLink>
                 <p class="text-sm font-medium text-black block m-0" style="letter-spacing:0.28px">{{ product.price }}</p>
                 <div v-if="product.colors?.length" class="flex gap-1.5 mt-2 flex-wrap">
                   <button
@@ -133,8 +134,10 @@ const selectColor = (pi: number, ci: number, color: ProductColor) => {
   activeImages[pi] = color.image || props.products[pi]?.image
 }
 
+const router = useRouter()
+
 const navigate = (link: string) => {
-  window.location.href = link
+  router.push(link)
 }
 
 // Drag scroll with proper mouseup/mousemove cleanup

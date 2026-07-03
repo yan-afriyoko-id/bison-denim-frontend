@@ -5,16 +5,19 @@
       <div class="flex flex-col md:flex-row gap-5 mb-6" :class="reverse ? 'md:flex-row-reverse' : ''">
         <!-- Left: big portrait image -->
         <div class="w-full md:w-[39%] flex-shrink-0 text-center">
-          <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
-            <img
-              :src="featureImage"
-              alt="Collection"
-              class="w-full h-full object-cover select-none pointer-events-none"
-              draggable="false"
-              ondragstart="return false"
-              loading="lazy"
-            />
-          </div>
+          <NuxtLink :to="shopMoreLink" class="block group">
+            <div class="aspect-[3/4] bg-gray-100 overflow-hidden relative">
+              <img
+                :src="featureImage"
+                alt="Collection"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
+                draggable="false"
+                ondragstart="return false"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            </div>
+          </NuxtLink>
         </div>
 
         <!-- Right: 3 overlapping card slider + text below -->
@@ -39,12 +42,12 @@
             <!-- card 2 (center, main) -->
             <NuxtLink
               :to="products[slideIndex]?.link || '#'"
-              class="absolute top-[12%] left-1/2 -translate-x-1/2 w-[36%] z-10 shadow-xl"
+              class="absolute top-[12%] left-1/2 -translate-x-1/2 w-[36%] z-10 shadow-xl group"
             >
               <div class="aspect-[4/5] overflow-hidden bg-gray-50">
                 <img
                   :src="products[slideIndex]?.image"
-                  class="w-full h-full object-cover select-none pointer-events-none"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
                   draggable="false"
                   loading="lazy"
                 />

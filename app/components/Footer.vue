@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-white text-black border-t border-[#d1d1d1] py-8 sm:py-10 text-[15px]">
+  <footer class="bg-white text-black border-t border-[#d1d1d1] pt-8 sm:pt-10 pb-0 text-[15px]">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-[50px]">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 pb-6 sm:pb-8">
         <div>
@@ -28,12 +28,12 @@
           </h4>
           <ul class="list-none p-0 m-0 space-y-1.5">
             <li>
-              <a :href="phoneLink" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block break-all">
+              <a :href="phoneLink" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 {{ footerPhone }}
               </a>
             </li>
             <li>
-              <NuxtLink to="/pages/contact-us" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Send us an email
               </NuxtLink>
             </li>
@@ -46,12 +46,12 @@
           </h4>
           <ul class="list-none p-0 m-0 space-y-1.5">
             <li>
-              <NuxtLink to="/about" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Our Story
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/store-locations" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Store Locations
               </NuxtLink>
             </li>
@@ -64,12 +64,12 @@
           </h4>
           <ul class="list-none p-0 m-0 space-y-1.5">
             <li>
-              <NuxtLink to="/account" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/account" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 My Account
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/account/orders" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/account/orders" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Track Your Order
               </NuxtLink>
             </li>
@@ -82,12 +82,12 @@
           </h4>
           <ul class="list-none p-0 m-0 space-y-1.5">
             <li>
-              <NuxtLink to="/privacy-policy" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/privacy-policy" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Privacy Policy
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/disclaimer" class="text-[14px] font-medium text-black leading-snug no-underline hover:underline block">
+              <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Disclaimer
               </NuxtLink>
             </li>
@@ -95,7 +95,7 @@
         </div>
       </div>
 
-      <div class="border-t border-[#BCBCBC] pt-5 sm:pt-6">
+      <div class="border-t border-[#BCBCBC] py-5 sm:py-6">
         <p class="text-[13px] sm:text-[15px] text-[#6b7280] m-0 text-center leading-relaxed">
           &copy; {{ new Date().getFullYear() }} {{ appName || 'Store' }}. All Rights Reserved.
         </p>

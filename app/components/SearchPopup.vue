@@ -15,8 +15,8 @@
       <div class="flex justify-between items-center h-16 px-5 bg-white border-b border-[#E6E9F0] flex-shrink-0">
         <h4 class="text-base font-semibold text-[#1A1919]">SEARCH</h4>
         <button class="relative cursor-pointer h-10 w-10 flex-shrink-0 bg-transparent border-none group" @click="closeSearch">
-          <div class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-0 -rotate-45"></div>
-          <div class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-0 rotate-45"></div>
+          <div class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:-rotate-45"></div>
+          <div class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-45"></div>
         </button>
       </div>
 

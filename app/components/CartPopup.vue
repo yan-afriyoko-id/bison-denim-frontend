@@ -35,10 +35,10 @@
             @click="closePopupCart"
           >
             <div
-              class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-0 -rotate-45"
+              class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:-rotate-45"
             ></div>
             <div
-              class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-0 rotate-45"
+              class="absolute top-[19px] left-2 w-6 h-[3px] bg-[#222] origin-center transition-all duration-300 group-hover:rotate-45"
             ></div>
           </button>
         </div>

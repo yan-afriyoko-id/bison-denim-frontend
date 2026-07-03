@@ -1,8 +1,7 @@
 <template>
   <main class="bg-white">
-    <AnnouncementBar />
     <Header />
-    <HeroBanner class="-mt-[75px]" />
+    <HeroBanner class="-mt-[115px]" />
     <TwoCollectionCards />
     <ProductGroupSection
       v-for="group in productGroups"
@@ -11,21 +10,21 @@
     />
     <NewArrivalsSection
       title="NEW ARRIVALS"
-      description=""
-      shop-more-link="/collections/new-arrival"
+      description="Explore the season's most coveted pieces, designed to effortlessly elevate your look with stylish verve. Each piece, including sleek card holders and durable real leather wallets, is crafted with modern elegance."
+      shop-more-link="/products"
       :products="newArrivalProducts"
     />
     <GenderCollectionSplit
       title="MEN'S COLLECTION"
       description="Thoughtfully made to carry life's essentials, these daily staples bring ease and style to commute. Explore stylish everyday pieces that are not only made to move with you but become trusted companions for every journey."
-      shop-more-link="/collections/new-arrival-men"
+      shop-more-link="/products"
       feature-image="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
       :products="menProducts.slice(0, 3)"
     />
     <GenderCollectionSplit
       title="WOMEN'S COLLECTION"
       description="Effortlessly graceful, these everyday bags are made to carry you through every moment. Thoughtfully crafted with beauty and purpose, each piece transitions effortlessly with quiet refined ease."
-      shop-more-link="/collections/new-arrival-women"
+      shop-more-link="/products"
       feature-image="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80"
       :products="womenProducts.slice(0, 3)"
       :reverse="true"
