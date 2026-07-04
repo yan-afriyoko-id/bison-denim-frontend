@@ -1,34 +1,37 @@
 <template>
-  <div class="min-h-screen bg-white font-poppins flex flex-col">
+  <div class="flex min-h-screen flex-col bg-white font-poppins">
     <Header force-white-header />
 
-    <main class="flex-1 flex items-center justify-center px-6 py-16">
-      <div class="max-w-xl w-full text-center">
-        <p class="text-sm font-semibold tracking-[0.24em] text-[#7B7B7B] uppercase mb-4">
-          {{ isNotFound ? "404" : "Error" }}
+    <main class="flex flex-1 items-center justify-center px-6 py-16">
+      <div class="w-full max-w-xl text-center">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.24em] text-[#7B7B7B]">
+          {{ isNotFound ? "404" : error.statusCode }}
         </p>
-        <h1 class="text-3xl sm:text-5xl font-semibold text-[#1A1919] mb-4">
+
+        <h1 class="mb-4 text-3xl font-semibold text-[#1A1919] sm:text-5xl">
           {{ isNotFound ? "Produk tidak ditemukan" : "Terjadi kesalahan" }}
         </h1>
-        <p class="text-sm sm:text-base text-[#7B7B7B] max-w-md mx-auto">
+
+        <p class="mx-auto max-w-md text-sm text-[#7B7B7B] sm:text-base">
           {{
             isNotFound
               ? "Halaman yang kamu cari tidak tersedia atau sudah dihapus."
-              : "Ada masalah saat membuka halaman ini. Coba kembali ke beranda."
+              : "Terjadi kesalahan saat memuat halaman."
           }}
         </p>
 
-        <div class="mt-8 flex items-center justify-center gap-3">
-          <NuxtLink
-            to="/"
-            class="inline-flex items-center justify-center px-5 py-3 rounded-full bg-black text-white text-sm font-medium hover:bg-black/80 transition"
+        <div class="mt-8 flex justify-center gap-3">
+          <button
+            class="rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-black/80"
+            @click="clearError({ redirect: '/' })"
           >
             Kembali ke Beranda
-          </NuxtLink>
+          </button>
+
           <button
             v-if="!isNotFound"
-            @click="clearError({ redirect: '/' })"
-            class="inline-flex items-center justify-center px-5 py-3 rounded-full border border-[#E6E9F0] text-sm font-medium text-[#1A1919] hover:bg-[#F8F8F8] transition"
+            class="rounded-full border border-[#E6E9F0] px-5 py-3 text-sm font-medium text-[#1A1919] transition hover:bg-[#F8F8F8]"
+            @click="clearError()"
           >
             Coba Lagi
           </button>
