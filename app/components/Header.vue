@@ -2,7 +2,7 @@
   <header
     ref="headerRef"
     class="sticky top-0 z-50 transition-all duration-300 group"
-    :class="isScrolled || route.path !== '/' ? 'bg-white shadow-sm' : 'bg-transparent'"
+    :class="isWhiteHeader ? 'bg-white shadow-sm' : 'bg-transparent'"
   >
     <AnnouncementBar />
     <div
@@ -194,6 +194,12 @@
 import { ref, computed, onMounted, onUnmounted } from "vue"
 import { DEFAULT_APP_LOGO } from "~/composables/useAppIdentity"
 
+const props = withDefaults(defineProps<{
+  forceWhiteHeader?: boolean
+}>(), {
+  forceWhiteHeader: false,
+})
+
 const router = useRouter()
 const route = useRoute()
 const auth = useAuth()
@@ -208,7 +214,9 @@ const isScrolled = ref(false)
 const isHydrated = ref(false)
 const headerRef = ref<HTMLElement | null>(null)
 
-const isWhiteHeader = computed(() => isScrolled.value || route.path !== '/')
+const isWhiteHeader = computed(() =>
+  props.forceWhiteHeader || isScrolled.value || route.path !== '/',
+)
 
 const isAuthenticated = auth.isAuthenticated
 const user = auth.user

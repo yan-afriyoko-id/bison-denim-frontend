@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-white font-poppins flex flex-col">
-    <Header />
+    <Header force-white-header />
 
     <main class="flex-1 flex items-center justify-center px-6 py-16">
       <div class="max-w-xl w-full text-center">
