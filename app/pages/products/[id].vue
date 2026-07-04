@@ -780,7 +780,7 @@ import type { Product } from "~/types/product";
 const route = useRoute();
 const router = useRouter();
 const { showToast } = useToast();
-const { getProduct, getRelatedProducts } = useProductApi();
+const { getProductOrThrowNotFound, getRelatedProducts } = useProductApi();
 const { getProductAttributes, getTaxoListsByType } = useProductRelationsApi();
 const {
   addToCart,
@@ -790,28 +790,10 @@ const {
   setSelectedForCheckout,
 } = useCart();
 
-const productFetchCache = useState<{
-  slug: string;
-  response: Awaited<ReturnType<typeof getProduct>>;
-} | null>("product:route-cache", () => null);
-
-const fetchProductBySlug = async (slug: string) => {
-  if (productFetchCache.value?.slug === slug) {
-    return productFetchCache.value.response;
-  }
-
-  const response = await getProduct(slug);
-  productFetchCache.value = {
-    slug,
-    response,
-  };
-
-  return response;
-};
+const productSlug = computed(() => route.params.id as string);
 
 definePageMeta({
   layout: "default",
-  middleware: "product",
 });
 
 // Loading & Error States
@@ -1338,210 +1320,169 @@ const loadRelatedProducts = async () => {
   relatedLoading.value = false;
 };
 
-// Load product from API
-const loadProduct = async () => {
-  loadingProduct.value = true;
-  errorProduct.value = null;
-
-  try {
-    const productSlug = route.params.id as string;
-
-    // Use slug directly
-    const { data, error } = await fetchProductBySlug(productSlug);
-
-    const statusCode = error?.statusCode || error?.response?.status || error?.data?.statusCode;
-
-    if (statusCode === 404) {
-      showError(
-        createError({
-          statusCode: 404,
-          statusMessage: "Produk tidak ditemukan",
-          message: "Produk tidak ditemukan",
-          fatal: true,
-        }),
-      );
-      return;
-    }
-
-    if (error || !data?.success || !data.data?.product) {
-      errorProduct.value = error?.message || "Terjadi kesalahan saat memuat produk";
-      return;
-    }
-
-    const apiProduct: Product = data.data.product;
-
-    // Store all variants with options
-    allVariants.value = (apiProduct.variants || [])
-      .filter((v: any) => v.status === "ACTIVE") // Only active variants
-      .map((v: any) => ({
-        id: v.id,
-        variant_name: v.variant_name || null,
-        options: (v.options || []).map((opt: any) => ({
-          attribute_id: opt.attribute_id,
-          attribute_name: opt.attribute_name || "Unknown",
-          attribute_value_id: opt.attribute_value_id,
-          attribute_value: opt.attribute_value || "Unknown",
-        })),
-        price: v.price || 0,
-        strike_price: v.strike_price || null,
-        final_price: v.final_price || v.price || 0,
-        discount_percent: v.discount_percent || null,
-        stock: v.stock || 0,
-        status: v.status,
-        is_available: v.is_available || false,
-        image_path: v.image_path || null,
-        stock_relations: v.stock_relations || v.stockRelations || [],
-      }));
-
-    // Collect all stores from all variants
-    const storesMap = new Map<
-      string,
-      {
-        store: any;
-        variants: Set<number>;
-      }
-    >();
-
-    (apiProduct.variants || []).forEach((variant: any) => {
-      const stockRelations = variant.stock_relations || variant.stockRelations || [];
-
-      if (Array.isArray(stockRelations)) {
-        stockRelations.forEach((stock: any) => {
-          if (stock.store && stock.store.id) {
-            const storeId = String(stock.store.id);
-            if (!storesMap.has(storeId)) {
-              storesMap.set(storeId, {
-                store: stock.store,
-                variants: new Set([variant.id]),
-              });
-            } else {
-              storesMap.get(storeId)!.variants.add(variant.id);
-            }
-          }
-        });
-      }
-    });
-
-    allStoresMap.value = storesMap;
-
-    // Initialize locationOptions with all stores (all enabled initially)
-    locationOptions.value = Array.from(storesMap.values()).map((item: any) => ({
-      value: String(item.store.id),
-      label: item.store.name || `Store ${item.store.id}`,
-      disabled: false, // Will be updated based on selected variant
-      shippingCost: "Rp0",
-      estimatedArrival: "Tersedia",
-      store: item.store,
+const applyProductResponse = (apiProduct: Product) => {
+  // Store all variants with options
+  allVariants.value = (apiProduct.variants || [])
+    .filter((v: any) => v.status === "ACTIVE")
+    .map((v: any) => ({
+      id: v.id,
+      variant_name: v.variant_name || null,
+      options: (v.options || []).map((opt: any) => ({
+        attribute_id: opt.attribute_id,
+        attribute_name: opt.attribute_name || "Unknown",
+        attribute_value_id: opt.attribute_value_id,
+        attribute_value: opt.attribute_value || "Unknown",
+      })),
+      price: v.price || 0,
+      strike_price: v.strike_price || null,
+      final_price: v.final_price || v.price || 0,
+      discount_percent: v.discount_percent || null,
+      stock: v.stock || 0,
+      status: v.status,
+      is_available: v.is_available || false,
+      image_path: v.image_path || null,
+      stock_relations: v.stock_relations || v.stockRelations || [],
     }));
 
-    buildDynamicAttributes();
-
-    const basePrice =
-      (apiProduct as any).base_price || (apiProduct as any).price || 0;
-    const baseStrikePrice = (apiProduct as any).base_strike_price || null;
-    const finalPrice = (apiProduct as any).final_price || basePrice;
-    const discountPercent = (apiProduct as any).discount_percent || null;
-    const averageRating = (apiProduct as any).average_rating || 0;
-    const reviewCount = (apiProduct as any).review_count || 0;
-    const totalStock = (apiProduct as any).total_stock || 0;
-
-    // Get images - prioritize featured image
-    let images: string[] = [];
-    if (apiProduct.images && apiProduct.images.length > 0) {
-      images = apiProduct.images.map((img: any) => img.path);
-      // Find featured image for initial selection
-      const featuredImage = apiProduct.images.find(
-        (img: any) => img.is_featured,
-      );
-      selectedImage.value = featuredImage
-        ? featuredImage.path
-        : images[0] || null;
-    } else {
-      selectedImage.value = null;
+  // Collect all stores from all variants
+  const storesMap = new Map<
+    string,
+    {
+      store: any;
+      variants: Set<number>;
     }
+  >();
 
-    // Add variant images to the image list (if they exist and are not duplicates)
-    // This should be done AFTER allVariants is set
-    if (allVariants.value && allVariants.value.length > 0) {
-      allVariants.value.forEach((variant: any) => {
-        if (variant.image_path && !images.includes(variant.image_path)) {
-          images.push(variant.image_path);
+  (apiProduct.variants || []).forEach((variant: any) => {
+    const stockRelations = variant.stock_relations || variant.stockRelations || [];
+
+    if (Array.isArray(stockRelations)) {
+      stockRelations.forEach((stock: any) => {
+        if (stock.store && stock.store.id) {
+          const storeId = String(stock.store.id);
+          if (!storesMap.has(storeId)) {
+            storesMap.set(storeId, {
+              store: stock.store,
+              variants: new Set([variant.id]),
+            });
+          } else {
+            storesMap.get(storeId)!.variants.add(variant.id);
+          }
         }
       });
     }
+  });
 
-    // Fallback to placeholder if no images
-    if (images.length === 0) {
-      images = ["/assets/img/products/placeholder.png"];
-      selectedImage.value = images[0];
-    }
+  allStoresMap.value = storesMap;
 
-    productImages.value = images;
-    selectedImageIndex.value = selectedImage.value
-      ? images.indexOf(selectedImage.value)
-      : 0;
-    if (selectedImageIndex.value < 0) selectedImageIndex.value = 0;
+  // Initialize locationOptions with all stores (all enabled initially)
+  locationOptions.value = Array.from(storesMap.values()).map((item: any) => ({
+    value: String(item.store.id),
+    label: item.store.name || `Store ${item.store.id}`,
+    disabled: false,
+    shippingCost: "Rp0",
+    estimatedArrival: "Tersedia",
+    store: item.store,
+  }));
 
-    // Get reviews
-    const reviews = (apiProduct as any).reviews || [];
+  buildDynamicAttributes();
 
-    product.value = {
-      id: apiProduct.id,
-      name: apiProduct.name,
-      slug: apiProduct.slug,
-      image: images[0] || "/assets/img/products/placeholder.png",
-      price: `Rp ${formatNumber(basePrice)}`,
-      discountedPrice: `Rp ${formatNumber(finalPrice)}`,
-      rating: averageRating,
-      reviews: reviewCount,
-      discount: discountPercent || null,
-      stock: totalStock,
-      description: (apiProduct as any).description || "",
-      material: apiProduct.material ?? null,
-      finishing: apiProduct.finishing ?? null,
-      color: apiProduct.color ?? null,
-      weight: apiProduct.weight ?? null,
-      type_weight: apiProduct.type_weight ?? null,
-      size_long: apiProduct.size_long ?? null,
-      size_wide: apiProduct.size_wide ?? null,
-      size_tall: apiProduct.size_tall ?? null,
-      type_size: apiProduct.type_size ?? null,
-      package_long: apiProduct.package_long ?? null,
-      package_wide: apiProduct.package_wide ?? null,
-      package_tall: apiProduct.package_tall ?? null,
-      sku: apiProduct.sku ?? null,
-      product_information: apiProduct.product_information ?? null,
-      baseStrikePrice: baseStrikePrice ?? null,
-      categories: apiProduct.categories || [],
-    };
-    if (apiProduct?.slug) {
-      void loadRelatedProducts();
-    }
-    if (apiProduct?.id) {
-      void loadProductAttributes(apiProduct.id);
-    }
-    void loadTaxonomies();
-    // Update reviews
-    updateReviews(reviews);
-  } catch (err) {
-    const statusCode = (err as any)?.statusCode || (err as any)?.response?.status || (err as any)?.data?.statusCode;
-    if (statusCode === 404) {
-      showError(
-        createError({
-          statusCode: 404,
-          statusMessage: "Produk tidak ditemukan",
-          message: "Produk tidak ditemukan",
-          fatal: true,
-        }),
-      );
-      return;
-    }
-    console.error("Error loading product:", err);
-    errorProduct.value = "Terjadi kesalahan saat memuat produk";
-  } finally {
-    loadingProduct.value = false;
+  const basePrice =
+    (apiProduct as any).base_price || (apiProduct as any).price || 0;
+  const baseStrikePrice = (apiProduct as any).base_strike_price || null;
+  const finalPrice = (apiProduct as any).final_price || basePrice;
+  const discountPercent = (apiProduct as any).discount_percent || null;
+  const averageRating = (apiProduct as any).average_rating || 0;
+  const reviewCount = (apiProduct as any).review_count || 0;
+  const totalStock = (apiProduct as any).total_stock || 0;
+
+  let images: string[] = [];
+  if (apiProduct.images && apiProduct.images.length > 0) {
+    images = apiProduct.images.map((img: any) => img.path);
+    const featuredImage = apiProduct.images.find(
+      (img: any) => img.is_featured,
+    );
+    selectedImage.value = featuredImage
+      ? featuredImage.path
+      : images[0] || null;
+  } else {
+    selectedImage.value = null;
   }
+
+  if (allVariants.value && allVariants.value.length > 0) {
+    allVariants.value.forEach((variant: any) => {
+      if (variant.image_path && !images.includes(variant.image_path)) {
+        images.push(variant.image_path);
+      }
+    });
+  }
+
+  if (images.length === 0) {
+    images = ["/assets/img/products/placeholder.png"];
+    selectedImage.value = images[0];
+  }
+
+  productImages.value = images;
+  selectedImageIndex.value = selectedImage.value
+    ? images.indexOf(selectedImage.value)
+    : 0;
+  if (selectedImageIndex.value < 0) selectedImageIndex.value = 0;
+
+  const reviewsList = (apiProduct as any).reviews || [];
+
+  product.value = {
+    id: apiProduct.id,
+    name: apiProduct.name,
+    slug: apiProduct.slug,
+    image: images[0] || "/assets/img/products/placeholder.png",
+    price: `Rp ${formatNumber(basePrice)}`,
+    discountedPrice: `Rp ${formatNumber(finalPrice)}`,
+    rating: averageRating,
+    reviews: reviewCount,
+    discount: discountPercent || null,
+    stock: totalStock,
+    description: (apiProduct as any).description || "",
+    material: apiProduct.material ?? null,
+    finishing: apiProduct.finishing ?? null,
+    color: apiProduct.color ?? null,
+    weight: apiProduct.weight ?? null,
+    type_weight: apiProduct.type_weight ?? null,
+    size_long: apiProduct.size_long ?? null,
+    size_wide: apiProduct.size_wide ?? null,
+    size_tall: apiProduct.size_tall ?? null,
+    type_size: apiProduct.type_size ?? null,
+    package_long: apiProduct.package_long ?? null,
+    package_wide: apiProduct.package_wide ?? null,
+    package_tall: apiProduct.package_tall ?? null,
+    sku: apiProduct.sku ?? null,
+    product_information: apiProduct.product_information ?? null,
+    baseStrikePrice: baseStrikePrice ?? null,
+    categories: apiProduct.categories || [],
+  };
+
+  if (apiProduct?.slug) {
+    void loadRelatedProducts();
+  }
+  if (apiProduct?.id) {
+    void loadProductAttributes(apiProduct.id);
+  }
+  void loadTaxonomies();
+  updateReviews(reviewsList);
 };
+
+const {
+  data: productResponse,
+  error: productAsyncError,
+  pending: productPending,
+  refresh: refreshProduct,
+} = await useAsyncData(
+  () => `product:${productSlug.value}`,
+  () => getProductOrThrowNotFound(productSlug.value),
+  {
+    watch: [productSlug],
+    default: () => null,
+  },
+);
 
 const loadProductAttributes = async (id: number) => {
   try {
@@ -2355,9 +2296,46 @@ watch(
   { immediate: false },
 );
 
+watch(
+  [productResponse, productAsyncError, productPending],
+  ([response, asyncError, pending]) => {
+    loadingProduct.value = pending;
+
+    if (pending) {
+      errorProduct.value = null;
+      return;
+    }
+
+    if (asyncError) {
+      showError(asyncError);
+      return;
+    }
+
+    const payload = response?.data?.product;
+    if (!response?.success || !payload) {
+      showError(
+        createError({
+          statusCode: 404,
+          statusMessage: "Produk tidak ditemukan",
+          message: "Produk tidak ditemukan",
+          fatal: true,
+        }),
+      );
+      return;
+    }
+
+    errorProduct.value = null;
+    applyProductResponse(payload);
+  },
+  { immediate: true },
+);
+
+const loadProduct = async () => {
+  await refreshProduct();
+};
+
 // Load product data based on route param
-onMounted(async () => {
-  await loadProduct();
+onMounted(() => {
   window.addEventListener("scroll", onTabScroll);
 });
 
@@ -2366,37 +2344,88 @@ onUnmounted(() => {
 });
 
 const currentUrl = computed(() => route.fullPath);
+const pageTitle = computed(() => product.value.name || "Produk");
+const pageDescription = computed(
+  () => product.value.description || "Deskripsi produk default",
+);
+const pageImage = computed(
+  () => product.value.image || "/assets/img/products/placeholder.png",
+);
+const productStructuredData = computed(() =>
+  JSON.stringify(
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.value.name,
+      image: pageImage.value,
+      description: pageDescription.value,
+      sku: product.value.sku || "",
+      offers: {
+        "@type": "Offer",
+        url: currentUrl.value,
+        priceCurrency: "IDR",
+        price: currentPrice.value.toString(),
+        availability:
+          currentStock.value > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+      },
+      aggregateRating:
+        reviews.value.length > 0
+          ? {
+              "@type": "AggregateRating",
+              ratingValue: averageRating.value.toFixed(1),
+              reviewCount: reviews.value.length,
+            }
+          : undefined,
+      review: reviews.value.slice(0, 5).map((r) => ({
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: r.rating,
+          bestRating: 5,
+        },
+        author: { "@type": "Person", name: r.user.name },
+        datePublished: r.date,
+        reviewBody: r.comment,
+      })),
+    },
+    null,
+    2,
+  ),
+);
 
 useHead({
-  title: product.value.name,
+  title: pageTitle,
   meta: [
     {
       name: "description",
-      content: product.value.description || "Deskripsi produk default",
+      content: pageDescription,
     },
     {
       property: "og:title",
-      content: product.value.name,
+      content: pageTitle,
     },
     {
       property: "og:description",
-      content: product.value.description,
+      content: pageDescription,
     },
     {
       property: "og:image",
-      content: product.value.image,
+      content: pageImage,
     },
-    { property: "og:url", content: currentUrl.value },
+    { property: "og:url", content: currentUrl },
     { property: "og:type", content: "product" },
     { name: "twitter:card", content: "summary_large_image" },
     {
       name: "twitter:title",
-      content: product.value.name,
+      content: pageTitle,
     },
-    { name: "twitter:description", content: product.value.description },
+    { name: "twitter:description", content: pageDescription },
     {
       name: "twitter:image",
-      content: product.value.image,
+      content: pageImage,
     },
   ],
 });
@@ -2405,48 +2434,7 @@ useHead({
   script: [
     {
       type: "application/ld+json",
-      innerHTML: JSON.stringify(
-        {
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: product.value.name,
-          image: product.value.image,
-          description: product.value.description,
-          sku: product.value.sku || "",
-          offers: {
-            "@type": "Offer",
-            url: currentUrl.value,
-            priceCurrency: "IDR",
-            price: currentPrice.value.toString(),
-            availability:
-              currentStock.value > 0
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
-            itemCondition: "https://schema.org/NewCondition",
-          },
-          aggregateRating:
-            reviews.value.length > 0
-              ? {
-                  "@type": "AggregateRating",
-                  ratingValue: averageRating.value.toFixed(1),
-                  reviewCount: reviews.value.length,
-                }
-              : undefined,
-          review: reviews.value.slice(0, 5).map((r) => ({
-            "@type": "Review",
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: r.rating,
-              bestRating: 5,
-            },
-            author: { "@type": "Person", name: r.user.name },
-            datePublished: r.date,
-            reviewBody: r.comment,
-          })),
-        },
-        null,
-        2,
-      ),
+      innerHTML: productStructuredData,
     },
   ],
 });

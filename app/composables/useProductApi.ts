@@ -12,6 +12,14 @@ import type {
 export const useProductApi = () => {
   const { baseURL, getHeaders } = useApiBase();
 
+  const createProductNotFoundError = () =>
+    createError({
+      statusCode: 404,
+      statusMessage: "Produk tidak ditemukan",
+      message: "Produk tidak ditemukan",
+      fatal: true,
+    });
+
   const getProducts = async (
     page: number = 1,
     perPage: number = 15,
@@ -117,6 +125,25 @@ export const useProductApi = () => {
         },
       };
     }
+  };
+
+  const getProductOrThrowNotFound = async (slug: string) => {
+    const response = await getProduct(slug);
+    const statusCode =
+      response.error?.statusCode ||
+      response.error?.status ||
+      response.error?.response?.status ||
+      response.error?.data?.statusCode;
+
+    if (response.data?.success && response.data.data?.product) {
+      return response.data;
+    }
+
+    if (statusCode === 404 || response.error) {
+      throw createProductNotFoundError();
+    }
+
+    throw createProductNotFoundError();
   };
 
   const createProduct = async (data: ProductCreatePayload) => {
@@ -248,6 +275,7 @@ export const useProductApi = () => {
     getProducts,
     getAllProducts,
     getProduct,
+    getProductOrThrowNotFound,
     createProduct,
     updateProduct,
     deleteProduct,
