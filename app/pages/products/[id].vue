@@ -508,10 +508,10 @@
             </table>
           </div>
         </section>
-        <section id="ulasan" class="mb-10 scroll-mt-[145px]">
+        <!-- #region Reviews -->
+        <!-- <section id="ulasan" class="mb-10 scroll-mt-[145px]">
           <h2 class="text-lg font-semibold mb-4">Ulasan</h2>
 
-          <!-- Rating Summary (always visible) -->
           <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
             <div class="flex items-start gap-3 sm:gap-4">
               <div class="text-4xl sm:text-5xl font-bold text-[#1A1919] leading-none">
@@ -535,7 +535,6 @@
             </button>
           </div>
 
-          <!-- Filters and Search -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div class="flex flex-wrap gap-2 sm:gap-2.5">
               <button
@@ -573,7 +572,6 @@
             </div>
           </div>
 
-          <!-- Reviews List -->
           <div v-if="filteredReviews.length > 0" class="space-y-4">
             <div v-for="review in filteredReviews" :key="review.id" class="border border-[#E6E9F0] py-4 sm:py-5 px-4 sm:px-5 rounded-lg">
               <div class="flex items-start gap-3 sm:gap-4">
@@ -597,14 +595,10 @@
             </div>
           </div>
 
-          <!-- Empty State -->
           <div v-else class="flex flex-col items-center justify-center py-12 text-center">
             <svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
-              <!-- Speech bubble background - black -->
               <path d="M20 30C20 21.7157 26.7157 15 35 15H125C133.284 15 140 21.7157 140 30V70C140 78.2843 133.284 85 125 85H70L45 105V85H35C26.7157 85 20 78.2843 20 70V30Z" fill="#1E1E1E"/>
-              <!-- Star - white -->
               <path d="M80 35L86.7082 49.2705H102.108L89.7002 58.209L96.4084 72.4795L80 63.541L63.5916 72.4795L70.2998 58.209L57.8917 49.2705H73.2918L80 35Z" fill="#FFFFFF"/>
-              <!-- Magnifying glass - white with black stroke -->
               <circle cx="115" cy="75" r="20" fill="#FFFFFF" stroke="#1E1E1E" stroke-width="3"/>
               <circle cx="115" cy="75" r="12" fill="#1E1E1E"/>
               <line x1="130" y1="90" x2="145" y2="105" stroke="#1E1E1E" stroke-width="5" stroke-linecap="round"/>
@@ -622,7 +616,7 @@
             </template>
             <button :disabled="currentReviewPage >= totalReviewPages" @click="changeReviewPage(currentReviewPage + 1)" class="px-3 py-1.5 border border-[#E6E9F0] rounded text-sm hover:bg-gray-50 transition disabled:opacity-50 cursor-pointer">Next</button>
           </div>
-        </section>
+        </section> -->
         </div>
         <!-- End Combined Section -->
 

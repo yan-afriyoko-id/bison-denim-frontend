@@ -66,26 +66,31 @@
           </span>
         </button>
 
-        <template v-if="!isAuthenticated">
-        <NuxtLink
-          to="/login"
-          class="hover:cursor-pointer"
-          :class="isWhiteHeader
-            ? 'text-black'
-            : 'text-white'"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-          </svg>
-        </NuxtLink>
+        <template v-if="!isHydrated">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full opacity-0 flex-none" aria-hidden="true">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"></svg>
+          </span>
+        </template>
+        <template v-else-if="!isAuthenticated">
+          <NuxtLink
+            to="/login"
+            class="hover:cursor-pointer"
+            :class="isWhiteHeader ? 'text-black' : 'text-white'"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+            </svg>
+          </NuxtLink>
         </template>
         <NuxtLink
           v-else
           to="/account"
-          class="flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold hover:cursor-pointer transition-colors"
-          :class="isWhiteHeader
-            ? 'bg-black text-white'
-            : 'bg-white text-black'"
+          class="flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold hover:cursor-pointer transition-colors flex-none"
+          :class="route.path.startsWith('/account')
+            ? 'bg-black text-white ring-1 ring-black/10'
+            : isWhiteHeader
+              ? 'bg-black text-white ring-1 ring-black/10'
+              : 'bg-white text-black ring-1 ring-black/10'"
         >
           {{ userName.charAt(0).toUpperCase() }}
         </NuxtLink>
@@ -200,6 +205,7 @@ const cartItemCount = getCartItemCount
 const isSidebarOpen = ref(false)
 const isLoggingOut = ref(false)
 const isScrolled = ref(false)
+const isHydrated = ref(false)
 const headerRef = ref<HTMLElement | null>(null)
 
 const isWhiteHeader = computed(() => isScrolled.value || route.path !== '/')
@@ -238,6 +244,7 @@ const handleScroll = () => {
 }
 
 onMounted(async () => {
+  isHydrated.value = true
   if (!user.value) await auth.initAuth()
   await loadAppIdentity()
   await loadCart()
