@@ -394,7 +394,7 @@
                               item.review_id || item.review?.id,
                             )
                           "
-                          class="px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition !bg-white !text-[#B91C1C] !border !border-[#B91C1C] hover:!bg-[#B91C1C] hover:!text-white"
+                          class="px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-[10px] transition !bg-white !text-[#1A1919] !border !border-[#1A1919] hover:!bg-[#1A1919] hover:!text-white"
                         >
                           Edit Ulasan
                         </button>
