@@ -583,7 +583,7 @@
               <div class="space-y-1.5 pt-1">
                 <div class="flex items-center gap-0.5">
                   <svg v-for="i in 5" :key="i" width="18" height="18" class="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5.825 21L7.45 13.975L2 9.25L9.2 8.625L12 2L14.8 8.625L22 9.25L16.55 13.975L18.175 21L12 17.275L5.825 21Z" :fill="i <= Math.round(averageRating) ? '#FF8A00' : '#FFCC00'" />
+                    <path d="M5.825 21L7.45 13.975L2 9.25L9.2 8.625L12 2L14.8 8.625L22 9.25L16.55 13.975L18.175 21L12 17.275L5.825 21Z" :fill="i <= Math.round(averageRating) ? '#FFCC00' : '#E6E9F0'"   />
                   </svg>
                 </div>
                 <p class="text-sm text-[#1A1919] font-medium">

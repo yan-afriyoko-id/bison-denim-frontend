@@ -54,12 +54,11 @@
                 <svg
                   class="w-8 h-8 sm:w-10 sm:h-10"
                   viewBox="0 0 24 24"
-                  fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                    :fill="star <= reviewForm.rating ? '#E9322B' : '#E6E9F0'"
+                    :fill="star <= reviewForm.rating ? '#FFCC00' : '#E6E9F0'"
                   />
                 </svg>
               </button>
@@ -386,6 +385,7 @@
                       </button>
                       <template v-else-if="item.review_id || item.review">
                         <button
+                          type="button"
                           v-if="item.review?.can_edit"
                           @click="
                             openReviewModal(
@@ -394,7 +394,7 @@
                               item.review_id || item.review?.id,
                             )
                           "
-                          class="px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-[#E9322B] text-[#E9322B] rounded-lg hover:bg-[#E9322B] hover:text-white transition"
+                          class="px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition !bg-white !text-[#B91C1C] !border !border-[#B91C1C] hover:!bg-[#B91C1C] hover:!text-white"
                         >
                           Edit Ulasan
                         </button>
@@ -680,7 +680,7 @@ const openReviewModal = async (
     const existing = reviews.find((r) => r.id === reviewId);
 
     if (existing) {
-      reviewForm.rating = existing.rating ?? 0;
+      reviewForm.rating = Number(existing.rating ?? 0);
       reviewForm.comment = existing.comment ?? "";
     } else {
       reviewForm.rating = 0;
