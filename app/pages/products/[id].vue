@@ -591,11 +591,11 @@
                 </p>
               </div>
             </div>
-            <button
+            <!-- <button
               class="self-start px-5 py-2.5 bg-[#1E1E1E] hover:bg-[#333333] text-white font-medium text-sm rounded-lg transition hover:cursor-pointer"
             >
               Beri Ulasan
-            </button>
+            </button> -->
           </div>
 
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
