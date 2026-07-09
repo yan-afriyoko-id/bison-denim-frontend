@@ -172,7 +172,7 @@
                   />
                 </svg>
             </div>
-            <!-- </div> -->
+            </div> -->
             </div>
 
             <div v-if="product.sku" class="text-sm text-[#808080] mb-3">
@@ -367,21 +367,18 @@
 
               <!-- Store Location Card -->
               <div class="mt-5 border border-[#E6E9F0] rounded-lg overflow-hidden">
-                <div class="px-4 py-3 flex items-center justify-between gap-2">
-                  <h3 class="text-base sm:text-lg font-semibold text-[#1A1919]">
-                    Pilih Lokasi Pengiriman Toko
-                  </h3>
-                </div>
-
-                <!-- Stock Info Header -->
-                <div class="px-4 pb-3 flex items-center justify-between gap-2 border-b border-[#E6E9F0]">
-                  <p class="text-sm text-[#1A1919]">
-                    <span class="text-[#808080]">Informasi Stok:</span>
-                    <span class="font-semibold ml-1">{{ selectedLocationLabel || "Pilih lokasi" }}</span>
-                  </p>
+                <div class="px-4 py-3 flex items-center justify-between gap-2 border-b border-[#E6E9F0]">
+                  <div>
+                    <h3 class="text-base sm:text-lg font-semibold text-[#1A1919]">
+                      Pilih Lokasi Pengiriman Toko
+                    </h3>
+                    <p class="text-sm text-[#808080] mt-1">
+                      {{ selectedLocationLabel || "Belum ada toko dipilih" }}
+                    </p>
+                  </div>
                   <button
                     @click="isLocationModalOpen = true"
-                    class="text-sm font-medium text-[#1E1E1E] hover:underline hover:cursor-pointer flex items-center gap-1"
+                    class="text-sm font-medium text-[#1E1E1E] hover:underline hover:cursor-pointer flex items-center gap-1 shrink-0"
                   >
                     Lihat Lokasi Lainnya
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -390,9 +387,75 @@
                   </button>
                 </div>
 
+                <div
+                  v-if="loadingStores"
+                  class="px-4 py-6 text-sm text-[#808080]"
+                >
+                  Memuat toko...
+                </div>
+
+                <div
+                  v-else-if="locationOptions.length === 0"
+                  class="px-4 py-6 text-sm text-[#808080]"
+                >
+                  Toko belum tersedia.
+                </div>
+
+                <div
+                  v-else
+                  class="px-4 py-4"
+                >
+                  <div class="grid grid-cols-1 gap-3">
+                    <p class="text-sm text-[#808080]">
+                      Informasi Stok:
+                      <span class="font-semibold text-[#1A1919]">
+                        {{ selectedLocationLabel || "Belum ada toko dipilih" }}
+                      </span>
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <button
+                        v-for="location in visibleLocationOptions"
+                        :key="location.value"
+                        :disabled="isStoreUnavailable(location)"
+                        @click="selectLocation(location.value)"
+                        class="relative w-full min-h-[88px] rounded-lg border p-3 text-left transition"
+                        :class="selectedLocation === location.value
+                          ? 'border-black bg-black text-white shadow-sm'
+                          : isStoreUnavailable(location)
+                            ? 'border-[#E6E9F0] bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed'
+                            : 'border-[#E6E9F0] bg-white text-[#1A1919] hover:border-black/40 hover:shadow-sm'"
+                      >
+                        <span
+                          v-if="isStoreUnavailable(location)"
+                          class="absolute right-3 top-3 text-[#1990FF]"
+                          aria-hidden="true"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/>
+                          </svg>
+                        </span>
+
+                        <p class="text-[15px] sm:text-base font-medium pr-5">
+                          {{ location.label }}
+                        </p>
+
+                        <p
+                          class="mt-2 text-sm font-medium"
+                          :class="selectedLocation === location.value
+                            ? 'text-white/85'
+                            : getStoreStatusTextClass(location)"
+                        >
+                          {{ getStoreStatus(location) }}
+                        </p>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Empty state when no location selected -->
                 <div
-                  v-if="!selectedLocation"
+                  v-if="false"
                   class="flex items-start gap-2 text-[#ACACAC] px-4 py-6"
                 >
                   <svg width="20" height="20" class="w-5 h-5 sm:w-5 sm:h-5 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -409,7 +472,7 @@
 
                 <!-- Store Stock Grid (shown when location is selected) -->
                 <div
-                  v-else
+                  v-if="false"
                   class="p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3"
                 >
                   <div
@@ -509,7 +572,7 @@
           </div>
         </section>
         <!-- #region Reviews -->
-        <!-- <section id="ulasan" class="mb-10 scroll-mt-[145px]">
+        <section id="ulasan" class="mb-10 scroll-mt-[145px]">
           <h2 class="text-lg font-semibold mb-4">Ulasan</h2>
 
           <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
@@ -559,7 +622,7 @@
                 </template>
               </button>
             </div>
-            <div class="relative w-full sm:w-64">
+            <!-- <div class="relative w-full sm:w-64">
               <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#808080]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -569,7 +632,7 @@
                 placeholder="Cari Ulasan"
                 class="w-full pl-9 pr-3 py-2 border border-[#E6E9F0] rounded-lg text-sm focus:outline-none focus:border-[#1E1E1E] transition"
               />
-            </div>
+            </div> -->
           </div>
 
           <div v-if="filteredReviews.length > 0" class="space-y-4">
@@ -616,7 +679,7 @@
             </template>
             <button :disabled="currentReviewPage >= totalReviewPages" @click="changeReviewPage(currentReviewPage + 1)" class="px-3 py-1.5 border border-[#E6E9F0] rounded text-sm hover:bg-gray-50 transition disabled:opacity-50 cursor-pointer">Next</button>
           </div>
-        </section> -->
+        </section>
         </div>
         <!-- End Combined Section -->
 
@@ -776,12 +839,14 @@
 
 <script setup lang="ts">
 import type { Product } from "~/types/product";
+import type { Store } from "~/types/store";
 
 const route = useRoute();
 const router = useRouter();
 const { showToast } = useToast();
 const { getProductOrThrowNotFound, getRelatedProducts } = useProductApi();
 const { getProductAttributes, getTaxoListsByType } = useProductRelationsApi();
+const { getPublicStores } = useStoreApi();
 const {
   addToCart,
   loadCart,
@@ -1344,47 +1409,6 @@ const applyProductResponse = (apiProduct: Product) => {
       stock_relations: v.stock_relations || v.stockRelations || [],
     }));
 
-  // Collect all stores from all variants
-  const storesMap = new Map<
-    string,
-    {
-      store: any;
-      variants: Set<number>;
-    }
-  >();
-
-  (apiProduct.variants || []).forEach((variant: any) => {
-    const stockRelations = variant.stock_relations || variant.stockRelations || [];
-
-    if (Array.isArray(stockRelations)) {
-      stockRelations.forEach((stock: any) => {
-        if (stock.store && stock.store.id) {
-          const storeId = String(stock.store.id);
-          if (!storesMap.has(storeId)) {
-            storesMap.set(storeId, {
-              store: stock.store,
-              variants: new Set([variant.id]),
-            });
-          } else {
-            storesMap.get(storeId)!.variants.add(variant.id);
-          }
-        }
-      });
-    }
-  });
-
-  allStoresMap.value = storesMap;
-
-  // Initialize locationOptions with all stores (all enabled initially)
-  locationOptions.value = Array.from(storesMap.values()).map((item: any) => ({
-    value: String(item.store.id),
-    label: item.store.name || `Store ${item.store.id}`,
-    disabled: false,
-    shippingCost: "Rp0",
-    estimatedArrival: "Tersedia",
-    store: item.store,
-  }));
-
   buildDynamicAttributes();
 
   const basePrice =
@@ -1668,7 +1692,7 @@ const updateVariantOptions = (
 const selectedColor = ref<string | null>(null);
 const selectedSize = ref<string | null>(null);
 const selectedModel = ref<string | null>(null);
-const selectedLocation = ref("");
+const selectedLocation = ref<string | null>(null);
 const selectedMarketplace = ref<string | null>(null);
 const isLocationOpen = ref(false);
 const isLocationModalOpen = ref(false);
@@ -1681,20 +1705,41 @@ const locationOptions = ref<
     disabled: boolean;
     shippingCost: string;
     estimatedArrival: string;
-    store?: any;
+    store: Store;
   }>
 >([]);
 
-// Store all unique stores from all variants
-const allStoresMap = ref<
-  Map<
-    string,
-    {
-      store: any;
-      variants: Set<number>; // Track which variants have this store
+const { data: publicStores, pending: loadingStores } = await useAsyncData<Store[]>(
+  "product-public-stores",
+  async () => {
+    try {
+      const { data, error } = await getPublicStores();
+      if (error) {
+        console.error("Failed to load stores:", error);
+        return [];
+      }
+
+      return data?.data?.stores || [];
+    } catch (err) {
+      console.error("Error loading stores:", err);
+      return [];
     }
-  >
->(new Map());
+  },
+  {
+    default: () => [],
+  },
+);
+
+watchEffect(() => {
+  locationOptions.value = (publicStores.value || []).map((store) => ({
+    value: String(store.id),
+    label: store.name || `Store ${store.id}`,
+    disabled: false,
+    shippingCost: "-",
+    estimatedArrival: "Tersedia",
+    store,
+  }));
+});
 
 const marketplaceOptions = ref([
   {
@@ -1713,29 +1758,29 @@ const marketplaceOptions = ref([
 
 const selectLocation = (value: string) => {
   const location = locationOptions.value.find((l) => l.value === value);
-  if (location && !location.disabled) {
-    selectedLocation.value = value;
-    isLocationOpen.value = false;
+  if (!location) return;
 
-    // Reset quantity if it exceeds the new store's stock
-    const newStock = currentStock.value;
-    if (quantity.value > newStock) {
-      quantity.value = Math.max(1, newStock || 1);
-    }
+  selectedLocation.value = selectedLocation.value === value ? null : value;
+  isLocationOpen.value = false;
+
+  // Reset quantity if it exceeds the new store's stock
+  const newStock = currentStock.value;
+  if (quantity.value > newStock) {
+    quantity.value = Math.max(1, newStock || 1);
   }
 };
 
 const selectLocationFromModal = (value: string) => {
   const location = locationOptions.value.find((l) => l.value === value);
-  if (location && !location.disabled) {
-    selectedLocation.value = value;
-    isLocationModalOpen.value = false;
+  if (!location) return;
 
-    // Reset quantity if it exceeds the new store's stock
-    const newStock = currentStock.value;
-    if (quantity.value > newStock) {
-      quantity.value = Math.max(1, newStock || 1);
-    }
+  selectedLocation.value = selectedLocation.value === value ? null : value;
+  isLocationModalOpen.value = false;
+
+  // Reset quantity if it exceeds the new store's stock
+  const newStock = currentStock.value;
+  if (quantity.value > newStock) {
+    quantity.value = Math.max(1, newStock || 1);
   }
 };
 
@@ -1746,6 +1791,9 @@ const selectedLocationLabel = computed(() => {
   );
   return found?.label || "";
 });
+
+const visibleLocationOptions = computed(() => locationOptions.value.slice(0, 9));
+const hasMoreLocations = computed(() => locationOptions.value.length > 9);
 
 const getStoreStockQty = (location: { store?: any; value: string }): number => {
   if (!location?.store) return 0;
@@ -1776,15 +1824,22 @@ const getStoreStockQty = (location: { store?: any; value: string }): number => {
   return total;
 };
 
+const isStoreUnavailable = (location: {
+  store?: any;
+  value: string;
+  disabled: boolean;
+}): boolean => {
+  return location.disabled || getStoreStockQty(location) <= 0;
+};
+
 const getStoreStatus = (location: {
   store?: any;
   value: string;
   disabled: boolean;
 }): string => {
-  if (location.disabled) return "Tidak Tersedia";
+  if (isStoreUnavailable(location)) return "Habis";
   const qty = getStoreStockQty(location);
-  if (qty <= 0) return "Habis";
-  if (qty > 0 && qty < 5) return "Pre-Order";
+  if (qty < 10) return `sisa ${qty}`;
   return "Tersedia";
 };
 
@@ -1793,10 +1848,9 @@ const getStoreStatusClass = (location: {
   value: string;
   disabled: boolean;
 }): string => {
-  if (location.disabled) return "bg-[#F2F2F2] text-[#808080]";
+  if (isStoreUnavailable(location)) return "bg-[#F2F2F2] text-[#808080]";
   const qty = getStoreStockQty(location);
-  if (qty <= 0) return "bg-[#FDECEA] text-[#E5322B]";
-  if (qty > 0 && qty < 5) return "bg-[#FFF5E0] text-[#C77A00]";
+  if (qty < 10) return "bg-[#FFF5E0] text-[#FF8A00]";
   return "bg-[#E6F4EA] text-[#1E8E3E]";
 };
 
@@ -1805,11 +1859,10 @@ const getStoreStatusTextClass = (location: {
   value: string;
   disabled: boolean;
 }): string => {
-  if (location.disabled) return "text-[#ACACAC]";
+  if (isStoreUnavailable(location)) return "text-[#ACACAC]";
   const qty = getStoreStockQty(location);
-  if (qty <= 0) return "text-[#E5322B]";
-  if (qty > 0 && qty < 5) return "text-[#C77A00]";
-  return "text-[#1E8E3E]";
+  if (qty < 10) return "text-[#FF8A00]";
+  return "text-[#16A34A]";
 };
 
 const selectMarketplace = (value: string) => {
@@ -2211,80 +2264,9 @@ watch(
       quantity.value = Math.max(1, newVariant.stock || 1);
     }
 
-    // Update location options based on selected variant
-    // Show all stores, but disable those not available in selected variant
-    if (newVariant && newVariant.stock_relations) {
-      const stockRelations = newVariant.stock_relations || [];
-
-      // Create a map of store availability for the selected variant
-      const variantStoreAvailability = new Map<
-        string,
-        {
-          availableQty: number;
-          isAvailable: boolean;
-        }
-      >();
-
-      stockRelations.forEach((stock: any) => {
-        if (stock.store && stock.store.id) {
-          const storeId = String(stock.store.id);
-          const availableQty = (stock.qty || 0) - (stock.reserved_qty || 0);
-
-          variantStoreAvailability.set(storeId, {
-            availableQty: availableQty,
-            isAvailable: availableQty > 0,
-          });
-        }
-      });
-
-      // Update locationOptions: show all stores, but disable unavailable ones
-      locationOptions.value = Array.from(allStoresMap.value.values()).map(
-        (item: any) => {
-          const storeId = String(item.store.id);
-          const availability = variantStoreAvailability.get(storeId);
-
-          // If store is not in selected variant's stock_relations, it's disabled
-          if (!availability) {
-            return {
-              value: storeId,
-              label: item.store.name || `Store ${item.store.id}`,
-              disabled: true,
-              shippingCost: "-",
-              estimatedArrival: "Tidak Tersedia",
-              store: item.store,
-            };
-          }
-
-          // Store is in variant, check availability
-          return {
-            value: storeId,
-            label: item.store.name || `Store ${item.store.id}`,
-            disabled: !availability.isAvailable,
-            shippingCost: availability.isAvailable ? "Rp0" : "-",
-            estimatedArrival: availability.isAvailable
-              ? "Tersedia"
-              : "Tidak Tersedia",
-            store: item.store,
-          };
-        },
-      );
-    } else if (!newVariant) {
-      // No variant selected - show all stores but disable all
-      locationOptions.value = Array.from(allStoresMap.value.values()).map(
-        (item: any) => ({
-          value: String(item.store.id),
-          label: item.store.name || `Store ${item.store.id}`,
-          disabled: true,
-          shippingCost: "-",
-          estimatedArrival: "Pilih varian terlebih dahulu",
-          store: item.store,
-        }),
-      );
-    }
-
     // Reset selected location when variant changes
     if (newVariant?.id !== oldVariant?.id) {
-      selectedLocation.value = "";
+      selectedLocation.value = null;
     }
 
     // Reset quantity if it exceeds the new variant's stock

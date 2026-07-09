@@ -1,47 +1,59 @@
 <template>
   <div class="bg-black text-white text-center text-xs sm:text-sm overflow-hidden h-10 relative z-10">
-    <div class="relative h-full flex items-center justify-center">
-      <TransitionGroup tag="div" name="announce-fade" class="absolute inset-0 flex items-center justify-center">
-        <div
-          v-for="(item, index) in items"
-          v-show="index === current"
-          :key="item.text"
-          class="absolute inset-0 flex items-center justify-center gap-1.5 px-4"
-        >
-          <span>{{ item.text }}</span>
-          <NuxtLink
-            v-if="item.link"
-            :to="item.link"
-            class="link-underline-anim text-white/90 hover:text-white underline-offset-2 font-medium"
-          >
-            {{ item.linkText }}
-          </NuxtLink>
-        </div>
-      </TransitionGroup>
+    <div class="relative h-full flex items-center justify-center px-4">
+      <Transition name="announce-fade" mode="out-in">
+        <p :key="bannerText" class="max-w-[90vw] sm:max-w-4xl truncate" aria-live="polite">
+          {{ bannerText }}
+        </p>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
 
-const items = [
-  { text: 'Enjoy Up to 50% Off On Selected Products.', link: '/products', linkText: 'Shop Now' },
-  { text: 'Member Exclusive: Enjoy 10% Off All Full-Priced Finds —', link: '/register', linkText: 'Sign Up Now!' },
-  { text: 'Enjoy a 50,000 IDR shipping rebate on purchases of 2,000,000 IDR or more.', link: '/products', linkText: 'Shop now' },
-]
+const DEFAULT_BANNER_TEXT = 'Free Shipping JABODETABEK pembelanjaan Rp150.000+ | New Arrival Denim Collection'
 
-const current = ref(0)
-let interval: ReturnType<typeof setInterval> | null = null
+type PublicConfigResponse = {
+  success: boolean
+  message?: string
+  data?: {
+    key?: string
+    value?: string | null
+    value_image?: string | null
+    casted_value?: string | null
+  } | null
+}
 
-onMounted(() => {
-  interval = setInterval(() => {
-    current.value = (current.value + 1) % items.length
-  }, 4000)
-})
+const { baseURL } = useApiBase()
 
-onUnmounted(() => {
-  if (interval) clearInterval(interval)
+const { data: bannerResponse } = await useFetch<PublicConfigResponse>(
+  `${baseURL}/public-configs/topbanner`,
+  {
+    key: 'announcement-bar-topbanner',
+    method: 'GET',
+    onResponseError({ error }) {
+      console.error('Failed to load top banner config:', error)
+    },
+    default: () => ({
+      success: true,
+      data: {
+        value: DEFAULT_BANNER_TEXT,
+        casted_value: DEFAULT_BANNER_TEXT,
+      },
+    }),
+  },
+)
+
+const bannerText = computed(() => {
+  const configData = bannerResponse.value?.data
+
+  return (
+    configData?.casted_value ||
+    configData?.value ||
+    DEFAULT_BANNER_TEXT
+  )
 })
 </script>
 
@@ -50,6 +62,7 @@ onUnmounted(() => {
 .announce-fade-leave-active {
   transition: opacity 0.6s ease;
 }
+
 .announce-fade-enter-from,
 .announce-fade-leave-to {
   opacity: 0;
