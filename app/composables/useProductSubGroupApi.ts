@@ -1,3 +1,32 @@
+export interface PublicProductSubGroupProduct {
+  id: number;
+  name: string;
+  slug: string;
+  featured_image?: {
+    path: string;
+  } | null;
+  images?: Array<{
+    path: string;
+  }>;
+  base_price?: number | null;
+  final_price?: number | null;
+  status?: string | null;
+  is_new_arrival?: boolean;
+}
+
+export interface PublicProductSubGroup {
+  id: number;
+  product_group_id: number;
+  title: string;
+  sort: number;
+  products: PublicProductSubGroupProduct[];
+}
+
+export interface PublicProductSubGroupResponse {
+  success: boolean;
+  data: PublicProductSubGroup[];
+}
+
 export const useProductSubGroupApi = () => {
   const { baseURL, getHeaders } = useApiBase();
 
@@ -23,7 +52,7 @@ export const useProductSubGroupApi = () => {
     const params: Record<string, any> = {};
     if (limit !== undefined) params.limit = limit;
 
-    return fetchWithHandling(
+    return fetchWithHandling<PublicProductSubGroupResponse>(
       `${baseURL}/public/product-groups/${groupId}/sub-groups`,
       {
         method: "GET",
@@ -36,7 +65,10 @@ export const useProductSubGroupApi = () => {
     groupId: string | number,
     subGroupId: string | number,
   ) => {
-    return fetchWithHandling(
+    return fetchWithHandling<{
+      success: boolean;
+      data: PublicProductSubGroup;
+    }>(
       `${baseURL}/public/product-groups/${groupId}/sub-groups/${subGroupId}`,
       { method: "GET" },
     );

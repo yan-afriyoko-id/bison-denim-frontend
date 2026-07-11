@@ -60,6 +60,11 @@ export const useStoreApi = () => {
           Accept: 'application/json',
         },
       })
+      if (response?.data?.stores) {
+        response.data.stores = response.data.stores.filter(
+          (store) => store.status === 'ACTIVE',
+        )
+      }
       return { data: response, error: null }
     } catch (error: any) {
       return {

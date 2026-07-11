@@ -85,7 +85,7 @@ onMounted(async () => {
       console.error("Failed to load stores:", error);
       stores.value = [];
     } else if (data?.success && data.data?.stores) {
-      stores.value = data.data.stores;
+      stores.value = data.data.stores.filter((store) => store.status === "ACTIVE");
     }
   } catch (err) {
     console.error("Error loading stores:", err);
