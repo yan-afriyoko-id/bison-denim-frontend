@@ -2,7 +2,7 @@
   <header
     ref="headerRef"
     class="sticky top-0 z-50 transition-all duration-300 group"
-    :class="isWhiteHeader ? 'bg-white shadow-sm' : 'bg-transparent'"
+    :class="(isWhiteHeader || isSidebarOpen) ? 'bg-white shadow-sm' : 'bg-transparent'"
   >
     <AnnouncementBar />
     <div
@@ -11,12 +11,33 @@
       <!-- Left: Hamburger (mobile) + Logo + Text -->
       <div class="flex items-center gap-3">
         <button
-          @click="isSidebarOpen = !isSidebarOpen"
-          class="xl:hidden flex items-center justify-center hover:cursor-pointer"
-          :class="isWhiteHeader ? 'text-black' : 'text-white'"
+          @click="toggleSidebar"
+          class="flex h-10 w-10 items-center justify-center rounded-full transition hover:cursor-pointer hover:bg-black/5"
+          :class="isWhiteHeader || isSidebarOpen ? 'text-black' : 'text-white'"
+          :aria-expanded="isSidebarOpen"
+          aria-label="Open navigation menu"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M3 6h18M3 12h18M3 18h18"/>
+          <svg
+            v-if="!isSidebarOpen"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" />
+          </svg>
+          <svg
+            v-else
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+          >
+            <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round" />
           </svg>
         </button>
 
@@ -101,20 +122,20 @@
 
     <div
       v-if="isSidebarOpen"
-      @click="isSidebarOpen = false"
-      class="xl:hidden fixed inset-0 bg-black/40 z-[60]"
+      @click="closeSidebar"
+      class="fixed inset-0 z-[80] bg-black/45 backdrop-blur-[1px]"
     ></div>
 
-    <!-- Mobile Sidebar -->
     <aside
       :class="[
-        'xl:hidden fixed top-0 left-0 bottom-0 h-full w-[85%] max-w-sm bg-white z-[70] transform transition-transform duration-300 ease-in-out shadow-xl overflow-y-auto',
+        'fixed inset-y-0 left-0 z-[90] h-screen w-[100vw] max-w-[620px] overflow-y-auto bg-white shadow-2xl transform-gpu transition-transform duration-300 ease-out',
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
+      aria-label="Primary navigation"
     >
-      <div class="flex flex-col h-full">
-        <div class="flex items-center justify-between p-4 border-b border-gray-200">
-          <NuxtLink to="/" @click="isSidebarOpen = false" class="flex items-center gap-2">
+      <div class="flex h-full flex-col">
+        <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 md:px-8 md:py-6">
+          <NuxtLink to="/" @click="closeSidebar" class="flex items-center gap-3">
             <img
               src="/assets/img/logo.png"
               alt="Bison Denim"
@@ -122,66 +143,110 @@
               draggable="false"
               ondragstart="return false"
             />
-            <span class="text-base font-semibold tracking-tight text-black">Bison Denim</span>
+            <span class="text-sm font-semibold tracking-[0.22em] text-black uppercase">Bison Denim</span>
           </NuxtLink>
-          <button @click="isSidebarOpen = false" class="p-2 hover:bg-gray-100 rounded transition cursor-pointer">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
-              <path d="M18 6L6 18M6 6L18 18"/>
+          <button
+            type="button"
+            @click="closeSidebar"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-black transition hover:bg-black/5"
+            aria-label="Close navigation menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round" />
             </svg>
           </button>
         </div>
 
-        <div class="flex-1 flex flex-col gap-4 px-6 py-8">
-          <template v-if="!isAuthenticated">
-            <NuxtLink
-              to="/login"
-              @click="isSidebarOpen = false"
-              class="w-full border border-black bg-white text-black px-5 py-3 rounded font-medium text-center text-base hover:bg-gray-50 transition"
-            >
-              Masuk
-            </NuxtLink>
-            <NuxtLink
-              to="/register"
-              @click="isSidebarOpen = false"
-              class="w-full bg-black text-white px-5 py-3 rounded font-medium text-center text-base hover:bg-gray-800 transition cursor-pointer"
-            >
-              Daftar
-            </NuxtLink>
-          </template>
-          <template v-else>
-            <div class="px-4 py-3 border-b border-gray-200">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-semibold text-sm">
-                  {{ userName.charAt(0).toUpperCase() }}
-                </div>
-                <div>
-                  <p class="text-sm font-semibold">{{ userName }}</p>
-                  <p class="text-xs text-gray-500">{{ userEmail }}</p>
-                </div>
+        <div class="flex-1 px-5 py-6 md:px-8 md:py-8 lg:px-12 lg:py-10">
+          <div class="grid gap-10">
+            <div>
+              <p class="mb-5 text-xs font-medium uppercase tracking-[0.28em] text-gray-500">
+                Menu
+              </p>
+
+              <div v-if="loadingCategories" class="flex items-center justify-center py-10">
+                <div class="h-7 w-7 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
               </div>
+
+              <nav v-else class="space-y-4">
+                <section
+                  v-for="section in navigationSections"
+                  :key="section.id"
+                  class="border-b border-gray-100 pb-4"
+                >
+                  <div class="flex items-start justify-between gap-4">
+                    <NuxtLink
+                      :to="categoryLink(section.id)"
+                      @click="closeSidebar"
+                      class="flex-1 text-[24px] font-medium uppercase tracking-[0.16em] text-black md:text-[28px]"
+                    >
+                      {{ section.name }}
+                    </NuxtLink>
+
+                    <button
+                      v-if="section.children.length"
+                      type="button"
+                      @click="toggleCategorySection(section.id)"
+                      class="mt-2 flex h-10 w-10 items-center justify-center rounded-full text-black transition hover:bg-black/5"
+                      :aria-expanded="!!openCategorySections[section.id]"
+                      :aria-label="`${openCategorySections[section.id] ? 'Collapse' : 'Expand'} ${section.name}`"
+                    >
+                      <svg
+                        class="h-5 w-5 transition-transform duration-200"
+                        :class="{ 'rotate-180': openCategorySections[section.id] }"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M5 7.5L10 12.5L15 7.5"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <Transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="opacity-0 -translate-y-1"
+                    enter-to-class="opacity-100 translate-y-0"
+                    leave-active-class="transition duration-150 ease-in"
+                    leave-from-class="opacity-100 translate-y-0"
+                    leave-to-class="opacity-0 -translate-y-1"
+                  >
+                    <div
+                      v-if="section.children.length && openCategorySections[section.id]"
+                      class="mt-4 border-l border-gray-200 pl-5"
+                    >
+                      <div class="grid gap-2 sm:grid-cols-2">
+                        <NuxtLink
+                          v-for="child in section.children"
+                          :key="child.id"
+                          :to="categoryLink(child.id)"
+                          @click="closeSidebar"
+                          class="group flex items-center justify-between rounded-lg border border-transparent px-3 py-2 text-sm uppercase tracking-[0.16em] text-gray-700 transition hover:border-gray-200 hover:bg-gray-50 hover:text-black"
+                        >
+                          <span>{{ child.name }}</span>
+                          <span class="text-xs text-gray-400 transition group-hover:text-black">→</span>
+                        </NuxtLink>
+                      </div>
+
+                      <NuxtLink
+                        :to="categoryLink(section.id)"
+                        @click="closeSidebar"
+                        class="mt-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em] text-black"
+                      >
+                        Shop All
+                        <span aria-hidden="true">→</span>
+                      </NuxtLink>
+                    </div>
+                  </Transition>
+                </section>
+              </nav>
             </div>
-            <NuxtLink
-              to="/account"
-              @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded font-medium text-center text-base hover:bg-gray-50 transition"
-            >
-              Akun Saya
-            </NuxtLink>
-            <NuxtLink
-              to="/account/orders"
-              @click="isSidebarOpen = false"
-              class="w-full px-5 py-3 rounded font-medium text-center text-base hover:bg-gray-50 transition"
-            >
-              Pesanan Saya
-            </NuxtLink>
-            <button
-              @click="handleLogout"
-              class="w-full px-5 py-3 rounded font-medium text-center text-base hover:bg-gray-50 transition cursor-pointer"
-              :disabled="isLoggingOut"
-            >
-              {{ isLoggingOut ? 'Keluar...' : 'Keluar' }}
-            </button>
-          </template>
+          </div>
         </div>
       </div>
     </aside>
@@ -191,8 +256,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue"
+import { ref, computed, onMounted, onUnmounted, watch } from "vue"
 import { DEFAULT_APP_LOGO } from "~/composables/useAppIdentity"
+import { useProductRelationsApi } from "~/composables/useProductRelationsApi"
 
 const props = withDefaults(defineProps<{
   forceWhiteHeader?: boolean
@@ -206,6 +272,7 @@ const auth = useAuth()
 const { appName, logoUrl, loadAppIdentity } = useAppIdentity()
 const { logout } = auth
 const { getCartItemCount, togglePopupCart, loadCart } = useCart()
+const { getTaxoListsByType } = useProductRelationsApi()
 
 const cartItemCount = getCartItemCount
 const isSidebarOpen = ref(false)
@@ -213,6 +280,18 @@ const isLoggingOut = ref(false)
 const isScrolled = ref(false)
 const isHydrated = ref(false)
 const headerRef = ref<HTMLElement | null>(null)
+const loadingCategories = ref(false)
+
+type NavigationCategory = {
+  id: number
+  name: string
+  slug?: string | null
+  parent: number | null
+  children: NavigationCategory[]
+}
+
+const navigationSections = ref<NavigationCategory[]>([])
+const openCategorySections = ref<Record<number, boolean>>({})
 
 const isWhiteHeader = computed(() =>
   props.forceWhiteHeader || isScrolled.value || route.path !== '/',
@@ -233,16 +312,88 @@ const toggleSearch = () => {
   searchPopup.value = !searchPopup.value
 }
 
+const categoryLink = (categoryId: number) => ({
+  path: "/products",
+  query: {
+    category_ids: String(categoryId),
+  },
+})
+
+const closeSidebar = () => {
+  isSidebarOpen.value = false
+}
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+}
+
+const toggleCategorySection = (categoryId: number) => {
+  openCategorySections.value = {
+    ...openCategorySections.value,
+    [categoryId]: !openCategorySections.value[categoryId],
+  }
+}
+
+const loadNavigationCategories = async () => {
+  loadingCategories.value = true
+
+  try {
+    const [type2, type3] = await Promise.all([
+      getTaxoListsByType(2),
+      getTaxoListsByType(3),
+    ])
+
+    const rawCategories = [
+      ...(type2.data?.data?.taxo_lists || []),
+      ...(type3.data?.data?.taxo_lists || []),
+    ]
+      .filter((category: any) => category.taxonomy_status === "ACTIVE")
+      .map((category: any) => ({
+        id: category.id,
+        name: category.taxonomy_name,
+        slug: category.taxonomy_slug || null,
+        parent: category.parent ?? null,
+      }))
+
+    const uniqueCategories = Array.from(
+      new Map(rawCategories.map((category) => [category.id, category])).values(),
+    )
+
+    const parents = uniqueCategories
+      .filter((category) => category.parent === null)
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    navigationSections.value = parents.map((parent) => ({
+      ...parent,
+      children: uniqueCategories
+        .filter((category) => category.parent === parent.id)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    }))
+  } catch (error) {
+    console.error("Failed to load navigation categories:", error)
+    navigationSections.value = []
+  } finally {
+    loadingCategories.value = false
+  }
+}
+
 const handleLogout = async () => {
   if (isLoggingOut.value) return
   isLoggingOut.value = true
   try {
     await logout()
+    closeSidebar()
     await router.push("/")
   } catch (error) {
     console.error("Logout error:", error)
   } finally {
     isLoggingOut.value = false
+  }
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === "Escape" && isSidebarOpen.value) {
+    closeSidebar()
   }
 }
 
@@ -255,12 +406,30 @@ onMounted(async () => {
   isHydrated.value = true
   if (!user.value) await auth.initAuth()
   await loadAppIdentity()
+  await loadNavigationCategories()
   await loadCart()
+  window.addEventListener("keydown", handleKeydown)
   window.addEventListener("scroll", handleScroll)
   handleScroll()
 })
 
 onUnmounted(() => {
+  if (import.meta.client) {
+    document.body.style.overflow = ""
+  }
+  window.removeEventListener("keydown", handleKeydown)
   window.removeEventListener("scroll", handleScroll)
 })
+
+watch(isSidebarOpen, (open) => {
+  if (!import.meta.client) return
+  document.body.style.overflow = open ? "hidden" : ""
+})
+
+watch(
+  () => route.path,
+  () => {
+    closeSidebar()
+  },
+)
 </script>

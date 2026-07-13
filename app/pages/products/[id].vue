@@ -366,7 +366,10 @@
               </p>
 
               <!-- Store Location Card -->
-              <div class="mt-5 border border-[#E6E9F0] rounded-lg overflow-hidden">
+              <div
+                v-if="locationOptions !== null && locationOptions.length > 1"
+                class="mt-5 border border-[#E6E9F0] rounded-lg overflow-hidden"
+              >
                 <div class="px-4 py-3 flex items-center justify-between gap-2 border-b border-[#E6E9F0]">
                   <div>
                     <h3 class="text-base sm:text-lg font-semibold text-[#1A1919]">
@@ -388,7 +391,7 @@
                 </div>
 
                 <div
-                  v-if="loadingStores"
+                  v-if="loadingStores || locationOptions === null"
                   class="px-4 py-6 text-sm text-[#808080]"
                 >
                   Memuat toko...
@@ -798,7 +801,10 @@
                 Lokasi Lainnya
               </h4>
             </div>
-            <div v-if="locationOptions.length === 0" class="px-5 py-6 text-center text-[#808080] text-sm">
+            <div
+              v-if="locationOptions !== null && locationOptions.length === 0"
+              class="px-5 py-6 text-center text-[#808080] text-sm"
+            >
               Tidak ada toko tersedia untuk produk ini
             </div>
             <ul v-else>
@@ -928,7 +934,7 @@ const handleBuy = async () => {
   }
 
   // Check if location is selected (if required)
-  if (!selectedLocation.value && locationOptions.value.length > 0) {
+  if (!selectedLocation.value && (locationOptions.value?.length || 0) > 0) {
     showToast("Silakan pilih lokasi pengiriman toko terlebih dahulu", "error");
     return;
   }
@@ -985,7 +991,7 @@ const handleAddToCart = async () => {
     return;
   }
 
-  if (!selectedLocation.value && locationOptions.value.length > 0) {
+  if (!selectedLocation.value && (locationOptions.value?.length || 0) > 0) {
     showToast("Silakan pilih lokasi pengiriman toko terlebih dahulu", "error");
     return;
   }
@@ -1739,6 +1745,15 @@ watchEffect(() => {
     estimatedArrival: "Tersedia",
     store,
   }));
+
+  if (locationOptions.value.length === 1) {
+    selectedLocation.value = locationOptions.value[0].value;
+  } else if (
+    selectedLocation.value &&
+    !locationOptions.value.some((location) => location.value === selectedLocation.value)
+  ) {
+    selectedLocation.value = null;
+  }
 });
 
 const marketplaceOptions = ref([
@@ -1757,6 +1772,11 @@ const marketplaceOptions = ref([
 ]);
 
 const selectLocation = (value: string) => {
+  if (locationOptions.value.length === 1) {
+    selectedLocation.value = locationOptions.value[0].value;
+    return;
+  }
+
   const location = locationOptions.value.find((l) => l.value === value);
   if (!location) return;
 
@@ -1771,6 +1791,11 @@ const selectLocation = (value: string) => {
 };
 
 const selectLocationFromModal = (value: string) => {
+  if (locationOptions.value.length === 1) {
+    selectedLocation.value = locationOptions.value[0].value;
+    return;
+  }
+
   const location = locationOptions.value.find((l) => l.value === value);
   if (!location) return;
 
@@ -2267,6 +2292,11 @@ watch(
     // Reset selected location when variant changes
     if (newVariant?.id !== oldVariant?.id) {
       selectedLocation.value = null;
+    }
+
+    // Auto-pilih store tunggal lagi setelah variant berubah.
+    if (locationOptions.value.length === 1) {
+      selectedLocation.value = locationOptions.value[0].value;
     }
 
     // Reset quantity if it exceeds the new variant's stock
