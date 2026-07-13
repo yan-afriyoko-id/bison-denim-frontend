@@ -567,7 +567,7 @@
                   <h2 class="text-lg font-semibold mb-2">Voucher</h2>
                   <button
                     @click="showVoucherModal = true"
-                    class="text-sm sm:text-base text-[#7B7B7B] bg-[#F8F8F8] px-2 sm:px-2 py-1 rounded-md font-medium hover:underline hover:cursor-pointer whitespace-nowrap shrink-0"
+                    class="text-sm sm:text-base text-white bg-black px-2 sm:px-2 py-1 rounded-md font-medium hover:bg-[#1f1f1f] hover:cursor-pointer whitespace-nowrap shrink-0 transition-colors"
                   >
                     {{ selectedVoucher ? "Ubah Voucher" : "Pilih Voucher" }}
                   </button>
@@ -589,7 +589,7 @@
                   <button
                     @click="applyVoucherCode"
                     :disabled="isApplyingVoucher || !voucherCode"
-                    class="px-4 py-2 rounded bg-red-500 text-white text-sm disabled:bg-gray-300"
+                    class="px-4 py-2 rounded-md bg-black text-white text-sm font-medium border border-black shadow-sm hover:bg-[#1f1f1f] hover:shadow-md transition-colors disabled:bg-gray-600 disabled:border-gray-500 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer"
                   >
                     Terapkan
                   </button>

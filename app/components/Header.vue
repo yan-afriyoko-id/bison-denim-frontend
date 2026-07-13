@@ -49,8 +49,12 @@
             src="/assets/img/logo.png"
             alt="Bison Denim"
             class="block h-7 sm:h-9 w-auto object-contain select-none"
+            :style="{
+              filter: isWhiteHeader ? 'invert(0)' : 'invert(1)',
+              transition: 'filter 300ms ease',
+            }"
             draggable="false"
-            ondragstart="return false"
+            @dragstart.prevent
           />
           <span
             class="text-base sm:text-lg font-semibold tracking-tight"
