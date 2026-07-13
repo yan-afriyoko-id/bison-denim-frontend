@@ -128,7 +128,7 @@
 
     <aside
       :class="[
-        'fixed inset-y-0 left-0 z-[90] h-screen w-[100vw] max-w-[620px] overflow-y-auto bg-white shadow-2xl transform-gpu transition-transform duration-300 ease-out',
+        'fixed inset-y-0 left-0 z-[90] h-screen w-[100vw] max-w-[420px] overflow-y-auto bg-white transform-gpu transition-transform duration-300 ease-out',
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
       aria-label="Primary navigation"
@@ -143,7 +143,7 @@
               draggable="false"
               ondragstart="return false"
             />
-            <span class="text-sm font-semibold tracking-[0.22em] text-black uppercase">Bison Denim</span>
+            <span class="text-sm lg:text-lg font-semibold tracking-tight text-black">Bison Denim</span>
           </NuxtLink>
           <button
             type="button"
@@ -157,42 +157,43 @@
           </button>
         </div>
 
-        <div class="flex-1 px-5 py-6 md:px-8 md:py-8 lg:px-12 lg:py-10">
-          <div class="grid gap-10">
+        <div class="flex-1 px-5 py-6 md:px-8 md:py-8">
+          <div class="grid gap-5">
             <div>
-              <p class="mb-5 text-xs font-medium uppercase tracking-[0.28em] text-gray-500">
-                Menu
-              </p>
-
               <div v-if="loadingCategories" class="flex items-center justify-center py-10">
                 <div class="h-7 w-7 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
               </div>
 
-              <nav v-else class="space-y-4">
+              <nav v-else class="space-y-2">
                 <section
                   v-for="section in navigationSections"
                   :key="section.id"
-                  class="border-b border-gray-100 pb-4"
+                  class=""
                 >
-                  <div class="flex items-start justify-between gap-4">
+                  <!-- Main category -->
+                  <div class="flex items-center justify-between gap-4 py-3">
                     <NuxtLink
                       :to="categoryLink(section.id)"
                       @click="closeSidebar"
-                      class="flex-1 text-[24px] font-medium uppercase tracking-[0.16em] text-black md:text-[28px]"
+                      class="group/main relative inline-block text-[18px] font-medium uppercase tracking-[0.08em] text-black md:text-[20px]"
                     >
                       {{ section.name }}
+
+                      <span
+                        class="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-black transition-transform duration-300 group-hover/main:origin-left group-hover/main:scale-x-100"
+                      />
                     </NuxtLink>
 
                     <button
                       v-if="section.children.length"
                       type="button"
                       @click="toggleCategorySection(section.id)"
-                      class="mt-2 flex h-10 w-10 items-center justify-center rounded-full text-black transition hover:bg-black/5"
+                      class="flex h-8 w-8 shrink-0 items-center justify-center text-black"
                       :aria-expanded="!!openCategorySections[section.id]"
                       :aria-label="`${openCategorySections[section.id] ? 'Collapse' : 'Expand'} ${section.name}`"
                     >
                       <svg
-                        class="h-5 w-5 transition-transform duration-200"
+                        class="h-5 w-5 transition-transform duration-300"
                         :class="{ 'rotate-180': openCategorySections[section.id] }"
                         viewBox="0 0 20 20"
                         fill="none"
@@ -209,38 +210,34 @@
                   </div>
 
                   <Transition
-                    enter-active-class="transition duration-200 ease-out"
-                    enter-from-class="opacity-0 -translate-y-1"
-                    enter-to-class="opacity-100 translate-y-0"
-                    leave-active-class="transition duration-150 ease-in"
-                    leave-from-class="opacity-100 translate-y-0"
-                    leave-to-class="opacity-0 -translate-y-1"
+                    enter-active-class="overflow-hidden transition-all duration-300 ease-out"
+                    enter-from-class="max-h-0 opacity-0"
+                    enter-to-class="max-h-[600px] opacity-100"
+                    leave-active-class="overflow-hidden transition-all duration-300 ease-in"
+                    leave-from-class="max-h-[600px] opacity-100"
+                    leave-to-class="max-h-0 opacity-0"
                   >
                     <div
                       v-if="section.children.length && openCategorySections[section.id]"
-                      class="mt-4 border-l border-gray-200 pl-5"
+                      class="pb-5 pl-5"
                     >
-                      <div class="grid gap-2 sm:grid-cols-2">
+                      <div class="flex flex-col">
                         <NuxtLink
                           v-for="child in section.children"
                           :key="child.id"
                           :to="categoryLink(child.id)"
                           @click="closeSidebar"
-                          class="group flex items-center justify-between rounded-lg border border-transparent px-3 py-2 text-sm uppercase tracking-[0.16em] text-gray-700 transition hover:border-gray-200 hover:bg-gray-50 hover:text-black"
+                          class="group/child flex items-center justify-between py-4 text-[17px] uppercase tracking-[0.12em] text-gray-500 transition-colors duration-300 hover:text-black"
                         >
-                          <span>{{ child.name }}</span>
-                          <span class="text-xs text-gray-400 transition group-hover:text-black">→</span>
+                          <span class="relative inline-block">
+                            {{ child.name }}
+
+                            <span
+                              class="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-black transition-transform duration-300 group-hover/child:origin-left group-hover/child:scale-x-100"
+                            />
+                          </span>
                         </NuxtLink>
                       </div>
-
-                      <NuxtLink
-                        :to="categoryLink(section.id)"
-                        @click="closeSidebar"
-                        class="mt-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em] text-black"
-                      >
-                        Shop All
-                        <span aria-hidden="true">→</span>
-                      </NuxtLink>
                     </div>
                   </Transition>
                 </section>
