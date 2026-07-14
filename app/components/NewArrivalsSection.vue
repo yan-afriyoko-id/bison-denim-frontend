@@ -56,7 +56,7 @@
                   :src="activeImages[pi] || product.image"
                   :alt="product.name"
                   class="w-full aspect-square object-cover transition-all duration-300 ease-out select-none pointer-events-none"
-                  :class="hoveredIndex === pi && product.hoverImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'"
+                  :class="hoveredIndex === pi && product.hoverImage ? 'scale-105' : 'scale-100'"
                   loading="lazy"
                   draggable="false"
                   ondragstart="return false"
