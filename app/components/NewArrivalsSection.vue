@@ -17,6 +17,26 @@
       <!-- Slider wrapper: arrows positioned relative to this -->
       <div class="relative">
         <div
+          v-if="loading"
+          class="flex gap-5 overflow-hidden px-[2px]"
+        >
+          <div
+            v-for="n in 5"
+            :key="'skeleton-' + n"
+            class="shrink-0 w-[220px] sm:w-[260px] md:w-[280px]"
+          >
+            <div class="flex flex-col pb-3 bg-gray-100 rounded-sm">
+              <div class="w-full aspect-square bg-gray-200 animate-pulse"></div>
+              <div class="px-3 pt-3">
+                <div class="h-4 bg-gray-200 rounded animate-pulse w-4/5 mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded animate-pulse w-2/5"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-else
           ref="scrollContainer"
           class="flex gap-5 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory no-scrollbar px-[2px] cursor-grab active:cursor-grabbing"
           @mousedown="onDragStart"
@@ -78,18 +98,20 @@
           </div>
         </div>
 
-        <button
-          @click="scroll(-1)"
-          class="absolute top-[35%] -translate-y-1/2 -left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition cursor-pointer z-10"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="black" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <button
-          @click="scroll(1)"
-          class="absolute top-[35%] -translate-y-1/2 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition cursor-pointer z-10"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="black" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
+        <template v-if="!loading">
+          <button
+            @click="scroll(-1)"
+            class="absolute top-[35%] -translate-y-1/2 -left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition cursor-pointer z-10"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="black" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button
+            @click="scroll(1)"
+            class="absolute top-[35%] -translate-y-1/2 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition cursor-pointer z-10"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="black" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </template>
       </div>
     </div>
   </section>
@@ -118,6 +140,7 @@ const props = defineProps<{
   description: string
   shopMoreLink: string
   products: Product[]
+  loading?: boolean
 }>()
 
 const scrollContainer = ref<HTMLElement | null>(null)

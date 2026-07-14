@@ -8,6 +8,7 @@
       description="Explore the season's most coveted pieces, designed to effortlessly elevate your look with stylish verve. Each piece, including sleek card holders and durable real leather wallets, is crafted with modern elegance."
       shop-more-link="/products"
       :products="newArrivalProducts"
+      :loading="loadingNewArrivals"
     />
     <GenderCollectionSplit
       v-for="section in collectionSections"
@@ -41,13 +42,8 @@ const { getProductGroups } = useProductGroupApi();
 const { getSubGroups } = useProductSubGroupApi();
 const { getProducts } = useProductApi();
 
-const newArrivalProducts = ref<any[]>([
-  { name: 'VIKTOR CENTRE FLAP WALLET WITH COIN COMPARTMENT', price: 'Rp 4.500.000,00 IDR', image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&q=80', hoverImage: 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&q=80', link: '/products/viktor-centre-flap-wallet', colors: [{ name: 'Black', hex: '#000', image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&q=80' }, { name: 'Circular Grey', hex: '#d9d9d9', image: 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&q=80' }, { name: 'Deep Blue', hex: '#4b5563', image: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&q=80' }] },
-  { name: 'VIKTOR SMALL MESSENGER', price: 'Rp 8.600.000,00 IDR', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80', hoverImage: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&q=80', link: '/products/viktor-small-messenger', colors: [{ name: 'Black', hex: '#000', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80' }, { name: 'Grey', hex: '#6b7280', image: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&q=80' }] },
-  { name: 'MILLE SLING WALLET', price: 'Rp 3.900.000,00 IDR', image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80', hoverImage: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80', link: '/products/mille-sling-wallet', colors: [{ name: 'Black', hex: '#000', image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80' }, { name: 'Potting Soil', hex: '#5c4033', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80' }] },
-  { name: 'LOGAN CENTRE FLAP CARDS WALLET', price: 'Rp 4.200.000,00 IDR', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&q=80', hoverImage: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80', link: '/products/logan-centre-flap-cards-wallet', colors: [{ name: 'Black', hex: '#000', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&q=80' }, { name: 'Brown', hex: '#5c4033', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80' }] },
-  { name: 'LOGAN MEDIUM WAIST POUCH', price: 'Rp 7.900.000,00 IDR', image: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&q=80', hoverImage: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&q=80', link: '/products/logan-medium-waist-pouch', colors: [{ name: 'Black', hex: '#000', image: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&q=80' }, { name: 'Potting Soil', hex: '#5c4033', image: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=400&q=80' }] },
-]);
+const newArrivalProducts = ref<any[]>([]);
+const loadingNewArrivals = ref(true);
 
 type CollectionProduct = {
   name: string;
@@ -69,7 +65,7 @@ type CollectionSection = {
 const collectionSections = ref<CollectionSection[]>([]);
 
 const DEFAULT_COLLECTION_IMAGE =
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80";
+  "/assets/img/products/product-1.png";
 
 
 type PublicCollectionProduct = {
@@ -179,12 +175,6 @@ const loadNewArrivals = async () => {
       .filter((p: any) => p.status === "PUBLISH" && p.is_new_arrival)
       .slice(0, 5);
 
-    // If API returns less than 3 products, fallback to dummy data
-    if (products.length < 3) {
-      console.info(`Only ${products.length} new arrivals from API, using dummy data as fallback`);
-      return;
-    }
-
     newArrivalProducts.value = products.map((p: any) => {
       const image =
         p.featured_image?.path ||
@@ -201,6 +191,8 @@ const loadNewArrivals = async () => {
     });
   } catch (e) {
     console.error("Error loading new arrivals:", e);
+  } finally {
+    loadingNewArrivals.value = false;
   }
 };
 
@@ -224,6 +216,8 @@ onMounted(async () => {
     await loadNewArrivals();
   } catch (err) {
     console.error(err);
+  } finally {
+    loadingNewArrivals.value = false;
   }
 });
 </script>
