@@ -3,9 +3,7 @@
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-[50px]">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 pb-6 sm:pb-8">
         <div>
-          <h4 class="text-[13px] sm:text-[14px] font-medium text-[#898989] uppercase mb-3 sm:mb-4 tracking-normal">
-            Subscribe to our Newsletter
-          </h4>
+
           <form class="flex items-end gap-2 max-w-xs">
             <input
               type="email"
