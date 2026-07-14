@@ -1,23 +1,18 @@
 <template>
   <section class="relative overflow-hidden bg-gray-100">
-    <div
-      v-if="banner"
-      class="relative w-full min-h-[60vh] md:min-h-screen bg-cover bg-[center_30%] flex items-end justify-center"
-      :style="{ backgroundImage: `url(${banner.image})` }"
-    >
+    <div v-if="banner" class="relative flex min-h-[60vh] md:min-h-screen items-center bg-cover bg-center"
+      :style="{ backgroundImage: `url(${banner.image})` }">
       <div class="absolute inset-0 bg-black/20"></div>
-      <div class="relative z-10 text-center text-white px-4 pb-10 sm:pb-[55px] pt-10 sm:pt-[75px] horizontal-slideshow--slide-content">
-        <div class="flex items-center justify-center gap-6">
-          <NuxtLink
-            :to="banner.link_url || '/products'"
-            class="link-underline-anim text-white text-sm font-medium"
-          >
-            Discover More
-          </NuxtLink>
-          <NuxtLink
-            :to="banner.link_url2 || '/products'"
-            class="link-underline-anim text-white text-sm font-medium"
-          >
+
+      <div class="relative z-10 w-full px-6 md:px-16 lg:px-24">
+        <div class="max-w-xl">
+          <h1 v-if="banner.title"
+            class="mb-8 text-4xl font-light leading-[1.1] tracking-wide text-white md:text-7xl font-semibold">
+            {{ banner.title }}
+          </h1>
+
+          <NuxtLink :to="banner.link_url || '/products'"
+            class="inline-block border border-white bg-white px-8 ml-1 py-3 text-sm font-medium text-black transition-all duration-300 hover:bg-transparent hover:text-white">
             Shop Now
           </NuxtLink>
         </div>
@@ -35,10 +30,9 @@ const { getActiveMainBanners } = usePublicMainBannerApi()
 
 const banner = ref<MainBanner | null>({
   id: 0,
-  title: 'ALL HANDS ON DECK 2026',
-  image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1440&q=80',
+  title: '',
+  image: '',
   link_url: '/products',
-  link_url2: '/products',
   sort_order: 0,
   status: 'ACTIVE',
   created_at: '',
