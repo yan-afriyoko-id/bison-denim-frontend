@@ -333,12 +333,10 @@
                         {{ item.product_name }}
                       </h3>
                     </div>
-                    <p
-                      v-if="item.variant_description"
-                      class="text-xs sm:text-sm text-[#7B7B7B] mb-2"
-                    >
-                      {{ item.variant_description }}
-                    </p>
+                      <p v-if="formatVariantDescription(item.variant_description)" class="text-xs mb-0 text-[#808080]">
+                        {{ formatVariantDescription(item.variant_description) }}
+                      </p>
+
                     <div class="flex items-center justify-between">
                       <span class="text-xs sm:text-sm text-[#7B7B7B]"
                         >Qty: {{ item.qty }}</span
@@ -545,6 +543,7 @@
 import { useOrder } from "~/composables/useOrder";
 import type { Order } from "~/types/order";
 import { useProductReviewApi } from "~/composables/useProductReviewApi";
+import { formatVariantDescription } from '~/utils/helpers'
 
 definePageMeta({
   layout: "default",

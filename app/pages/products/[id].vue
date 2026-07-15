@@ -230,17 +230,17 @@
 
             <!-- Dynamic Attribute Options -->
             <template v-for="attribute in dynamicAttributes">
-              <div
-                v-if="attribute.values.length > 0"
-                :key="attribute.attribute_id"
-                class="mb-5 sm:mb-7.5"
-              >
+            <div
+              v-if="getVisibleAttributeValues(attribute).length > 0"
+              :key="attribute.attribute_id"
+              class="mb-5 sm:mb-7.5"
+            >
                 <h3 class="text-base sm:text-lg text-[#1A1919] mb-3 sm:mb-4">
                   {{ attribute.attribute_name }}
                 </h3>
                 <div class="flex flex-wrap gap-2 sm:gap-2.5">
                   <button
-                    v-for="attrValue in attribute.values"
+                    v-for="attrValue in getVisibleAttributeValues(attribute)"
                     :key="attrValue.attribute_value_id"
                     @click="
                       !attrValue.disabled &&
@@ -1537,9 +1537,14 @@ const loadProductAttributes = async (id: number) => {
 // Like button state
 const isLiked = ref(false);
 
-const toggleLike = () => {
-  isLiked.value = !isLiked.value;
-};
+const isNoVariant = (value: string) =>
+  value.trim().toLowerCase() === "no variant"
+
+const getVisibleAttributeValues = (attribute: any) => {
+  return attribute.values.filter(
+    (value: any) => !isNoVariant(value.value),
+  )
+}
 
 // Product Detail Tabs
 const activeTabId = ref("informasi");
@@ -2022,6 +2027,8 @@ const isButtonDisabled = computed(() => {
 
   // If location is required but not selected (only if there's at least one available store)
   const hasAvailableStore = locationOptions.value.some((loc) => !loc.disabled);
+    console.log(dynamicAttributes.value.length, !selectedVariant.value, hasAvailableStore)
+
   if (hasAvailableStore && !selectedLocation.value) {
     return true;
   }
@@ -2195,11 +2202,11 @@ const averageRating = computed(() => {
   return sum / reviews.value.length;
 });
 
-const satisfactionPercentage = computed(() => {
-  if (reviews.value.length === 0) return 0;
-  const satisfiedCount = reviews.value.filter((r) => r.rating >= 4).length;
-  return Math.round((satisfiedCount / reviews.value.length) * 100);
-});
+// const satisfactionPercentage = computed(() => {
+//   if (reviews.value.length === 0) return 0;
+//   const satisfiedCount = reviews.value.filter((r) => r.rating >= 4).length;
+//   return Math.round((satisfiedCount / reviews.value.length) * 100);
+// });
 
 const getRatingCount = (rating: number) => {
   return reviews.value.filter((r) => r.rating === rating).length;
@@ -2307,6 +2314,29 @@ watch(
   },
   { immediate: false },
 );
+watch(
+  dynamicAttributes,
+  (attributes) => {
+    attributes.forEach((attribute: any) => {
+      if (selectedAttributeValues.value[attribute.attribute_id]) return
+
+      const noVariant = attribute.values.find((value: any) =>
+        isNoVariant(value.value),
+      )
+
+      if (noVariant) {
+        selectAttributeValue(
+          attribute.attribute_id,
+          noVariant.attribute_value_id,
+        )
+      }
+    })
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+)
 
 watch(
   [productResponse, productAsyncError, productPending],

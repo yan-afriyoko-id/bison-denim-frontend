@@ -66,3 +66,21 @@ export const getVariantTotalStock = (variant: any): string => {
 export const formatCurrency = (amount: number): string => {
   return `Rp ${formatNumber(amount)}`;
 };
+
+export const formatVariantDescription = (description?: string | null) => {
+  if (!description) return ""
+
+  const variants = description
+    .split(/\s*-\s*/)
+    .map((item) => item.trim())
+    .filter((item) => {
+      const index = item.indexOf(":")
+      if (index === -1) return true
+
+      const value = item.slice(index + 1).trim().toLowerCase()
+
+      return value !== "no variant"
+    })
+
+  return variants.join(" - ")
+}

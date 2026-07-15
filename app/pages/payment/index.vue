@@ -1,9 +1,7 @@
 <template>
   <main class="bg-white">
     <div class="min-h-screen flex flex-col">
-      <div
-        class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-[31px] py-6 sm:py-8 md:py-10 flex-1"
-      >
+      <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-[31px] py-6 sm:py-8 md:py-10 flex-1">
         <!-- Loading State -->
         <div v-if="isLoadingCart" class="text-center py-10">
           <p class="text-sm sm:text-base text-[#7B7B7B]">
@@ -12,12 +10,9 @@
         </div>
 
         <!-- Empty Cart / No selection -->
-        <div
-          v-else-if="
-            !cartData || cartData.cart.length === 0 || checkoutCart.length === 0
-          "
-          class="text-center py-10 sm:py-16"
-        >
+        <div v-else-if="
+          !cartData || cartData.cart.length === 0 || checkoutCart.length === 0
+        " class="text-center py-10 sm:py-16">
           <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-2">
             Keranjang Kosong
           </h2>
@@ -28,61 +23,38 @@
                 : "Silakan tambahkan produk ke keranjang terlebih dahulu"
             }}
           </p>
-          <NuxtLink
-            to="/cart"
-            class="inline-block px-6 py-3 bg-[#E9322B] text-white rounded-lg font-medium hover:bg-[#C4282B] transition cursor-pointer"
-          >
+          <NuxtLink to="/cart"
+            class="inline-block px-6 py-3 bg-[#E9322B] text-white rounded-lg font-medium hover:bg-[#C4282B] transition cursor-pointer">
             Kembali ke Keranjang
           </NuxtLink>
         </div>
 
         <!-- Payment Form -->
-        <div
-          v-else
-          class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-11.5"
-        >
+        <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-11.5">
           <!-- Left Column -->
           <div class="lg:col-span-2 space-y-5 sm:space-y-6 md:space-y-7.5">
             <!-- Alamat Pengiriman Section -->
-            <div
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5 overflow-hidden"
-            >
-              <h2
-                class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5"
-              >
+            <div class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5 overflow-hidden">
+              <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5">
                 Alamat Pengiriman
               </h2>
 
-              <div
-                class="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-0"
-              >
+              <div class="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-0">
                 <div class="flex-1 min-w-0">
-                  <div
-                    class="flex items-center gap-2 sm:gap-2.5 mb-1.5 flex-wrap"
-                  >
+                  <div class="flex items-center gap-2 sm:gap-2.5 mb-1.5 flex-wrap">
                     <div class="flex items-center gap-1">
                       <div class="w-5 h-5 sm:w-6 sm:h-6 shrink-0">
-                        <svg
-                          class="w-full h-full"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             d="M12 2C9.87827 2 7.84344 2.84285 6.34315 4.34315C4.84285 5.84344 4 7.87827 4 10C4 15.4 11.05 21.5 11.35 21.76C11.5311 21.9149 11.7616 22.0001 12 22.0001C12.2384 22.0001 12.4689 21.9149 12.65 21.76C13 21.5 20 15.4 20 10C20 7.87827 19.1571 5.84344 17.6569 4.34315C16.1566 2.84285 14.1217 2 12 2ZM12 19.65C9.87 17.65 6 13.34 6 10C6 8.4087 6.63214 6.88258 7.75736 5.75736C8.88258 4.63214 10.4087 4 12 4C13.5913 4 15.1174 4.63214 16.2426 5.75736C17.3679 6.88258 18 8.4087 18 10C18 13.34 14.13 17.66 12 19.65ZM12 6C11.2089 6 10.4355 6.2346 9.77772 6.67412C9.11992 7.11365 8.60723 7.73836 8.30448 8.46927C8.00173 9.20017 7.92252 10.0044 8.07686 10.7804C8.2312 11.5563 8.61216 12.269 9.17157 12.8284C9.73098 13.3878 10.4437 13.7688 11.2196 13.9231C11.9956 14.0775 12.7998 13.9983 13.5307 13.6955C14.2616 13.3928 14.8864 12.8801 15.3259 12.2223C15.7654 11.5645 16 10.7911 16 10C16 8.93913 15.5786 7.92172 14.8284 7.17157C14.0783 6.42143 13.0609 6 12 6ZM12 12C11.6044 12 11.2178 11.8827 10.8889 11.6629C10.56 11.4432 10.3036 11.1308 10.1522 10.7654C10.0009 10.3999 9.96126 9.99778 10.0384 9.60982C10.1156 9.22186 10.3061 8.86549 10.5858 8.58579C10.8655 8.30608 11.2219 8.1156 11.6098 8.03843C11.9978 7.96126 12.3999 8.00087 12.7654 8.15224C13.1308 8.30362 13.4432 8.55996 13.6629 8.88886C13.8827 9.21776 14 9.60444 14 10C14 10.5304 13.7893 11.0391 13.4142 11.4142C13.0391 11.7893 12.5304 12 12 12Z"
-                            fill="#8A8A8A"
-                          />
+                            fill="#8A8A8A" />
                         </svg>
                       </div>
-                      <span
-                        class="text-sm sm:text-base font-semibold text-[#1A1919]"
-                        >{{ shippingForm.label_place || "Alamat" }}</span
-                      >
+                      <span class="text-sm sm:text-base font-semibold text-[#1A1919]">{{ shippingForm.label_place ||
+                        "Alamat" }}</span>
                     </div>
-                    <span
-                      v-if="addresses[selectedAddressIndex]?.isPrimary"
-                      class="border text-[#E9322B] text-xs px-2 py-1 rounded"
-                    >
+                    <span v-if="addresses[selectedAddressIndex]?.isPrimary"
+                      class="border text-[#E9322B] text-xs px-2 py-1 rounded">
                       Utama
                     </span>
                   </div>
@@ -92,34 +64,19 @@
                       {{ shippingForm.first_name }}
                       {{ shippingForm.last_name || "" }}
                     </p>
-                    <div
-                      v-if="shippingForm.phone"
-                      class="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px] shrink-0"
-                    >
-                      <svg
-                        class="w-full h-full"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                    <div v-if="shippingForm.phone" class="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px] shrink-0">
+                      <svg class="w-full h-full" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M7 4.37521C7.36003 4.37521 7.69954 4.44357 8.01855 4.58029C8.33757 4.71701 8.61556 4.90386 8.85254 5.14084C9.08952 5.37782 9.27865 5.65809 9.41992 5.98166C9.5612 6.30523 9.62956 6.64474 9.625 7.00021C9.625 7.3648 9.55664 7.70432 9.41992 8.01877C9.2832 8.33322 9.09635 8.61122 8.85938 8.85275C8.6224 9.09429 8.34212 9.28342 8.01855 9.42014C7.69499 9.55685 7.35547 9.62521 7 9.62521C6.63542 9.62521 6.2959 9.55685 5.98145 9.42014C5.66699 9.28342 5.389 9.09657 5.14746 8.85959C4.90592 8.62261 4.7168 8.34461 4.58008 8.0256C4.44336 7.70659 4.375 7.3648 4.375 7.00021C4.375 6.64019 4.44336 6.30067 4.58008 5.98166C4.7168 5.66265 4.90365 5.38465 5.14062 5.14767C5.3776 4.9107 5.6556 4.72157 5.97461 4.58029C6.29362 4.43902 6.63542 4.37066 7 4.37521Z"
-                          fill="#ACACAC"
-                        />
+                          fill="#ACACAC" />
                       </svg>
                     </div>
 
-                    <p
-                      v-if="shippingForm.phone"
-                      class="text-xs sm:text-sm text-[#7B7B7B]"
-                    >
+                    <p v-if="shippingForm.phone" class="text-xs sm:text-sm text-[#7B7B7B]">
                       {{ shippingForm.phone }}
                     </p>
                   </div>
-                  <p
-                    v-if="shippingForm.address"
-                    class="text-xs sm:text-sm text-[#7B7B7B]"
-                  >
+                  <p v-if="shippingForm.address" class="text-xs sm:text-sm text-[#7B7B7B]">
                     {{ shippingForm.address
                     }}{{ shippingForm.city ? `, ${shippingForm.city}` : ""
                     }}{{
@@ -135,108 +92,61 @@
                   </p>
                 </div>
 
-                <button
-                  v-if="!isReadonlyMode"
-                  @click="openAddressModal"
-                  class="text-sm sm:text-base text-[#7B7B7B] bg-[#F8F8F8] px-2 sm:px-2 py-1 rounded-md font-medium hover:underline hover:cursor-pointer whitespace-nowrap shrink-0"
-                >
+                <button v-if="!isReadonlyMode" @click="openAddressModal"
+                  class="text-sm sm:text-base text-[#7B7B7B] bg-[#F8F8F8] px-2 sm:px-2 py-1 rounded-md font-medium hover:underline hover:cursor-pointer whitespace-nowrap shrink-0">
                   Ubah
                 </button>
-                <span v-else class="text-xs sm:text-sm text-[#7B7B7B] italic"
-                  >Tidak dapat diubah</span
-                >
+                <span v-else class="text-xs sm:text-sm text-[#7B7B7B] italic">Tidak dapat diubah</span>
               </div>
 
               <!-- Decorative dashed line pattern -->
               <div class="mt-6 -mx-7.5 -mb-7.5 h-[7px] overflow-hidden flex">
-                <svg
-                  v-for="i in 100"
-                  :key="i"
-                  width="43"
-                  height="7"
-                  viewBox="0 0 43 7"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="shrink-0"
-                >
-                  <path
-                    d="M10 0H43L33 7H0L10 0Z"
-                    :fill="(i - 1) % 2 === 0 ? '#E6E9F0' : '#E9322B'"
-                  />
+                <svg v-for="i in 100" :key="i" width="43" height="7" viewBox="0 0 43 7" fill="none"
+                  xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                  <path d="M10 0H43L33 7H0L10 0Z" :fill="(i - 1) % 2 === 0 ? '#E6E9F0' : '#E9322B'" />
                 </svg>
               </div>
             </div>
 
             <!-- Dikirim dari Toko Section -->
-            <div
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5"
-            >
-              <h2
-                class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5"
-              >
+            <div class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5">
+              <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5">
                 Dikirim dari Toko
               </h2>
 
               <div class="flex items-center gap-2 sm:gap-2.5 mb-4 sm:mb-5">
                 <div class="w-5 h-5 sm:w-6 sm:h-6 shrink-0">
-                  <svg
-                    class="w-full h-full"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                  <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M4 19H6V11H18V19H20V8.35L12 5.15L4 8.35V19ZM2 21V7L12 3L22 7V21H16V13H8V21H2ZM9 21V19H11V21H9ZM11 18V16H13V18H11ZM13 21V19H15V21H13Z"
-                      fill="#8A8A8A"
-                    />
+                      fill="#8A8A8A" />
                   </svg>
                 </div>
 
-                <span
-                  class="text-sm sm:text-base md:text-lg font-semibold text-[#1A1919]"
-                  >{{ storeCityLabel }}</span
-                >
+                <span class="text-sm sm:text-base md:text-lg font-semibold text-[#1A1919]">{{ storeCityLabel }}</span>
               </div>
 
               <!-- Product Items (readonly: existing order) -->
               <template v-if="isReadonlyMode && existingOrder?.order_items">
-                <div
-                  v-for="item in existingOrder.order_items"
-                  :key="item.id"
-                  class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-5"
-                >
-                  <NuxtImg
-                    :src="
-                      item.product_image ||
-                      '/assets/img/products/placeholder.png'
-                    "
-                    :alt="item.product_name"
-                    width="120"
-                    height="120"
+                <div v-for="item in existingOrder.order_items" :key="item.id"
+                  class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-5">
+                  <NuxtImg :src="item.product_image ||
+                    '/assets/img/products/placeholder.png'
+                    " :alt="item.product_name" width="120" height="120"
                     class="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] object-cover rounded-lg shrink-0"
-                    fit="cover"
-                  />
+                    fit="cover" />
                   <div class="flex-1 min-w-0">
-                    <h3
-                      class="text-sm sm:text-base font-medium text-[#1A1919] mb-1"
-                    >
+                    <h3 class="text-sm sm:text-base font-medium text-[#1A1919] mb-1">
                       {{ item.product_name }}
                     </h3>
-                    <p
-                      v-if="item.variant_description"
-                      class="text-xs sm:text-sm text-[#7B7B7B] mb-2 sm:mb-2.5"
-                    >
-                      {{ item.variant_description }}
+                    <p v-if="formatVariantDescription(item.variant_description)" class="text-xs mb-0 text-[#808080]">
+                      {{ formatVariantDescription(item.variant_description) }}
                     </p>
-                    <p
-                      class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[#1A1919]"
-                    >
+                    <p class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[#1A1919]">
                       {{ formatPrice(item.subtotal) }}
                     </p>
                   </div>
-                  <p
-                    class="text-base sm:text-lg md:text-xl text-[#1A1919] font-semibold shrink-0"
-                  >
+                  <p class="text-base sm:text-lg md:text-xl text-[#1A1919] font-semibold shrink-0">
                     x{{ item.qty }}
                   </p>
                 </div>
@@ -245,11 +155,8 @@
               <!-- Product Items: per-store grouping with products inside -->
               <template v-else>
                 <!-- Store Groups -->
-                <div
-                  v-for="storeGroup in groupedByStore"
-                  :key="`store-${storeGroup.store_id}`"
-                  class="border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 mb-4 sm:mb-5"
-                >
+                <div v-for="storeGroup in groupedByStore" :key="`store-${storeGroup.store_id}`"
+                  class="border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 mb-4 sm:mb-5">
                   <!-- Store Header -->
                   <div class="mb-4 pb-4 border-b border-[#E6E9F0]">
                     <p class="text-sm font-semibold text-[#7B7B7B]">
@@ -258,51 +165,31 @@
                   </div>
 
                   <!-- Products in Store -->
-                  <div
-                    v-for="item in storeGroup.items"
-                    :key="item.variant_id"
-                    class="mb-4 pb-4 border-b border-[#E6E9F0] last:border-0 last:mb-0 last:pb-0"
-                  >
+                  <div v-for="item in storeGroup.items" :key="item.variant_id"
+                    class="mb-4 pb-4 border-b border-[#E6E9F0] last:border-0 last:mb-0 last:pb-0">
                     <!-- Product Item -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
-                      <NuxtImg
-                        :src="
-                          item.image || '/assets/img/products/placeholder.png'
-                        "
-                        :alt="item.product_name"
-                        width="120"
-                        height="120"
+                      <NuxtImg :src="item.image || '/assets/img/products/placeholder.png'
+                        " :alt="item.product_name" width="120" height="120"
                         class="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] object-cover rounded-lg shrink-0"
-                        fit="cover"
-                      />
+                        fit="cover" />
                       <div class="flex-1 min-w-0">
-                        <h3
-                          class="text-sm sm:text-base font-medium text-[#1A1919] mb-1"
-                        >
+                        <h3 class="text-sm sm:text-base font-medium text-[#1A1919] mb-1">
                           {{ item.product_name }}
                         </h3>
-                        <p
-                          v-if="item.variant_description"
-                          class="text-xs sm:text-sm text-[#7B7B7B] mb-2 sm:mb-2.5"
-                        >
-                          {{ item.variant_description }}
+                        <p v-if="formatVariantDescription(item.variant_description)"
+                          class="text-xs mb-0 text-[#808080]">
+                          {{ formatVariantDescription(item.variant_description) }}
                         </p>
-                        <p
-                          class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[#1A1919]"
-                        >
+                        <p class="text-xl sm:text-2xl md:text-[32px] font-semibold text-[#1A1919]">
                           {{ formatPrice(item.sub_total) }}
                         </p>
-                        <p
-                          class="text-base sm:text-lg text-[#1A1919] font-medium"
-                        >
+                        <p class="text-base sm:text-lg text-[#1A1919] font-medium">
                           x{{ item.qty }}
                         </p>
 
-                        <button
-                          type="button"
-                          @click="openNoteModal(item)"
-                          class="text-xs text-[#E9322B] hover:underline mt-2 hover:cursor-pointer"
-                        >
+                        <button type="button" @click="openNoteModal(item)"
+                          class="text-xs text-[#E9322B] hover:underline mt-2 hover:cursor-pointer">
                           {{
                             notePerItem[item.variant_id]
                               ? "Ubah Catatan"
@@ -310,57 +197,38 @@
                           }}
                         </button>
 
-                        <p
-                          v-if="notePerItem[item.variant_id]"
-                          class="text-xs text-[#7B7B7B] mt-1 italic"
-                        >
+                        <p v-if="notePerItem[item.variant_id]" class="text-xs text-[#7B7B7B] mt-1 italic">
                           Catatan: {{ notePerItem[item.variant_id] }}
                         </p>
                       </div>
                     </div>
 
                     <!-- Proteksi per product (inside each product) -->
-                    <div
-                      v-if="!isReadonlyMode"
-                      class="flex items-center justify-between py-2 px-3 bg-[#F5F5F5] rounded-lg"
-                    >
-                      <label
-                        class="flex items-center gap-2 cursor-pointer flex-1"
-                      >
-                        <input
-                          type="checkbox"
-                          :checked="protectionPerItem[item.variant_id]"
+                    <div v-if="!isReadonlyMode"
+                      class="flex items-center justify-between py-2 px-3 bg-[#F5F5F5] rounded-lg">
+                      <label class="flex items-center gap-2 cursor-pointer flex-1">
+                        <input type="checkbox" :checked="protectionPerItem[item.variant_id]"
                           @change="toggleProtectionForItem(item.variant_id)"
-                          class="w-4 h-4 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B]"
-                        />
-                        <span class="text-xs sm:text-sm text-[#1A1919]"
-                          >Proteksi keamanan</span
-                        >
+                          class="w-4 h-4 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B]" />
+                        <span class="text-xs sm:text-sm text-[#1A1919]">Proteksi keamanan</span>
                       </label>
-                      <span
-                        class="text-xs sm:text-sm font-semibold text-[#1A1919]"
-                        >{{
-                          formatPrice(
-                            (item.purchase_price * globalProtectionPercent) /
-                              100,
-                          )
-                        }}
-                        x {{ item.qty }}</span
-                      >
+                      <span class="text-xs sm:text-sm font-semibold text-[#1A1919]">{{
+                        formatPrice(
+                          (item.purchase_price * globalProtectionPercent) /
+                          100,
+                        )
+                      }}
+                        x {{ item.qty }}</span>
                     </div>
                   </div>
 
                   <!-- Ongkir per store (at bottom of store group) -->
-                  <div
-                    class="flex items-center justify-between py-3 border-t border-[#E6E9F0] mt-4 pt-4"
-                  >
+                  <div class="flex items-center justify-between py-3 border-t border-[#E6E9F0] mt-4 pt-4">
                     <div>
                       <p class="text-xs sm:text-sm text-[#7B7B7B] mb-0.5">
                         Ongkos kirim ({{ storeGroup.items.length }} produk)
                       </p>
-                      <p
-                        class="text-sm sm:text-base font-semibold text-[#1A1919]"
-                      >
+                      <p class="text-sm sm:text-base font-semibold text-[#1A1919]">
                         {{
                           shippingPerStore[
                             storeGroup.store_id ?? "null"
@@ -373,18 +241,15 @@
                         {{
                           shippingPerStore[storeGroup.store_id ?? "null"]?.agent
                             ? formatPrice(
-                                shippingPerStore[storeGroup.store_id ?? "null"]
-                                  .cost,
-                              )
+                              shippingPerStore[storeGroup.store_id ?? "null"]
+                                .cost,
+                            )
                             : "Belum dipilih"
                         }}
                       </p>
-                      <p
-                        v-if="
-                          shippingPerStore[storeGroup.store_id ?? 'null']?.etd
-                        "
-                        class="text-xs text-[#7B7B7B]"
-                      >
+                      <p v-if="
+                        shippingPerStore[storeGroup.store_id ?? 'null']?.etd
+                      " class="text-xs text-[#7B7B7B]">
                         Estimasi
                         {{
                           shippingPerStore[storeGroup.store_id ?? "null"].etd
@@ -392,12 +257,8 @@
                         hari
                       </p>
                     </div>
-                    <button
-                      v-if="!isReadonlyMode"
-                      type="button"
-                      @click="openShippingModalForStore(storeGroup.store_id)"
-                      class="text-sm text-[#E9322B] hover:underline font-medium hover:cursor-pointer"
-                    >
+                    <button v-if="!isReadonlyMode" type="button" @click="openShippingModalForStore(storeGroup.store_id)"
+                      class="text-sm text-[#E9322B] hover:underline font-medium hover:cursor-pointer">
                       Ubah
                     </button>
                   </div>
@@ -405,61 +266,34 @@
               </template>
 
               <!-- Legacy single protection block (hidden when per-card is used) -->
-              <div
-                v-if="false && !isReadonlyMode"
-                class="mb-4 sm:mb-5 p-3 sm:p-4 md:p-5 border border-[#E6E9F0] rounded-lg"
-              >
-                <label
-                  class="flex items-center gap-3 sm:gap-4 md:gap-5 cursor-pointer"
-                >
+              <div v-if="false && !isReadonlyMode"
+                class="mb-4 sm:mb-5 p-3 sm:p-4 md:p-5 border border-[#E6E9F0] rounded-lg">
+                <label class="flex items-center gap-3 sm:gap-4 md:gap-5 cursor-pointer">
                   <div class="relative shrink-0">
-                    <input
-                      type="checkbox"
-                      v-model="hasProtection"
-                      class="w-4 h-4 sm:w-5 sm:h-5 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer opacity-0 absolute"
-                    />
-                    <div
-                      :class="[
-                        'w-4 h-4 sm:w-5 sm:h-5 border rounded flex items-center justify-center transition',
-                        hasProtection
-                          ? 'bg-[#E9322B] border-[#E9322B]'
-                          : 'bg-white border-[#C1C1C1]',
-                      ]"
-                    >
+                    <input type="checkbox" v-model="hasProtection"
+                      class="w-4 h-4 sm:w-5 sm:h-5 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer opacity-0 absolute" />
+                    <div :class="[
+                      'w-4 h-4 sm:w-5 sm:h-5 border rounded flex items-center justify-center transition',
+                      hasProtection
+                        ? 'bg-[#E9322B] border-[#E9322B]'
+                        : 'bg-white border-[#C1C1C1]',
+                    ]">
                       <div class="w-2.5 h-2.5 sm:w-3 sm:h-3">
-                        <svg
-                          v-if="hasProtection"
-                          class="w-full h-full"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M10 3L4.5 8.5L2 6"
-                            stroke="white"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
+                        <svg v-if="hasProtection" class="w-full h-full" viewBox="0 0 12 12" fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path d="M10 3L4.5 8.5L2 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         </svg>
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0"
-                  >
+                  <div class="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
                     <div class="w-5 h-5 sm:w-6 sm:h-6 shrink-0">
-                      <svg
-                        class="w-full h-full"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                      <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_703_7116)">
                           <path
                             d="M12.0002 0C12.2158 0 12.4315 0.046875 12.6283 0.135938L21.4596 3.88125C22.4908 4.31719 23.2596 5.33438 23.2549 6.5625C23.2315 11.2125 21.319 19.7203 13.2424 23.5875C12.4596 23.9625 11.5502 23.9625 10.7674 23.5875C2.68615 19.7203 0.778342 11.2125 0.754904 6.5625C0.750217 5.33438 1.51897 4.31719 2.55022 3.88125L11.3768 0.135938C11.5737 0.046875 11.7846 0 12.0002 0ZM12.0002 3.13125V20.8547C18.469 17.7234 20.208 10.7859 20.2502 6.63281L12.0002 3.13594V3.13125Z"
-                            fill="#E9322B"
-                          />
+                            fill="#E9322B" />
                         </g>
                         <defs>
                           <clipPath id="clip0_703_7116">
@@ -469,151 +303,92 @@
                       </svg>
                     </div>
 
-                    <span class="text-sm sm:text-base text-[#1A1919]"
-                      >Tambah Proteksi Kerusakan</span
-                    >
+                    <span class="text-sm sm:text-base text-[#1A1919]">Tambah Proteksi Kerusakan</span>
                   </div>
-                  <span
-                    class="text-base sm:text-lg ml-auto text-[#1A1919] whitespace-nowrap shrink-0"
-                  >
+                  <span class="text-base sm:text-lg ml-auto text-[#1A1919] whitespace-nowrap shrink-0">
                     Rp159.000
                   </span>
                 </label>
               </div>
 
               <!-- Shipping Info (single row: only in readonly mode; non-readonly uses per-card shipping) -->
-              <div
-                v-if="isReadonlyMode"
-                class="pt-4 sm:pt-5 border-t border-[#E6E9F0] flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0"
-              >
+              <div v-if="isReadonlyMode"
+                class="pt-4 sm:pt-5 border-t border-[#E6E9F0] flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0">
                 <div class="flex-1 min-w-0">
-                  <div
-                    class="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2"
-                  >
+                  <div class="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
                     <div class="w-5 h-5 sm:w-6 sm:h-6 shrink-0">
-                      <svg
-                        class="w-full h-full"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                      <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M8 19C8.53043 19 9.03914 18.7893 9.41421 18.4142C9.78929 18.0391 10 17.5304 10 17C10 16.4696 9.78929 15.9609 9.41421 15.5858C9.03914 15.2107 8.53043 15 8 15C7.46957 15 6.96086 15.2107 6.58579 15.5858C6.21071 15.9609 6 16.4696 6 17C6 17.5304 6.21071 18.0391 6.58579 18.4142C6.96086 18.7893 7.46957 19 8 19ZM18 19C18.5304 19 19.0391 18.7893 19.4142 18.4142C19.7893 18.0391 20 17.5304 20 17C20 16.4696 19.7893 15.9609 19.4142 15.5858C19.0391 15.2107 18.5304 15 18 15C17.4696 15 16.9609 15.2107 16.5858 15.5858C16.2107 15.9609 16 16.4696 16 17C16 17.5304 16.2107 18.0391 16.5858 18.4142C16.9609 18.7893 17.4696 19 18 19Z"
-                          stroke="#8A8A8A"
-                          stroke-width="1.5"
-                          stroke-miterlimit="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
+                          stroke="#8A8A8A" stroke-width="1.5" stroke-miterlimit="1.5" stroke-linecap="round"
+                          stroke-linejoin="round" />
                         <path
                           d="M10.05 17H15V6.6C15 6.44087 14.9368 6.28826 14.8243 6.17574C14.7117 6.06321 14.5591 6 14.4 6H1M5.65 17H3.6C3.52121 17 3.44319 16.9845 3.37039 16.9543C3.29759 16.9242 3.23145 16.88 3.17574 16.8243C3.12002 16.7685 3.07583 16.7024 3.04567 16.6296C3.01552 16.5568 3 16.4788 3 16.4V11.5"
-                          stroke="#8A8A8A"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                        />
-                        <path
-                          d="M2 9H6"
-                          stroke="#8A8A8A"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
+                          stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M2 9H6" stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round"
+                          stroke-linejoin="round" />
                         <path
                           d="M15 9H20.61C20.726 9.00003 20.8395 9.03367 20.9367 9.09685C21.034 9.16003 21.1108 9.25005 21.158 9.356L22.948 13.384C22.9821 13.4605 22.9998 13.5433 23 13.627V16.4C23 16.4788 22.9845 16.5568 22.9543 16.6296C22.9242 16.7024 22.88 16.7685 22.8243 16.8243C22.7685 16.88 22.7024 16.9242 22.6296 16.9543C22.5568 16.9845 22.4788 17 22.4 17H20.5M15 17H16"
-                          stroke="#8A8A8A"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                        />
+                          stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round" />
                       </svg>
                     </div>
 
-                    <span
-                      class="text-sm sm:text-base font-semibold text-[#1A1919]"
-                      >{{ courierForm.agent?.toUpperCase() || "Kurir" }}
+                    <span class="text-sm sm:text-base font-semibold text-[#1A1919]">{{ courierForm.agent?.toUpperCase()
+                      || "Kurir" }}
                       {{ courierForm.service || "" }}
-                      {{ formatPrice(courierForm.cost || 0) }}</span
-                    >
+                      {{ formatPrice(courierForm.cost || 0) }}</span>
                   </div>
-                  <p
-                    v-if="courierForm.etd"
-                    class="text-xs sm:text-sm text-[#7B7B7B]"
-                  >
+                  <p v-if="courierForm.etd" class="text-xs sm:text-sm text-[#7B7B7B]">
                     Estimasi tiba {{ courierForm.etd }} hari.
                   </p>
                   <p v-else class="text-xs sm:text-sm text-[#7B7B7B]">
                     Belum memilih kurir
                   </p>
                 </div>
-                <button
-                  v-if="!isReadonlyMode"
-                  @click="openShippingModal"
-                  class="text-sm sm:text-base text-[#7B7B7B] bg-[#F8F8F8] px-2 py-1 rounded-md font-medium hover:underline hover:cursor-pointer whitespace-nowrap shrink-0"
-                >
+                <button v-if="!isReadonlyMode" @click="openShippingModal"
+                  class="text-sm sm:text-base text-[#7B7B7B] bg-[#F8F8F8] px-2 py-1 rounded-md font-medium hover:underline hover:cursor-pointer whitespace-nowrap shrink-0">
                   Ubah
                 </button>
-                <span v-else class="text-xs sm:text-sm text-[#7B7B7B] italic"
-                  >Tidak dapat diubah</span
-                >
+                <span v-else class="text-xs sm:text-sm text-[#7B7B7B] italic">Tidak dapat diubah</span>
               </div>
             </div>
 
             <!-- Voucher Section -->
-            <div
-              v-if="!isReadonlyMode"
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5"
-            >
+            <div v-if="!isReadonlyMode" class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5">
               <div class="space-y-2">
                 <div class="flex justify-between items-center mt-5">
                   <h2 class="text-lg font-semibold mb-2">Voucher</h2>
-                  <button
-                    @click="showVoucherModal = true"
-                    class="text-sm sm:text-base text-white bg-black px-2 sm:px-2 py-1 rounded-md font-medium hover:bg-[#1f1f1f] hover:cursor-pointer whitespace-nowrap shrink-0 transition-colors"
-                  >
+                  <button @click="showVoucherModal = true"
+                    class="text-sm sm:text-base text-white bg-black px-2 sm:px-2 py-1 rounded-md font-medium hover:bg-[#1f1f1f] hover:cursor-pointer whitespace-nowrap shrink-0 transition-colors">
                     {{ selectedVoucher ? "Ubah Voucher" : "Pilih Voucher" }}
                   </button>
                 </div>
-                <div
-                  v-if="voucherError"
-                  class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 mt-2"
-                >
+                <div v-if="voucherError"
+                  class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 mt-2">
                   {{ voucherError }}
                 </div>
                 <div class="flex gap-2">
-                  <input
-                    v-model="voucherCode"
-                    type="text"
-                    placeholder="Masukkan kode voucher"
-                    class="bg-white flex-1 border border-[#E6E9F0] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#E6E9F0]"
-                  />
+                  <input v-model="voucherCode" type="text" placeholder="Masukkan kode voucher"
+                    class="bg-white flex-1 border border-[#E6E9F0] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#E6E9F0]" />
 
-                  <button
-                    @click="applyVoucherCode"
-                    :disabled="isApplyingVoucher || !voucherCode"
-                    class="px-4 py-2 rounded-md bg-black text-white text-sm font-medium border border-black shadow-sm hover:bg-[#1f1f1f] hover:shadow-md transition-colors disabled:bg-gray-600 disabled:border-gray-500 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer"
-                  >
+                  <button @click="applyVoucherCode" :disabled="isApplyingVoucher || !voucherCode"
+                    class="px-4 py-2 rounded-md bg-black text-white text-sm font-medium border border-black shadow-sm hover:bg-[#1f1f1f] hover:shadow-md transition-colors disabled:bg-gray-600 disabled:border-gray-500 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer">
                     Terapkan
                   </button>
                 </div>
-                <div
-                  v-if="selectedVoucher"
-                  class="border border-[#E6E9F0] bg-[#FFF7F7] rounded-lg px-4 py-3 text-sm flex flex-col gap-2"
-                >
+                <div v-if="selectedVoucher"
+                  class="border border-[#E6E9F0] bg-[#FFF7F7] rounded-lg px-4 py-3 text-sm flex flex-col gap-2">
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                       <div class="flex items-center gap-2">
-                        <span
-                          class="text-base sm:text-lg font-semibold text-[#1A1919] break-words"
-                        >
+                        <span class="text-base sm:text-lg font-semibold text-[#1A1919] break-words">
                           {{ selectedVoucher?.name }}
                         </span>
                         <span
-                          class="text-xs sm:text-sm font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded"
-                        >
-                          <span
-                            v-if="
-                              selectedVoucher?.discount_type === 'PERCENTAGE'
-                            "
-                          >
+                          class="text-xs sm:text-sm font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded">
+                          <span v-if="
+                            selectedVoucher?.discount_type === 'PERCENTAGE'
+                          ">
                             {{ Number(selectedVoucher?.discount_value) }}%
                           </span>
                           <span v-else>
@@ -625,17 +400,12 @@
                           </span>
                         </span>
                       </div>
-                      <p
-                        class="text-xs sm:text-sm text-[#7B7B7B] mt-1 leading-relaxed break-words"
-                      >
+                      <p class="text-xs sm:text-sm text-[#7B7B7B] mt-1 leading-relaxed break-words">
                         {{ selectedVoucher.description || "" }}
                       </p>
                     </div>
                     <div class="shrink-0">
-                      <button
-                        @click="removeVoucher"
-                        class="text-[#E9322B] hover:underline hover:cursor-pointer"
-                      >
+                      <button @click="removeVoucher" class="text-[#E9322B] hover:underline hover:cursor-pointer">
                         Hapus
                       </button>
                     </div>
@@ -654,40 +424,28 @@
           <!-- Right Column -->
           <div class="lg:col-span-1 space-y-5 sm:space-y-6 md:space-y-7.5">
             <!-- Detail Pembayaran Section -->
-            <div
-              class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5"
-            >
-              <h2
-                class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5"
-              >
+            <div class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5">
+              <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5">
                 Detail Pembayaran
               </h2>
 
               <div class="space-y-1.5 mb-3 sm:mb-4">
-                <div
-                  class="flex justify-between text-sm sm:text-base text-[#7B7B7B]"
-                >
+                <div class="flex justify-between text-sm sm:text-base text-[#7B7B7B]">
                   <span>Subtotal</span>
-                  <span
-                    class="text-base sm:text-lg text-[#1A1919] font-semibold"
-                    >{{
-                      formatPrice(
-                        isReadonlyMode && existingOrder
-                          ? existingOrder.subtotal
-                          : checkoutCalculation?.sub_total || 0,
-                      )
-                    }}</span
-                  >
+                  <span class="text-base sm:text-lg text-[#1A1919] font-semibold">{{
+                    formatPrice(
+                      isReadonlyMode && existingOrder
+                        ? existingOrder.subtotal
+                        : checkoutCalculation?.sub_total || 0,
+                    )
+                  }}</span>
                 </div>
-                <div
-                  v-if="
-                    (isReadonlyMode &&
-                      existingOrder &&
-                      existingOrder.discount_amount > 0) ||
-                    (!isReadonlyMode && discountAmount > 0)
-                  "
-                  class="flex justify-between text-sm sm:text-base text-red-600"
-                >
+                <div v-if="
+                  (isReadonlyMode &&
+                    existingOrder &&
+                    existingOrder.discount_amount > 0) ||
+                  (!isReadonlyMode && discountAmount > 0)
+                " class="flex justify-between text-sm sm:text-base text-red-600">
                   <span>Diskon Voucher</span>
                   <span class="text-base sm:text-lg font-semibold">
                     -{{
@@ -700,13 +458,9 @@
                   </span>
                 </div>
 
-                <div
-                  class="flex justify-between text-sm sm:text-base text-[#7B7B7B]"
-                >
+                <div class="flex justify-between text-sm sm:text-base text-[#7B7B7B]">
                   <span>Ongkos Kirim</span>
-                  <span
-                    class="text-base sm:text-lg text-[#1A1919] font-semibold"
-                  >
+                  <span class="text-base sm:text-lg text-[#1A1919] font-semibold">
                     {{
                       formatPrice(
                         isReadonlyMode && existingOrder
@@ -716,17 +470,12 @@
                     }}
                   </span>
                 </div>
-                <div
-                  v-if="
-                    totalProtectionCost > 0 ||
-                    (isReadonlyMode && existingOrder && hasProtection)
-                  "
-                  class="flex justify-between text-sm sm:text-base text-[#7B7B7B]"
-                >
+                <div v-if="
+                  totalProtectionCost > 0 ||
+                  (isReadonlyMode && existingOrder && hasProtection)
+                " class="flex justify-between text-sm sm:text-base text-[#7B7B7B]">
                   <span>Proteksi keamanan</span>
-                  <span
-                    class="text-base sm:text-lg text-[#1A1919] font-semibold"
-                  >
+                  <span class="text-base sm:text-lg text-[#1A1919] font-semibold">
                     {{
                       formatPrice(
                         isReadonlyMode && existingOrder
@@ -738,16 +487,12 @@
                 </div>
               </div>
 
-              <div
-                class="border-t border-[#E6E9F0] pt-4 sm:pt-5 mb-5 sm:mb-7.5"
-              >
+              <div class="border-t border-[#E6E9F0] pt-4 sm:pt-5 mb-5 sm:mb-7.5">
                 <div class="flex justify-between items-center">
                   <span class="text-sm sm:text-base text-[#7B7B7B]">
                     Total Tagihan
                   </span>
-                  <span
-                    class="text-lg sm:text-xl md:text-[22px] font-semibold text-[#1A1919]"
-                  >
+                  <span class="text-lg sm:text-xl md:text-[22px] font-semibold text-[#1A1919]">
                     Rp{{ totalBill }}
                   </span>
                 </div>
@@ -759,23 +504,13 @@
                   Pilih Metode Pembayaran
                 </h3>
                 <div class="space-y-2">
-                  <label
-                    v-for="gw in paymentMethods"
-                    :key="gw.key"
-                    class="flex items-center gap-3 p-3 border rounded-lg transition"
-                    :class="[
+                  <label v-for="gw in paymentMethods" :key="gw.key"
+                    class="flex items-center gap-3 p-3 border rounded-lg transition" :class="[
                       selectedGateway === gw.key ? 'border-[#E9322B] bg-[#E9322B14]' : 'border-[#E6E9F0]',
                       gw.active ? 'cursor-pointer hover:border-[#E9322B]' : 'opacity-50'
-                    ]"
-                  >
-                    <input
-                      type="radio"
-                      name="paymentGateway"
-                      :value="gw.key"
-                      v-model="selectedGateway"
-                      :disabled="!gw.active"
-                      class="accent-[#E9322B]"
-                    />
+                    ]">
+                    <input type="radio" name="paymentGateway" :value="gw.key" v-model="selectedGateway"
+                      :disabled="!gw.active" class="accent-[#E9322B]" />
                     <div>
                       <span class="text-sm font-medium text-[#1A1919] capitalize">{{ gw.label }}</span>
                       <p class="text-xs text-[#ACACAC]">
@@ -786,67 +521,39 @@
                 </div>
               </div>
 
-              <button
-                v-if="!isReadonlyMode"
-                @click="handlePayment"
+              <button v-if="!isReadonlyMode" @click="handlePayment"
                 :disabled="isSubmitting || !canSubmit || !selectedGateway"
-                class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                <div
-                  v-if="!isSubmitting"
-                  class="w-5 h-5 sm:w-[26px] sm:h-[26px] shrink-0"
-                >
-                  <svg
-                    class="w-full h-full"
-                    viewBox="0 0 26 26"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed">
+                <div v-if="!isSubmitting" class="w-5 h-5 sm:w-[26px] sm:h-[26px] shrink-0">
+                  <svg class="w-full h-full" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M13 1.0835L21.9018 3.06166C22.1423 3.11514 22.3575 3.24904 22.5117 3.44127C22.6659 3.63349 22.75 3.87256 22.75 4.119V14.9382C22.7499 16.0083 22.4857 17.0618 21.9807 18.0052C21.4757 18.9486 20.7457 19.7527 19.8553 20.3462L13 24.9168L6.14467 20.3462C5.25446 19.7528 4.5245 18.9489 4.01954 18.0056C3.51459 17.0624 3.25026 16.0092 3.25 14.9393V4.119C3.25004 3.87256 3.33411 3.63349 3.48832 3.44127C3.64254 3.24904 3.85768 3.11514 4.09825 3.06166L13 1.0835ZM13 3.30325L5.41667 4.98783V14.9382C5.41668 15.6516 5.59279 16.3539 5.92937 16.9828C6.26594 17.6117 6.75258 18.1479 7.34608 18.5436L13 22.3136L18.6539 18.5436C19.2473 18.148 19.7338 17.612 20.0704 16.9833C20.4069 16.3546 20.5831 15.6525 20.5833 14.9393V4.98783L13 3.30325ZM17.823 8.90733L19.3559 10.4392L12.4616 17.3335L7.865 12.7369L9.39683 11.2051L12.4605 14.2687L17.823 8.90733Z"
-                      fill="white"
-                    />
+                      fill="white" />
                   </svg>
                 </div>
                 <span v-if="isSubmitting">Memproses...</span>
                 <span v-else>Bayar Sekarang</span>
               </button>
-              <button
-                v-else-if="orderIdFromQuery && existingOrder"
-                @click="processExistingPayment"
+              <button v-else-if="orderIdFromQuery && existingOrder" @click="processExistingPayment"
                 :disabled="isSubmitting"
-                class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                <div
-                  v-if="!isSubmitting"
-                  class="w-5 h-5 sm:w-[26px] sm:h-[26px] shrink-0"
-                >
-                  <svg
-                    class="w-full h-full"
-                    viewBox="0 0 26 26"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed">
+                <div v-if="!isSubmitting" class="w-5 h-5 sm:w-[26px] sm:h-[26px] shrink-0">
+                  <svg class="w-full h-full" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M13 1.0835L21.9018 3.06166C22.1423 3.11514 22.3575 3.24904 22.5117 3.44127C22.6659 3.63349 22.75 3.87256 22.75 4.119V14.9382C22.7499 16.0083 22.4857 17.0618 21.9807 18.0052C21.4757 18.9486 20.7457 19.7527 19.8553 20.3462L13 24.9168L6.14467 20.3462C5.25446 19.7528 4.5245 18.9489 4.01954 18.0056C3.51459 17.0624 3.25026 16.0092 3.25 14.9393V4.119C3.25004 3.87256 3.33411 3.63349 3.48832 3.44127C3.64254 3.24904 3.85768 3.11514 4.09825 3.06166L13 1.0835ZM13 3.30325L5.41667 4.98783V14.9382C5.41668 15.6516 5.59279 16.3539 5.92937 16.9828C6.26594 17.6117 6.75258 18.1479 7.34608 18.5436L13 22.3136L18.6539 18.5436C19.2473 18.148 19.7338 17.612 20.0704 16.9833C20.4069 16.3546 20.5831 15.6525 20.5833 14.9393V4.98783L13 3.30325ZM17.823 8.90733L19.3559 10.4392L12.4616 17.3335L7.865 12.7369L9.39683 11.2051L12.4605 14.2687L17.823 8.90733Z"
-                      fill="white"
-                    />
+                      fill="white" />
                   </svg>
                 </div>
                 <span v-if="isSubmitting">Memproses...</span>
                 <span v-else>Bayar Sekarang</span>
               </button>
-              <NuxtLink
-                to="/cart"
-                class="w-full bg-[#C4282B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#a32223] transition hover:cursor-pointer mt-2"
-              >
+              <NuxtLink to="/cart"
+                class="w-full bg-[#C4282B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#a32223] transition hover:cursor-pointer mt-2">
                 Kembali ke Keranjang
               </NuxtLink>
             </div>
-            <div
-              v-if="errorMessage"
-              class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
+            <div v-if="errorMessage"
+              class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
               {{ errorMessage }}
             </div>
           </div>
@@ -855,35 +562,23 @@
     </div>
     <Footer />
 
-    <div
-      v-if="showVoucherModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4"
-      @click.self="showVoucherModal = false"
-    >
+    <div v-if="showVoucherModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4"
+      @click.self="showVoucherModal = false">
       <div
         class="bg-white rounded-[10px] w-full max-w-[766px] max-h-[90vh] overflow-y-auto px-4 sm:px-5 md:px-6 py-5 sm:py-6 md:py-8"
-        @click.stop
-      >
+        @click.stop>
         <!-- Header -->
         <div class="flex items-center justify-between mb-4 sm:mb-5">
           <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919]">
             Pilih Voucher
           </h2>
-          <button
-            @click="showVoucherModal = false"
-            class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-[#F8F8F8] rounded-full transition hover:cursor-pointer shrink-0"
-          >
+          <button @click="showVoucherModal = false"
+            class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-[#F8F8F8] rounded-full transition hover:cursor-pointer shrink-0">
             <div class="w-5 h-5 sm:w-6 sm:h-6">
-              <svg
-                class="w-full h-full"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
-                  fill="black"
-                />
+                  fill="black" />
               </svg>
             </div>
           </button>
@@ -892,53 +587,38 @@
         <!-- Konten Voucher -->
         <div class="space-y-4 sm:space-y-5">
           <!-- Error -->
-          <div
-            v-if="voucherError"
-            class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
-          >
+          <div v-if="voucherError" class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
             {{ voucherError }}
           </div>
 
           <!-- Loading (opsional, kalau fetch vouchers async) -->
           <div v-if="isApplyingVoucher" class="text-center py-8">
-            <div
-              class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#E9322B]"
-            ></div>
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#E9322B]"></div>
             <p class="mt-3 text-sm text-[#7B7B7B]">Memuat voucher...</p>
           </div>
 
           <!-- No voucher -->
-          <div
-            v-else-if="vouchers.length === 0 && !isApplyingVoucher"
-            class="text-center py-8 text-sm text-[#7B7B7B]"
-          >
+          <div v-else-if="vouchers.length === 0 && !isApplyingVoucher" class="text-center py-8 text-sm text-[#7B7B7B]">
             Tidak ada voucher yang tersedia
           </div>
 
           <!-- List Voucher -->
           <div v-else class="space-y-3">
-            <div
-              v-for="voucher in vouchers"
-              :key="voucher.id"
-              @click="selectVoucherFromList(voucher)"
+            <div v-for="voucher in vouchers" :key="voucher.id" @click="selectVoucherFromList(voucher)"
               class="flex items-start gap-3 p-3 sm:p-4 border rounded-md cursor-pointer hover:border-[#E9322B] hover:bg-[#E9322B14] transition"
               :class="{
                 'border-[#E9322B] bg-[#E9322B14]':
                   selectedVoucher?.id === voucher.id,
                 'border-[#E6E9F0]': selectedVoucher?.id !== voucher.id,
-              }"
-            >
+              }">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2 mb-1">
                   <div class="flex items-center gap-2">
-                    <span
-                      class="text-sm sm:text-base font-semibold text-[#1A1919]"
-                    >
+                    <span class="text-sm sm:text-base font-semibold text-[#1A1919]">
                       {{ voucher.name }}
                     </span>
                     <span
-                      class="text-xs font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded"
-                    >
+                      class="text-xs font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded">
                       <span v-if="voucher.discount_type === 'PERCENTAGE'">
                         {{ Number(voucher.discount_value) }}%
                       </span>
@@ -949,10 +629,8 @@
                       </span>
                     </span>
                   </div>
-                  <span
-                    v-if="selectedVoucher?.id === voucher.id"
-                    class="text-[#E9322B] text-sm font-medium whitespace-nowrap"
-                  >
+                  <span v-if="selectedVoucher?.id === voucher.id"
+                    class="text-[#E9322B] text-sm font-medium whitespace-nowrap">
                     Dipilih
                   </span>
                 </div>
@@ -961,10 +639,7 @@
                   {{ voucher.description }}
                 </p>
 
-                <p
-                  v-if="voucher.min_purchase"
-                  class="text-xs text-[#7B7B7B] mt-1"
-                >
+                <p v-if="voucher.min_purchase" class="text-xs text-[#7B7B7B] mt-1">
                   Min. belanja Rp{{
                     Number(voucher.min_purchase).toLocaleString("id-ID")
                   }}
@@ -976,70 +651,37 @@
       </div>
     </div>
     <!-- Shipping Option Modal (single item when editing one product's shipping) -->
-    <ShippingModal
-      v-model="showShippingModal"
-      :shippingCosts="currentStoreShippingOptions"
-      :loadingShippingCost="isFetchingShipping"
-      :shippingError="shippingError"
-      :storeKey="editingShippingStoreId"
-      @update:courier="updateCourierFromModal"
-    />
+    <ShippingModal v-model="showShippingModal" :shippingCosts="currentStoreShippingOptions"
+      :loadingShippingCost="isFetchingShipping" :shippingError="shippingError" :storeKey="editingShippingStoreId"
+      @update:courier="updateCourierFromModal" />
 
     <!-- Address Selection Modal -->
-    <AddressSelectionModal
-      v-model="showAddressModal"
-      :addresses="addresses"
-      :selectedIndex="selectedAddressIndex"
-      @update:selectedIndex="selectedAddressIndex = $event"
-      @select="selectAddress"
-      @edit="openEditAddressModal"
-      @delete="openDeleteConfirmModal"
-      @add="openNewAddressModal"
-    />
+    <AddressSelectionModal v-model="showAddressModal" :addresses="addresses" :selectedIndex="selectedAddressIndex"
+      @update:selectedIndex="selectedAddressIndex = $event" @select="selectAddress" @edit="openEditAddressModal"
+      @delete="openDeleteConfirmModal" @add="openNewAddressModal" />
 
     <!-- Delete Address Confirmation Modal -->
-    <ConfirmModal
-      v-model="showDeleteConfirmModal"
-      title="Hapus Alamat?"
-      message="Kamu akan menghapus alamat pengiriman ini."
-      confirmText="Hapus"
-      @confirm="confirmDeleteAddress"
-    />
+    <ConfirmModal v-model="showDeleteConfirmModal" title="Hapus Alamat?"
+      message="Kamu akan menghapus alamat pengiriman ini." confirmText="Hapus" @confirm="confirmDeleteAddress" />
 
     <!-- New/Edit Address Modal -->
-    <AddressModal
-      ref="addressModalRef"
-      v-model="showNewAddressModal"
-      :editingAddress="editingAddress"
-      @save="handleSaveAddress"
-    />
+    <AddressModal ref="addressModalRef" v-model="showNewAddressModal" :editingAddress="editingAddress"
+      @save="handleSaveAddress" />
 
-    <div
-      v-if="showNoteModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      @click.self="showNoteModal = false"
-    >
+    <div v-if="showNoteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      @click.self="showNoteModal = false">
       <div class="bg-white rounded-[10px] w-full max-w-md p-6" @click.stop>
         <h2 class="text-lg font-semibold mb-4">Catatan untuk Produk</h2>
 
-        <textarea
-          v-model="noteDraft"
-          rows="4"
+        <textarea v-model="noteDraft" rows="4"
           class="w-full border border-[#E6E9F0] rounded p-3 text-sm focus:outline-none"
-          placeholder="Tulis catatan untuk produk ini..."
-        ></textarea>
+          placeholder="Tulis catatan untuk produk ini..."></textarea>
 
         <div class="flex justify-end gap-2 mt-4">
-          <button
-            @click="showNoteModal = false"
-            class="px-4 py-2 text-sm border rounded hover:cursor-pointer"
-          >
+          <button @click="showNoteModal = false" class="px-4 py-2 text-sm border rounded hover:cursor-pointer">
             Batal
           </button>
-          <button
-            @click="saveNote"
-            class="px-4 py-2 text-sm bg-[#E9322B] text-white rounded hover:cursor-pointer"
-          >
+          <button @click="saveNote" class="px-4 py-2 text-sm bg-[#E9322B] text-white rounded hover:cursor-pointer">
             Simpan
           </button>
         </div>
@@ -1062,6 +704,7 @@ import { useVoucher } from "~/composables/useVoucherApi";
 import { usePointApi } from "~/composables/usePointApi";
 import { useConfigApi } from "~/composables/useConfigApi";
 import type { Voucher } from "~/types/voucher";
+import { formatVariantDescription } from '~/utils/helpers';
 
 definePageMeta({
   layout: "default",
@@ -2349,7 +1992,7 @@ const handlePayment = async () => {
         voucher_id: selectedVoucher.value?.id || null,
         voucher_discount: Math.round(
           (discountAmount.value * storeSubtotal) /
-            checkoutCalculation.value.sub_total,
+          checkoutCalculation.value.sub_total,
         ),
         use_points: usePoints.value,
         invoice_note: null,
