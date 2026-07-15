@@ -1196,6 +1196,7 @@ const buildDynamicAttributes = () => {
     if (!variant.options || variant.options.length === 0) return;
 
     variant.options.forEach((option) => {
+      if (option.attribute_value.trim().toLowerCase() === "no variant") return;
       if (!attributesMap.has(option.attribute_id)) {
         attributesMap.set(option.attribute_id, {
           attribute_id: option.attribute_id,
@@ -2027,7 +2028,6 @@ const isButtonDisabled = computed(() => {
 
   // If location is required but not selected (only if there's at least one available store)
   const hasAvailableStore = locationOptions.value.some((loc) => !loc.disabled);
-    console.log(dynamicAttributes.value.length, !selectedVariant.value, hasAvailableStore)
 
   if (hasAvailableStore && !selectedLocation.value) {
     return true;
@@ -2319,11 +2319,9 @@ watch(
   (attributes) => {
     attributes.forEach((attribute: any) => {
       if (selectedAttributeValues.value[attribute.attribute_id]) return
-
       const noVariant = attribute.values.find((value: any) =>
         isNoVariant(value.value),
       )
-
       if (noVariant) {
         selectAttributeValue(
           attribute.attribute_id,
@@ -2332,10 +2330,7 @@ watch(
       }
     })
   },
-  {
-    immediate: true,
-    deep: true,
-  },
+  { immediate: true, deep: true },
 )
 
 watch(
