@@ -74,12 +74,11 @@ export const formatVariantDescription = (description?: string | null) => {
     .split(/\s*-\s*/)
     .map((item) => item.trim())
     .filter((item) => {
-      const index = item.indexOf(":")
-      if (index === -1) return true
-
-      const value = item.slice(index + 1).trim().toLowerCase()
-
-      return value !== "no variant"
+      const colonIndex = item.indexOf(":")
+      let value = colonIndex === -1 ? item : item.slice(colonIndex + 1).trim()
+      // Normaliser: supprimer espaces multiples, convertir en minuscules
+      const normalized = value.replace(/\s+/g, " ").toLowerCase()
+      return normalized !== "no variant"
     })
 
   return variants.join(" - ")
