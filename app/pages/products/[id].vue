@@ -52,7 +52,7 @@
             <!-- Thumbnail Strip (Vertical on Desktop) -->
             <div class="flex md:flex-col gap-2 order-2 md:order-1 overflow-x-auto md:overflow-y-auto md:max-h-[600px]">
               <button
-                v-for="(img, index) in productImages"
+                v-for="(img, index) in productImages.slice(0, 7)"
                 :key="index"
                 @click="selectedImage = img; selectedImageIndex = index"
                 :class="[
