@@ -54,10 +54,10 @@
               <button
                 v-for="(img, index) in productImages.slice(0, 7)"
                 :key="index"
-                @click="selectedImage = img; selectedImageIndex = index"
+                @click="selectedImage = img;"
                 :class="[
                   'w-16 h-16 md:w-20 md:h-20 rounded border-2 transition hover:cursor-pointer shrink-0 overflow-hidden',
-                  selectedImage === img || (!selectedImage && index === 0)
+                  selectedImage === img 
                     ? 'border-black'
                     : 'border-gray-200 hover:border-gray-400',
                 ]"
@@ -568,8 +568,8 @@
                 <tr v-if="product.finishing" class="border-b border-[#E6E9F0]"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Finishing</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.finishing }}</td></tr>
                 <tr v-if="product.color" class="border-b border-[#E6E9F0]"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Warna</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.color }}</td></tr>
                 <tr v-if="product.weight" class="border-b border-[#E6E9F0]"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Berat</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.weight }} {{ product.type_weight || 'gram' }}</td></tr>
-                <tr v-if="product.size_long || product.size_wide || product.size_tall" class="border-b border-[#E6E9F0]"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Dimensi Produk</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.size_long }} x {{ product.size_wide }} x {{ product.size_tall }} {{ product.type_size || 'cm' }}</td></tr>
-                <tr v-if="product.package_long || product.package_wide || product.package_tall"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Dimensi Kemasan</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.package_long }} x {{ product.package_wide }} x {{ product.package_tall }} cm</td></tr>
+                <!-- <tr v-if="product.size_long || product.size_wide || product.size_tall" class="border-b border-[#E6E9F0]"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Dimensi Produk</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.size_long }} x {{ product.size_wide }} x {{ product.size_tall }} {{ product.type_size || 'cm' }}</td></tr> -->
+                <!-- <tr v-if="product.package_long || product.package_wide || product.package_tall"><td class="px-4 py-2.5 text-[#7B7B7B] w-32 sm:w-40 bg-[#F9FAFB] text-sm font-medium whitespace-nowrap">Dimensi Kemasan</td><td class="px-4 py-2.5 text-[#1A1919] text-sm whitespace-nowrap">{{ product.package_long }} x {{ product.package_wide }} x {{ product.package_tall }} cm</td></tr> -->
               </tbody>
             </table>
           </div>
@@ -1381,7 +1381,7 @@ const loadRelatedProducts = async () => {
   relatedError.value = null;
 
   const { data, error } = await getRelatedProducts(product.value.slug, 5);
-
+  // console.log("Related products response:", data, error);
   if (error) {
     relatedError.value = error.message || "Gagal memuat rekomendasi";
     console.error("Related products error:", error);
@@ -1460,7 +1460,6 @@ const applyProductResponse = (apiProduct: Product) => {
   if (selectedImageIndex.value < 0) selectedImageIndex.value = 0;
 
   const reviewsList = (apiProduct as any).reviews || [];
-
   product.value = {
     id: apiProduct.id,
     name: apiProduct.name,
@@ -1476,8 +1475,8 @@ const applyProductResponse = (apiProduct: Product) => {
     material: apiProduct.material ?? null,
     finishing: apiProduct.finishing ?? null,
     color: apiProduct.color ?? null,
-    weight: apiProduct.weight ?? null,
-    type_weight: apiProduct.type_weight ?? null,
+    weight: apiProduct.variants?.[0]?.weight ?? null,
+    type_weight: apiProduct.variants?.[0]?.type_weight ?? null,
     size_long: apiProduct.size_long ?? null,
     size_wide: apiProduct.size_wide ?? null,
     size_tall: apiProduct.size_tall ?? null,
@@ -1490,7 +1489,7 @@ const applyProductResponse = (apiProduct: Product) => {
     baseStrikePrice: baseStrikePrice ?? null,
     categories: apiProduct.categories || [],
   };
-
+  // console.log("Product data applied:", product.value.name, product.value.slug,product.value.weight, product.value.type_weight, product.value.size_long, product.value.size_wide, product.value.size_tall, product.value.type_size, product.value.package_long, product.value.package_wide,);
   if (apiProduct?.slug) {
     void loadRelatedProducts();
   }
