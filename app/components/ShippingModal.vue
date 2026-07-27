@@ -15,7 +15,7 @@
         </h2>
         <button
           @click="handleClose"
-          class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-[#F8F8F8] rounded-full transition hover:cursor-pointer shrink-0"
+          class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-[#F8F8F8] rounded-full transition hover:cursor-pointer hover:bg-gray-600 shrink-0"
         >
           <div class="w-5 h-5 sm:w-6 sm:h-6">
             <svg
@@ -57,8 +57,8 @@
           <div
             v-for="(cost, index) in shippingCosts"
             :key="index"
-            @click="selectedShippingCost = cost"
-            class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 border rounded-md cursor-pointer hover:border-[#E9322B] hover:bg-[#E9322B14] transition"
+            @click="selectedShippingCost = cost;"
+            class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 border  rounded-md cursor-pointer hover:border-[#E9322B] hover:bg-black/5 transition"
             :class="{
               'border-[#E9322B] bg-[#E9322B14]':
                 selectedShippingCost?.agent === cost.agent &&
@@ -68,7 +68,7 @@
                 selectedShippingCost?.service !== cost.service,
             }"
           >
-            <div class="flex-1 min-w-0">
+            <div class="flex-1 min-w-0 ">
               <div class="flex items-center justify-between gap-2 mb-1">
                 <div class="flex-1 min-w-0">
                   <span
@@ -165,6 +165,7 @@ const emitCourierUpdate = (
 
 watch(selectedShippingCost, (newCost) => {
   emitCourierUpdate(newCost, props.storeKey);
+   handleClose();
 });
 
 const handleClose = () => emit("update:modelValue", false);
