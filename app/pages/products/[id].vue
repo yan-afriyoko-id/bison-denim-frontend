@@ -53,7 +53,7 @@
             <div class="flex md:flex-col gap-2 order-2 md:order-1 overflow-x-auto md:overflow-y-auto md:max-h-[600px]">
               <button
                 v-for="(img, index) in productImages.slice(0, 7)"
-                :key="index"
+                :key="img"
                 @click="selectedImage = img;"
                 :class="[
                   'w-16 h-16 md:w-20 md:h-20 rounded border-2 transition hover:cursor-pointer shrink-0 overflow-hidden',
