@@ -1505,7 +1505,7 @@ const currentStoreShippingOptions = computed(() => {
 });
 
 const allCouriers =
-  "jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse";
+  "jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana";
 
 const fetchShippingCostPerStore = async () => {
   const cityId = shippingForm.value.city_id;
