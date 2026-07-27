@@ -540,7 +540,7 @@
             </ul>
           </div>
           <div class="mb-6">
-            <div v-if="product.product_information" v-html="product.product_information" class="text-[#1A1919]"></div>
+            <div v-if="product.product_information" v-html="product.product_information" class="product-content"></div>
             <p v-else class="text-[#808080]">Informasi produk belum tersedia</p>
           </div>
           <div v-if="product.categories && product.categories.length > 0" class="mb-6">
@@ -2465,7 +2465,6 @@ useHead({
     },
   ],
 });
-
 useHead({
   script: [
     {
@@ -2475,3 +2474,20 @@ useHead({
   ],
 });
 </script>
+
+<style scoped>
+:deep(.product-content h1) {
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+:deep(.product-content h2) {
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+:deep(.product-content h3) {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+</style>
