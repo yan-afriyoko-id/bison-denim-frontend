@@ -54,6 +54,7 @@
               <button
                 v-for="(img, index) in productImages.slice(0, 7)"
                 :key="img"
+                :id="`thumbnail-${index}`"
                 @click="selectedImage = img;"
                 :class="[
                   'w-16 h-16 md:w-20 md:h-20 rounded border-2 transition hover:cursor-pointer shrink-0 overflow-hidden',
@@ -65,6 +66,8 @@
                 <NuxtImg
                   :src="img"
                   :alt="`${product.name} ${index + 1}`"
+                  :key="img"
+                :id="`thumbnail-${index}`"
                   class="w-full h-full object-cover"
                   fit="cover"
                 />
