@@ -75,8 +75,6 @@
             <div class="flex-1 order-1 md:order-2">
               <div
                 class="relative group overflow-hidden rounded cursor-crosshair"
-                @mousemove="onImageZoom"
-                @mouseleave="zoomOrigin = null"
               >
                 <NuxtImg
                   :src="selectedImage || product.image"
@@ -87,13 +85,15 @@
                   :class="{ 'scale-150': zoomOrigin !== null }"
                   :style="zoomOrigin ? { 'transform-origin': zoomOrigin } : {}"
                   fit="cover"
+                  @mousemove="onImageZoom"
+                  @mouseleave="zoomOrigin = null"
                 />
 
                 <!-- Nav Arrows inside image (left/right, vertically centered) -->
                 <template v-if="productImages.length > 1">
                   <button
                     @click="prevImage"
-                    class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md hover:cursor-pointer transition"
+                    class="z-10 absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md hover:cursor-pointer transition"
                     aria-label="Previous image"
                   >
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
