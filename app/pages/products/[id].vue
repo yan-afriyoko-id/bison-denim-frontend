@@ -54,11 +54,10 @@
               <button
                 v-for="(img, index) in productImages.slice(0, 7)"
                 :key="img"
-                :id="`thumbnail-${index}`"
                 @click="selectedImage = img;"
                 :class="[
                   'w-16 h-16 md:w-20 md:h-20 rounded border-2 transition hover:cursor-pointer shrink-0 overflow-hidden',
-                  selectedImage === img 
+                  selectedImage === img && selectedImageIndex === index
                     ? 'border-black'
                     : 'border-gray-200 hover:border-gray-400',
                 ]"
