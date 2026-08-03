@@ -148,6 +148,19 @@
               {{ isSaving ? 'Menyimpan...' : 'Simpan' }}
             </button>
           </form>
+
+          <!-- Logout Button -->
+          <button
+            type="button"
+            :disabled="isLoggingOut"
+            class="mt-5 w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-danger text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:opacity-90 transition cursor-pointer disabled:opacity-60"
+            @click="handleLogout"
+          >
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+            </svg>
+            {{ isLoggingOut ? 'Keluar...' : 'Keluar' }}
+          </button>
         </div>
       </div>
     </div>
@@ -200,7 +213,20 @@ onMounted(async () => {
 })
 
 const isSaving = ref(false)
+const isLoggingOut = ref(false)
 const saveError = ref<string | null>(null)
+
+const handleLogout = async () => {
+  if (isLoggingOut.value) return
+  isLoggingOut.value = true
+  try {
+    await auth.logout()
+  } catch (error) {
+    console.error("Logout error:", error)
+  } finally {
+    isLoggingOut.value = false
+  }
+}
 
 const handleSave = async () => {
   isSaving.value = true

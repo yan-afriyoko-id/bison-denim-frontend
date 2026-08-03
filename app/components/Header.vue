@@ -107,18 +107,112 @@
             </svg>
           </NuxtLink>
         </template>
-        <NuxtLink
+        <div
           v-else
-          to="/account"
-          class="flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold hover:cursor-pointer transition-colors flex-none"
-          :class="route.path.startsWith('/account')
-            ? 'bg-black text-white ring-1 ring-black/10'
-            : isWhiteHeader
-              ? 'bg-black text-white ring-1 ring-black/10'
-              : 'bg-white text-black ring-1 ring-black/10'"
+          ref="profileMenuRef"
+          class="relative flex-none"
         >
-          {{ userName.charAt(0).toUpperCase() }}
-        </NuxtLink>
+          <!-- Profile dropdown trigger -->
+          <button
+            type="button"
+            class="flex items-center gap-2 hover:cursor-pointer"
+            :class="isWhiteHeader ? 'text-black' : 'text-white'"
+            :aria-expanded="isProfileMenuOpen"
+            aria-label="Account menu"
+            @click="isProfileMenuOpen = !isProfileMenuOpen"
+          >
+            <span
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white text-xs font-semibold flex-none"
+            >
+              {{ userName.charAt(0).toUpperCase() }}
+            </span>
+            <span class="hidden sm:block text-sm font-medium max-w-[100px] truncate">{{ userName }}</span>
+            <svg
+              class="w-3.5 h-3.5 flex-none transition-transform duration-200"
+              :class="{ 'rotate-180': isProfileMenuOpen }"
+              viewBox="0 0 20 20"
+              fill="none"
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+
+          <!-- Dropdown menu -->
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-1"
+          >
+            <div
+              v-if="isProfileMenuOpen"
+              class="absolute right-0 top-full mt-3 w-60 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 overflow-hidden"
+            >
+              <!-- Dropdown header -->
+              <div class="px-4 py-3.5 border-b border-gray-100">
+                <p class="text-sm font-semibold text-[#1A1919] truncate">{{ userName }}</p>
+                <p class="text-xs text-gray-500 truncate mt-0.5">{{ userEmail }}</p>
+              </div>
+
+              <div class="py-1.5">
+                <NuxtLink
+                  to="/account"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1A1919] hover:bg-gray-50 transition-colors"
+                  @click="isProfileMenuOpen = false"
+                >
+                  <svg class="w-4 h-4 shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                  </svg>
+                  Akun Saya
+                </NuxtLink>
+
+                <NuxtLink
+                  to="/account/orders"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1A1919] hover:bg-gray-50 transition-colors"
+                  @click="isProfileMenuOpen = false"
+                >
+                  <svg class="w-4 h-4 shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                  </svg>
+                  Pesanan Saya
+                </NuxtLink>
+
+                <NuxtLink
+                  to="/account/points"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1A1919] hover:bg-gray-50 transition-colors"
+                  @click="isProfileMenuOpen = false"
+                >
+                  <svg class="w-4 h-4 shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.563.563 0 0 0-.182-.557l-4.204-3.602a.563.563 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                  </svg>
+                  Poin Saya
+                </NuxtLink>
+              </div>
+
+              <div class="border-t border-gray-100 py-1.5">
+                <button
+                  type="button"
+                  :disabled="isLoggingOut"
+                  class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#E9322A] hover:bg-[#E9322A]/5 transition-colors disabled:opacity-60"
+                  @click="handleLogout"
+                >
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+                  </svg>
+                  {{ isLoggingOut ? "Keluar..." : "Keluar" }}
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
       </div>
     </div>
 
@@ -282,6 +376,8 @@ const isScrolled = ref(false)
 const isHydrated = ref(false)
 const headerRef = ref<HTMLElement | null>(null)
 const loadingCategories = ref(false)
+const isProfileMenuOpen = ref(false)
+const profileMenuRef = ref<HTMLElement | null>(null)
 
 type NavigationCategory = {
   id: number
@@ -396,6 +492,19 @@ const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === "Escape" && isSidebarOpen.value) {
     closeSidebar()
   }
+  if (event.key === "Escape" && isProfileMenuOpen.value) {
+    isProfileMenuOpen.value = false
+  }
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    isProfileMenuOpen.value &&
+    profileMenuRef.value &&
+    !profileMenuRef.value.contains(event.target as Node)
+  ) {
+    isProfileMenuOpen.value = false
+  }
 }
 
 // Scroll detection for header style switch
@@ -411,6 +520,7 @@ onMounted(async () => {
   await loadCart()
   window.addEventListener("keydown", handleKeydown)
   window.addEventListener("scroll", handleScroll)
+  window.addEventListener("click", handleClickOutside)
   handleScroll()
 })
 
@@ -420,6 +530,7 @@ onUnmounted(() => {
   }
   window.removeEventListener("keydown", handleKeydown)
   window.removeEventListener("scroll", handleScroll)
+  window.removeEventListener("click", handleClickOutside)
 })
 
 watch(isSidebarOpen, (open) => {
@@ -431,6 +542,7 @@ watch(
   () => route.path,
   () => {
     closeSidebar()
+    isProfileMenuOpen.value = false
   },
 )
 </script>
