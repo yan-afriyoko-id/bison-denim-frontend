@@ -1430,7 +1430,9 @@ const applyProductResponse = (apiProduct: Product) => {
 
   let images: string[] = [];
   if (apiProduct.images && apiProduct.images.length > 0) {
-    images = apiProduct.images.map((img: any) => img.path);
+    images = Array.from(
+      new Set(apiProduct.images.map((img: any) => img.path)),
+    );
     const featuredImage = apiProduct.images.find(
       (img: any) => img.is_featured,
     );
@@ -1441,12 +1443,16 @@ const applyProductResponse = (apiProduct: Product) => {
     selectedImage.value = null;
   }
 
-  if (allVariants.value && allVariants.value.length > 0) {
-    allVariants.value.forEach((variant: any) => {
-      if (variant.image_path && !images.includes(variant.image_path)) {
-        images.push(variant.image_path);
-      }
-    });
+  if (images.length === 0 && allVariants.value && allVariants.value.length > 0) {
+    const variantImages = Array.from(
+      new Set(
+        allVariants.value
+          .map((v: any) => v.image_path)
+          .filter((p: string | null) => p),
+      ),
+    );
+    images.push(...variantImages);
+    selectedImage.value = selectedImage.value || images[0] || null;
   }
 
   if (images.length === 0) {
@@ -2274,12 +2280,8 @@ const getPageNumbers = computed(() => {
 watch(
   selectedVariant,
   (newVariant, oldVariant) => {
-    // Update main image if variant has image
     if (newVariant?.image_path) {
       selectedImage.value = newVariant.image_path;
-      if (!productImages.value.includes(newVariant.image_path)) {
-        productImages.value.push(newVariant.image_path);
-      }
     } else if (!newVariant && oldVariant) {
       if (productImages.value && productImages.value.length > 0) {
         const firstProductImage = productImages.value.find((img: string) => {
