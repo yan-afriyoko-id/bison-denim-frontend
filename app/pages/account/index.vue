@@ -150,7 +150,7 @@
           </form>
 
           <!-- Logout Button -->
-          <button
+          <!-- <button
             type="button"
             :disabled="isLoggingOut"
             class="mt-5 w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-danger text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:opacity-90 transition cursor-pointer disabled:opacity-60"
@@ -160,7 +160,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
             </svg>
             {{ isLoggingOut ? 'Keluar...' : 'Keluar' }}
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
