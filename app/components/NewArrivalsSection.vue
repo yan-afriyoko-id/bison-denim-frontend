@@ -76,12 +76,11 @@
               <div class="px-3 product-card-info overflow-hidden">
                 <NuxtLink
                   :to="product.link"
-                  class="link-underline-anim text-sm font-medium text-black m-0 mb-[5px] leading-[21px] block truncate"
-                  style="text-transform:uppercase;letter-spacing:normal"
+                  class="block max-h-[42px] min-h-[42px] text-sm font-medium leading-[21px] text-black uppercase line-clamp-2 mb-4"
                 >
                   {{ product.name }}
                 </NuxtLink>
-                <p class="text-sm font-medium text-black block m-0" style="letter-spacing:0.28px">{{ product.price }}</p>
+                <p class="text-sm font-medium text-black block m-0 " style="letter-spacing:0.28px">{{ product.price }}</p>
                 <div v-if="product.colors?.length" class="flex gap-1.5 mt-2 flex-wrap">
                   <button
                     v-for="(color, ci) in product.colors"
