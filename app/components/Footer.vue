@@ -37,6 +37,8 @@
           </ul>
         </div>
 
+        <!-- Hidden per client request: ABOUT column (Our Story, Store Locations) -->
+        <!--
         <div>
           <h4 class="text-[13px] sm:text-[14px] font-medium text-[#898989] uppercase mb-3 sm:mb-4 tracking-normal">
             About
@@ -54,6 +56,7 @@
             </li>
           </ul>
         </div>
+        -->
 
         <div>
           <h4 class="text-[13px] sm:text-[14px] font-medium text-[#898989] uppercase mb-3 sm:mb-4 tracking-normal">
@@ -83,11 +86,14 @@
                 Privacy Policy
               </NuxtLink>
             </li>
+            <!-- Hidden per client request: Disclaimer link -->
+            <!--
             <li>
               <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
                 Disclaimer
               </NuxtLink>
             </li>
+            -->
           </ul>
         </div>
       </div>
