@@ -1,7 +1,7 @@
 <template>
-  <footer class="bg-white text-black border-t border-[#d1d1d1] pt-8 sm:pt-10 pb-0 text-[15px]">
+  <footer class="bg-white text-black pb-0 text-[15px]">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-[50px]">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-6 sm:pb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 border-t border-[#d1d1d1] pt-8 sm:pt-10 pb-6 sm:pb-8">
         <!-- <div>
           <form class="flex items-end gap-2 max-w-xs mt-9">
             <input
