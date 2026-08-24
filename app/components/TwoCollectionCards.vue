@@ -30,18 +30,18 @@
 <script setup lang="ts">
 const cards = [
   {
-    title: 'END OF SEASON',
+    title: 'Long Wallet',
     description: '',
-    link: '/products',
+    link: '/products?category_ids=50',
     linkText: 'Shop Now',
-    image: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=800&q=80',
+    image: '/assets/img/collections/long-wallet.jpg',
   },
   {
-    title: 'MAGNETIC CARD HOLDER',
+    title: 'Short Wallet',
     description: '',
-    link: '/products',
+    link: '/products?category_ids=51',
     linkText: 'Discover The Collection',
-    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&q=80',
+    image: '/assets/img/collections/short-wallet.jpg',
   },
 ]
 </script>
