@@ -736,7 +736,7 @@ const { getShippingCost } = useShippingApi();
 const { getPoints } = usePointApi();
 const { getPublicConfig } = useConfigApi();
 
-const { getSnapToken, getXenditInvoice, createPaymentGroup, getActivePaymentGateways } = usePaymentApi();
+const { getSnapToken, getXenditInvoice, getDokuCheckout, createPaymentGroup, getActivePaymentGateways } = usePaymentApi();
 const { confirmPayment } = useOrderApi();
 
 const isLoadingCart = ref(true);
@@ -811,6 +811,7 @@ const globalProtectionPercent = ref<number>(0);
 const allPaymentMethods = [
   { key: "midtrans", label: "Midtrans", description: "Kartu Kredit / Transfer / E-Wallet" },
   { key: "xendit", label: "Xendit", description: "Virtual Account / Retail / E-Wallet" },
+  { key: "doku", label: "DOKU", description: "Virtual Account / QRIS / E-Wallet / Kartu Kredit" },
 ];
 const activeGateways = ref<string[]>([]);
 const selectedGateway = ref<string>("");
@@ -1763,6 +1764,14 @@ const isXenditPayment = (payment?: { method?: string | null; snap_token?: string
   return payment?.method === "xendit" || isXenditInvoiceUrl(payment?.snap_token);
 };
 
+const isDokuCheckoutUrl = (value?: string | null) => {
+  return typeof value === "string" && /^https?:\/\/.+doku\.com/i.test(value);
+};
+
+const isDokuPayment = (payment?: { method?: string | null; snap_token?: string | null } | null) => {
+  return payment?.method === "doku" || isDokuCheckoutUrl(payment?.snap_token);
+};
+
 const payWithMidtrans = async (orderId: number) => {
   try {
     await loadMidtransSnap();
@@ -1815,6 +1824,27 @@ const payWithXenditReadonly = async (orderId: number) => {
   } catch (err) {
     console.error("Xendit error:", err);
     alert("Gagal memulai pembayaran Xendit");
+  }
+};
+
+const payWithDoku = async (orderId: number, variantIdsToRemove: number[] = []) => {
+  try {
+    const callbackUrl = window.location.origin + "/account/orders?tab=paid";
+    const { payment_url } = await getDokuCheckout(orderId, callbackUrl);
+    if (!payment_url) {
+      alert("Gagal mendapatkan halaman pembayaran");
+      return;
+    }
+    for (const variantId of variantIdsToRemove) {
+      await removeFromCart(variantId);
+    }
+    if (variantIdsToRemove.length > 0) {
+      await loadCart();
+    }
+    window.location.href = payment_url;
+  } catch (err: any) {
+    console.error("DOKU error:", err);
+    alert(err?.data?.message || "Gagal memulai pembayaran DOKU");
   }
 };
 
@@ -1895,6 +1925,8 @@ const processExistingPayment = async () => {
   const gw = existingOrder.value?.payment?.method || selectedGateway.value || "midtrans";
   if (isXenditPayment(existingOrder.value?.payment) || gw === "xendit") {
     await payWithXenditReadonly(orderIdFromQuery.value);
+  } else if (isDokuPayment(existingOrder.value?.payment) || gw === "doku") {
+    await payWithDoku(orderIdFromQuery.value);
   } else {
     await payWithMidtrans(orderIdFromQuery.value);
   }
@@ -2039,6 +2071,18 @@ const handlePayment = async () => {
           }
           await loadCart();
           window.location.href = invoice_url;
+        } else if (gw === "doku") {
+          const redirectUrl = window.location.origin + "/account/orders?tab=paid";
+          const { payment_url } = await createPaymentGroup(createdOrderIds, gw, redirectUrl);
+          if (!payment_url) {
+            alert("Gagal mendapatkan halaman pembayaran");
+            return;
+          }
+          for (const variantId of variantIdsToRemove) {
+            await removeFromCart(variantId);
+          }
+          await loadCart();
+          window.location.href = payment_url;
         } else {
           const { snap_token } = await createPaymentGroup(createdOrderIds, gw);
           if (!snap_token) {
@@ -2093,6 +2137,8 @@ const handlePayment = async () => {
       const gw = selectedGateway.value;
       if (gw === "xendit") {
         await payWithXendit(firstOrderId, variantIdsToRemove);
+      } else if (gw === "doku") {
+        await payWithDoku(firstOrderId, variantIdsToRemove);
       } else {
         await payWithMidtransWithCart(firstOrderId, variantIdsToRemove);
       }

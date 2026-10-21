@@ -333,7 +333,7 @@ const {
   isLoading,
 } = useOrder();
 const { cancelOrder, completeOrder, confirmPayment } = useOrderApi();
-const { getSnapToken, getXenditInvoice, getActivePaymentGateways } = usePaymentApi();
+const { getSnapToken, getXenditInvoice, getDokuCheckout, getActivePaymentGateways } = usePaymentApi();
 
 const route = useRoute();
 const router = useRouter();
@@ -350,6 +350,7 @@ const isPolling = ref(false);
 const allPaymentMethods = [
   { key: "midtrans", label: "Midtrans", description: "Kartu Kredit / Transfer / E-Wallet" },
   { key: "xendit", label: "Xendit", description: "Virtual Account / Retail / E-Wallet" },
+  { key: "doku", label: "DOKU", description: "Virtual Account / QRIS / E-Wallet / Kartu Kredit" },
 ];
 const showPaymentModal = ref(false);
 const payingOrderId = ref<number | null>(null);
@@ -367,9 +368,17 @@ const isXenditInvoiceUrl = (value?: string | null) => {
   return typeof value === "string" && /^https?:\/\/.+xendit\.co/i.test(value);
 };
 
+const isDokuCheckoutUrl = (value?: string | null) => {
+  return typeof value === "string" && /^https?:\/\/.+doku\.com/i.test(value);
+};
+
 const getOrderPaymentGateway = (order: any) => {
   if (order?.payment?.method === "xendit" || isXenditInvoiceUrl(order?.payment?.snap_token)) {
     return "xendit";
+  }
+
+  if (order?.payment?.method === "doku" || isDokuCheckoutUrl(order?.payment?.snap_token)) {
+    return "doku";
   }
 
   if (order?.payment?.method === "midtrans") {
@@ -406,6 +415,8 @@ const proceedPayment = async () => {
   showPaymentModal.value = false;
   if (paymentMethod === "xendit") {
     await handlePayXendit(orderId);
+  } else if (paymentMethod === "doku") {
+    await handlePayDoku(orderId);
   } else {
     await handlePay(orderId, paymentMethod);
   }
@@ -442,11 +453,14 @@ const loadOrders = async () => {
   }
 };
 
-const isXenditSuccessReturn = () => {
-  return route.query.xendit_return === "success" || route.query.status === "PAID";
+// Back from a hosted payment page (Xendit invoice / DOKU Checkout): verify pending orders with the gateway
+const isRedirectGatewayReturn = () => {
+  return route.query.xendit_return === "success" ||
+    route.query.status === "PAID" ||
+    route.query.doku_return !== undefined;
 };
 
-const syncPendingXenditOrders = async () => {
+const syncPendingRedirectOrders = async () => {
   const returnedOrderId = Number(route.query.order_id);
   const hasReturnedOrderId = Number.isFinite(returnedOrderId) && returnedOrderId > 0;
 
@@ -454,19 +468,19 @@ const syncPendingXenditOrders = async () => {
     if (order.payment.status !== "PENDING") return false;
     if (hasReturnedOrderId) return order.id === returnedOrderId;
 
-    return order.payment.method === "xendit";
+    return order.payment.method === "xendit" || order.payment.method === "doku";
   });
 
   await Promise.all(candidates.map((order) => confirmPayment(order.id)));
 };
 
 onMounted(async () => {
-  const shouldSyncXendit = isXenditSuccessReturn();
+  const shouldSyncRedirect = isRedirectGatewayReturn();
 
   await loadOrders();
 
-  if (shouldSyncXendit) {
-    await syncPendingXenditOrders();
+  if (shouldSyncRedirect) {
+    await syncPendingRedirectOrders();
     await loadOrders();
   }
 
@@ -479,8 +493,8 @@ onMounted(async () => {
   const poll = async () => {
     retries++;
 
-    if (shouldSyncXendit) {
-      await syncPendingXenditOrders();
+    if (shouldSyncRedirect) {
+      await syncPendingRedirectOrders();
     }
 
     await loadOrders();
@@ -641,6 +655,24 @@ const handlePayXendit = async (orderId: number) => {
     processingPaymentOrderId.value = null;
     console.error("Error processing Xendit payment:", error);
     alert("Gagal memproses pembayaran Xendit");
+  }
+};
+
+const handlePayDoku = async (orderId: number) => {
+  try {
+    processingPaymentOrderId.value = orderId;
+    const callbackUrl = window.location.origin + "/account/orders?tab=paid";
+    const { payment_url } = await getDokuCheckout(orderId, callbackUrl);
+    processingPaymentOrderId.value = null;
+    if (!payment_url) {
+      alert("Gagal mendapatkan halaman pembayaran");
+      return;
+    }
+    window.location.href = payment_url;
+  } catch (error: any) {
+    processingPaymentOrderId.value = null;
+    console.error("Error processing DOKU payment:", error);
+    alert(error?.data?.message || "Gagal memproses pembayaran DOKU");
   }
 };
 

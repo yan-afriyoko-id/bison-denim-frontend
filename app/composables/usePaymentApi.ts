@@ -36,6 +36,21 @@ export const usePaymentApi = () => {
     );
   };
 
+  const getDokuCheckout = async (orderId: number, callbackUrl?: string) => {
+    const body: Record<string, any> = {};
+    if (callbackUrl) {
+      body.callback_url = callbackUrl;
+    }
+    return await $fetch<{ payment_url: string; invoice_number: string }>(
+      `${baseURL}/orders/${orderId}/pay/doku`,
+      {
+        method: "POST",
+        headers: getHeaders(),
+        body: Object.keys(body).length > 0 ? body : undefined,
+      },
+    );
+  };
+
   const createPaymentGroup = async (orderIds: number[], paymentMethod?: string, redirectUrl?: string) => {
     const body: Record<string, any> = { order_ids: orderIds };
     if (paymentMethod) {
@@ -45,11 +60,15 @@ export const usePaymentApi = () => {
       body.success_redirect_url = redirectUrl;
       body.failure_redirect_url = redirectUrl;
     }
+    if (redirectUrl && paymentMethod === "doku") {
+      body.callback_url = redirectUrl;
+    }
     try {
       const res = await $fetch<{
         snap_token?: string;
         payment_group_id: number;
         invoice_url?: string;
+        payment_url?: string;
       }>(`${baseURL}/payments/groups`, {
         method: "POST",
         headers: getHeaders(),
@@ -63,27 +82,12 @@ export const usePaymentApi = () => {
 
   const getActivePaymentGateways = async (): Promise<string[]> => {
     try {
-      const res = await $fetch<{
-        success: boolean;
-        data: Array<{ key: string; value: string; casted_value: any }>;
-      }>(`${baseURL}/configs`, {
-        method: "GET",
-        headers: getHeaders(),
-      });
-      if (res.success && Array.isArray(res.data)) {
-        const gateways: string[] = [];
-        for (const cfg of res.data) {
-          const val = cfg.casted_value !== undefined
-            ? cfg.casted_value
-            : cfg.value;
-          if (cfg.key === "midtrans_is_active" && (val === true || val === "true")) {
-            gateways.push("midtrans");
-          }
-          if (cfg.key === "xendit_is_active" && (val === true || val === "true")) {
-            gateways.push("xendit");
-          }
-        }
-        if (gateways.length > 0) return gateways;
+      const res = await $fetch<{ gateways: string[] }>(
+        `${baseURL}/payment/gateways`,
+        { method: "GET" },
+      );
+      if (Array.isArray(res.gateways) && res.gateways.length > 0) {
+        return res.gateways;
       }
       return ["midtrans"];
     } catch {
@@ -91,5 +95,5 @@ export const usePaymentApi = () => {
     }
   };
 
-  return { getSnapToken, getXenditInvoice, createPaymentGroup, getActivePaymentGateways };
+  return { getSnapToken, getXenditInvoice, getDokuCheckout, createPaymentGroup, getActivePaymentGateways };
 };
