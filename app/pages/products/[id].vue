@@ -365,6 +365,9 @@
               <p v-if="currentStock > 0" class="text-xs sm:text-sm text-[#ACACAC] mt-2">
                 Sisa Stok: <span class="text-[#1A1919] font-bold">{{ currentStock }}</span>
               </p>
+              <p v-else class="text-xs sm:text-sm text-[#E9322B] font-semibold mt-2">
+                Stok Habis
+              </p>
 
               <!-- Store Location Card -->
               <div
