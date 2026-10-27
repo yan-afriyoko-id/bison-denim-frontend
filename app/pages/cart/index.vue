@@ -18,7 +18,7 @@
 
         <!-- Empty Cart -->
         <div
-          v-else-if="isCartEmpty || !cartData || cartData.cart.length === 0"
+          v-else-if="!hasItems"
           class="text-center py-10 sm:py-12 md:py-16"
         >
           <div class="mb-4 sm:mb-6">
@@ -61,8 +61,38 @@
         >
           <!-- Cart Items -->
           <div class="lg:col-span-2 space-y-5 sm:space-y-6 md:space-y-7.5">
+            <!-- Alert: item yang tidak bisa dibeli -->
+            <div
+              v-if="outOfStockItems.length > 0"
+              role="alert"
+              class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-[10px] p-4 sm:p-5"
+            >
+              <svg
+                class="w-5 h-5 shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <div class="text-xs sm:text-sm">
+                <p class="font-semibold">
+                  {{ outOfStockItems.length }} produk di keranjang tidak dapat
+                  di-checkout
+                </p>
+                <p>
+                  Jumlahnya melebihi stok atau produk sudah tidak tersedia.
+                  Sesuaikan jumlah atau hapus dari keranjang.
+                </p>
+              </div>
+            </div>
+
             <!-- Select All -->
             <div
+              v-if="inStockItems.length > 0"
               class="flex items-center justify-between bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5"
             >
               <label class="flex items-center gap-2 cursor-pointer">
@@ -83,28 +113,20 @@
             </div>
 
             <!-- Cart Items List -->
-            <div class="space-y-5 sm:space-y-6 md:space-y-7.5">
+            <div
+              v-if="inStockItems.length > 0"
+              class="space-y-5 sm:space-y-6 md:space-y-7.5"
+            >
               <div
-                v-for="item in allCartItems"
+                v-for="item in inStockItems"
                 :key="item.variant_id"
                 class="bg-white border rounded-[10px] p-4 sm:p-5 md:p-7.5 transition"
                 :class="[
-                  item.isOutOfStock
-                    ? ' bg-gray-50 border-gray-300 cursor-not-allowed'
-                    : isSelectedForCheckout(item.variant_id)
-                      ? 'border-[#E9322B] ring-1 ring-[#E9322B]/20'
-                      : 'border-[#E6E9F0]',
+                  isSelectedForCheckout(item.variant_id)
+                    ? 'border-[#E9322B] ring-1 ring-[#E9322B]/20'
+                    : 'border-[#E6E9F0]',
                 ]"
               >
-                <!-- Badge Out of Stock -->
-                <div v-if="item.isOutOfStock" class="mb-3">
-                  <span
-                    class="inline-block px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full"
-                  >
-                    Tidak Tersedia (Stok: {{ item.available_stock || 0 }})
-                  </span>
-                </div>
-
                 <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <!-- Checkbox -->
                   <div class="flex items-start sm:items-center shrink-0">
@@ -113,8 +135,7 @@
                         type="checkbox"
                         :checked="isSelectedForCheckout(item.variant_id)"
                         @change="toggleSelectedForCheckout(item.variant_id)"
-                        :disabled="item.isOutOfStock"
-                        class="w-4 h-4 sm:w-5 sm:h-5 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B] disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-4 h-4 sm:w-5 sm:h-5 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B]"
                       />
                       <span class="text-xs sm:text-sm text-[#7B7B7B] sm:sr-only"
                         >Pilih</span
@@ -125,14 +146,7 @@
                   <!-- Image -->
                   <NuxtLink
                     :to="`/products/${item.product_slug || item.product_id}`"
-                    :aria-disabled="item.isOutOfStock"
-                    :tabindex="item.isOutOfStock ? -1 : 0"
-                    class="w-full sm:w-[80px] md:w-[100px] lg:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] rounded-lg overflow-hidden bg-[#F8F8F8] shrink-0"
-                    :class="[
-                      item.isOutOfStock
-                        ? 'cursor-not-allowed opacity-70 pointer-events-none'
-                        : 'hover:text-[#E9322B] transition cursor-pointer',
-                    ]"
+                    class="w-full sm:w-[80px] md:w-[100px] lg:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] rounded-lg overflow-hidden bg-[#F8F8F8] shrink-0 hover:text-[#E9322B] transition cursor-pointer"
                   >
                     <NuxtImg
                       :src="item.image || '/placeholder.png'"
@@ -147,14 +161,7 @@
                   <div class="flex-1 min-w-0">
                     <NuxtLink
                       :to="`/products/${item.product_slug || item.product_id}`"
-                      :aria-disabled="item.isOutOfStock"
-                      :tabindex="item.isOutOfStock ? -1 : 0"
-                      class="block mb-1.5 sm:mb-2"
-                      :class="[
-                        item.isOutOfStock
-                          ? 'cursor-not-allowed opacity-70 pointer-events-none'
-                          : 'hover:text-[#E9322B] transition cursor-pointer',
-                      ]"
+                      class="block mb-1.5 sm:mb-2 hover:text-[#E9322B] transition cursor-pointer"
                     >
                       <h3
                         class="text-sm sm:text-base md:text-lg font-medium text-[#1A1919] line-clamp-2"
@@ -175,7 +182,7 @@
                       </span>
                     </div>
 
-                    <!-- Quantity (disabled kalau out of stock) -->
+                    <!-- Quantity -->
                     <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                       <label class="text-xs sm:text-sm text-[#808080]"
                         >Jumlah:</label
@@ -230,6 +237,12 @@
                           </svg>
                         </button>
                       </div>
+                      <span
+                        v-if="item.qty >= item.available_stock"
+                        class="text-xs text-[#7B7B7B]"
+                      >
+                        Stok maksimal
+                      </span>
                     </div>
 
                     <!-- Subtotal & Hapus -->
@@ -252,6 +265,76 @@
                       >
                         Hapus
                       </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Out of stock: ditangani terpisah (tidak bisa dipilih / diubah manual) -->
+            <div v-if="outOfStockItems.length > 0">
+              <h2
+                class="text-sm sm:text-base font-semibold text-[#1A1919] mb-3 sm:mb-4"
+              >
+                Tidak Dapat Di-checkout ({{ outOfStockItems.length }})
+              </h2>
+              <div class="space-y-4 sm:space-y-5">
+                <div
+                  v-for="item in outOfStockItems"
+                  :key="item.variant_id"
+                  class="bg-gray-50 border border-gray-300 rounded-[10px] p-4 sm:p-5"
+                >
+                  <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <!-- Image -->
+                    <div
+                      class="w-full sm:w-[80px] md:w-[100px] h-[80px] sm:h-[100px] md:h-[100px] rounded-lg overflow-hidden bg-[#F8F8F8] shrink-0 opacity-60"
+                    >
+                      <NuxtImg
+                        v-if="item.image"
+                        :src="item.image"
+                        :alt="item.product_name"
+                        class="w-full h-full object-cover"
+                        width="128"
+                        height="128"
+                      />
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                      <span
+                        class="inline-block px-3 py-1 mb-2 text-xs font-medium bg-red-100 text-red-700 rounded-full"
+                      >
+                        {{ isUnavailable(item) ? "Tidak Tersedia" : "Stok Tidak Cukup" }}
+                      </span>
+                      <h3
+                        class="text-sm sm:text-base font-medium text-[#1A1919] opacity-70 line-clamp-2"
+                      >
+                        {{ item.product_name }}
+                      </h3>
+                      <p
+                        v-if="item.variant_description"
+                        class="text-xs sm:text-sm text-[#7B7B7B] mb-1.5"
+                      >
+                        {{ item.variant_description }}
+                      </p>
+                      <p class="text-xs sm:text-sm text-red-700 mb-3">
+                        {{ outOfStockMessage(item) }}
+                      </p>
+
+                      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <button
+                          v-if="canAdjustToStock(item)"
+                          @click="adjustToStock(item)"
+                          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#E9322B] text-white rounded-md hover:bg-[#C4282B] transition cursor-pointer"
+                        >
+                          Sesuaikan jadi {{ item.available_stock }}
+                        </button>
+                        <button
+                          @click="removeItem(item.variant_id)"
+                          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-[#E9322B] border border-[#E9322B] hover:bg-red-50 rounded-md transition cursor-pointer"
+                        >
+                          Hapus
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -336,6 +419,8 @@
 </template>
 
 <script setup lang="ts">
+import type { CartItemResponse } from "~/types/cart";
+
 definePageMeta({
   layout: "default",
 });
@@ -343,6 +428,8 @@ definePageMeta({
 useHead({
   title: "Keranjang Belanja",
 });
+
+const { showToast } = useToast();
 
 const {
   cartData,
@@ -363,21 +450,11 @@ const {
 const auth = useAuth();
 const router = useRouter();
 
-const allCartItems = computed(() => {
-  if (!cartData.value) return [];
-
-  const normal = (cartData.value.cart || []).map((item) => ({
-    ...item,
-    isOutOfStock: false,
-  }));
-
-  const outOfStock = (cartData.value.outOfStock || []).map((item) => ({
-    ...item,
-    isOutOfStock: true,
-  }));
-
-  return [...normal, ...outOfStock];
-});
+const inStockItems = computed(() => cartData.value?.cart || []);
+const outOfStockItems = computed(() => cartData.value?.outOfStock || []);
+const hasItems = computed(
+  () => inStockItems.value.length > 0 || outOfStockItems.value.length > 0,
+);
 
 const selectedCount = computed(() => checkoutCart.value.length);
 
@@ -400,7 +477,7 @@ const toggleSelectAll = () => {
 
 const goToPayment = () => {
   if (checkoutCart.value.length === 0) {
-    toast.warning("Pilih minimal satu item untuk checkout");
+    showToast("Pilih minimal satu item untuk checkout", "error");
     return;
   }
 
@@ -433,7 +510,7 @@ const increaseQty = async (variantId: number) => {
   if (item && item.qty < item.available_stock) {
     await updateCartItem(variantId, item.qty + 1);
   } else if (item) {
-    toast.warning("Stok tidak cukup");
+    showToast(`Stok tersedia hanya ${item.available_stock}`, "error");
   }
 };
 
@@ -458,9 +535,25 @@ const removeItem = async (variantId: number) => {
   await removeFromCart(variantId);
 };
 
-const isCartEmpty = computed(() => {
-  return !cartData.value || cartData.value.cart.length === 0;
-});
+const isUnavailable = (item: CartItemResponse) => !!item.reason;
+
+const outOfStockMessage = (item: CartItemResponse) => {
+  if (isUnavailable(item)) return "Produk ini sudah tidak tersedia.";
+  if (item.available_stock > 0) {
+    return `Stok tersisa ${item.available_stock}, di keranjang ${item.qty}.`;
+  }
+  return "Stok produk ini sedang habis.";
+};
+
+const canAdjustToStock = (item: CartItemResponse) =>
+  !isUnavailable(item) &&
+  item.available_stock > 0 &&
+  item.available_stock < item.qty;
+
+const adjustToStock = async (item: CartItemResponse) => {
+  if (!canAdjustToStock(item)) return;
+  await updateCartItem(item.variant_id, item.available_stock);
+};
 </script>
 
 <style scoped>

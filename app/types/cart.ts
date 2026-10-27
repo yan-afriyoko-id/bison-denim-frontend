@@ -30,6 +30,7 @@ export interface CartItemResponse {
   note: string | null;
   in_stock: boolean;
   available_stock: number;
+  reason?: string;
   store?: {
     id: number;
     name: string;

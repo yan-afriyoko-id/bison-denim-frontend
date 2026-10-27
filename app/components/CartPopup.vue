@@ -54,12 +54,9 @@
         <!-- Cart Content -->
         <template v-else>
           <!-- Has Items -->
-          <template v-if="
-            (cartData?.cart && cartData.cart.length > 0) ||
-            (cartData?.outOfStock && cartData.outOfStock.length > 0)
-          ">
+          <template v-if="inStockItems.length > 0 || outOfStockItems.length > 0">
             <div class="mb-4">
-              <div v-if="cartData.cart && cartData.cart.length > 0"
+              <div v-if="inStockItems.length > 0"
                 class="border border-[#E6E9F0] rounded-lg p-3 mb-3 bg-white flex items-center gap-2 cursor-pointer"
                 @click="toggleSelectAll">
                 <input type="checkbox" :checked="isAllSelected"
@@ -67,37 +64,33 @@
                 <span class="text-sm font-medium text-[#1A1919]">Pilih semua</span>
               </div>
 
-              <!-- Semua item (normal + invalid) -->
-              <div v-for="item in allCartItems" :key="item.variant_id"
-                class="border rounded-lg p-3 mb-3 bg-white transition" :class="[
-                  item.isInvalid
-                    ? ' bg-gray-50 border-gray-300 cursor-not-allowed'
-                    : isSelectedForCheckout(item.variant_id)
-                      ? 'border-[#E9322B] ring-1 ring-[#E9322B]/20'
-                      : 'border-[#E6E9F0]',
-                ]">
-                <!-- Badge invalid -->
-                <div v-if="item.isInvalid" class="mb-2">
-                  <span class="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded">
-                    Tidak Tersedia (Stok: {{ item.available_stock || 0 }})
-                  </span>
-                </div>
+              <div v-if="outOfStockItems.length > 0" role="alert"
+                class="border border-red-200 bg-red-50 text-red-700 rounded-lg p-3 mb-3 text-xs">
+                <p class="font-semibold">
+                  {{ outOfStockItems.length }} produk tidak dapat di-checkout
+                </p>
+                <p>Sesuaikan jumlah atau hapus dari keranjang.</p>
+              </div>
 
+              <!-- Item normal -->
+              <div v-for="item in inStockItems" :key="item.variant_id"
+                class="border rounded-lg p-3 mb-3 bg-white transition" :class="[
+                  isSelectedForCheckout(item.variant_id)
+                    ? 'border-[#E9322B] ring-1 ring-[#E9322B]/20'
+                    : 'border-[#E6E9F0]',
+                ]">
                 <div class="flex flex-col">
                   <div class="flex mb-3">
                     <!-- Checkbox -->
                     <label class="flex items-center cursor-pointer mr-2 flex-shrink-0">
                       <input type="checkbox" :checked="isSelectedForCheckout(item.variant_id)"
-                        @change="toggleSelectedForCheckout(item.variant_id)" :disabled="item.isInvalid"
-                        class="w-4 h-4 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B] disabled:opacity-50 disabled:cursor-not-allowed" />
+                        @change="toggleSelectedForCheckout(item.variant_id)"
+                        class="w-4 h-4 border-[#C1C1C1] rounded focus:ring-[#E9322B] focus:ring-2 cursor-pointer text-[#E9322B]" />
                     </label>
 
-                    <component :is="item.isInvalid ? 'div' : 'NuxtLink'" :to="!item.isInvalid
-                        ? `/products/${item.product_slug || item.product_id}`
-                        : undefined
-                      "
+                    <NuxtLink :to="`/products/${item.product_slug || item.product_id}`"
                       class="aspect-square w-[78px] h-[78px] border border-[#E6E9F0] rounded-lg mr-3 overflow-hidden flex-shrink-0"
-                      :class="{ 'cursor-not-allowed': item.isInvalid }" @click="!item.isInvalid && closePopupCart()">
+                      @click="closePopupCart()">
                       <NuxtImg v-if="item.image" :src="item.image" :alt="item.product_name"
                         class="w-full h-full object-cover" fit="cover" />
                       <div v-else class="w-full h-full flex items-center justify-center bg-gray-100">
@@ -106,20 +99,15 @@
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                    </component>
+                    </NuxtLink>
 
                     <!-- Info -->
                     <div class="flex-1">
-                      <component :is="item.isInvalid ? 'p' : 'NuxtLink'" :to="!item.isInvalid
-                          ? `/products/${item.product_slug || item.product_id}`
-                          : undefined
-                        " class="font-semibold mb-1 text-sm" :class="[
-                          item.isInvalid
-                            ? 'text-[#1A1919] opacity-70 cursor-not-allowed'
-                            : 'text-[#1A1919] hover:text-[#E9322B] transition cursor-pointer',
-                        ]" @click="!item.isInvalid && closePopupCart()">
+                      <NuxtLink :to="`/products/${item.product_slug || item.product_id}`"
+                        class="font-semibold mb-1 text-sm text-[#1A1919] hover:text-[#E9322B] transition cursor-pointer"
+                        @click="closePopupCart()">
                         {{ item.product_name }}
-                      </component>
+                      </NuxtLink>
 
                       <!-- Harga -->
                       <p class="font-semibold mb-1 text-sm text-[#1A1919]">
@@ -148,21 +136,14 @@
                       </p>
                       <textarea
                         class="w-full px-3 py-2 border border-[#E6E9F0] rounded-lg text-sm outline-none transition-colors focus:border-[#E9322B] text-[#1A1919]"
-                        :class="{
-                          'bg-gray-100 cursor-not-allowed opacity-70':
-                            item.isInvalid,
-                        }" rows="2" :value="item.note || ''" @blur="onChangeNote($event, item.variant_id)"
-                        :disabled="item.isInvalid" placeholder="Tambahkan catatan..."></textarea>
+                        rows="2" :value="item.note || ''" @blur="onChangeNote($event, item.variant_id)"
+                        placeholder="Tambahkan catatan..."></textarea>
                     </div>
 
                     <!-- Qty & Hapus -->
                     <div class="flex items-center justify-between">
                       <!-- Qty -->
-                      <div
-                        class="flex items-center gap-3 sm:gap-5 border border-[#D9D9D9] rounded-sm py-1.5 sm:py-2 px-2 sm:px-2.5"
-                        :class="{
-                          'opacity-70 cursor-not-allowed': item.isInvalid,
-                        }">
+                      <div class="flex items-center gap-3 sm:gap-5 border border-[#D9D9D9] rounded-sm py-1.5 sm:py-2 px-2 sm:px-2.5">
                         <button @click="minQty(item.variant_id)" :disabled="item.qty <= 1"
                           class="disabled:cursor-not-allowed hover:cursor-pointer">
                           <svg width="20" height="20" class="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none"
@@ -185,7 +166,6 @@
                         </button>
                       </div>
 
-                      <!-- Hapus tetap aktif -->
                       <button class="p-0 hover:text-red-600 transition hover:cursor-pointer"
                         @click="removeCartItem(item.variant_id)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -195,6 +175,41 @@
                           <path fill-rule="evenodd"
                             d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                         </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Out of stock: ditangani terpisah, tidak bisa dipilih / diubah manual -->
+              <div v-for="item in outOfStockItems" :key="`oos-${item.variant_id}`"
+                class="border border-gray-300 rounded-lg p-3 mb-3 bg-gray-50">
+                <div class="flex">
+                  <div
+                    class="aspect-square w-[64px] h-[64px] border border-[#E6E9F0] rounded-lg mr-3 overflow-hidden flex-shrink-0 opacity-60 bg-[#F8F8F8]">
+                    <NuxtImg v-if="item.image" :src="item.image" :alt="item.product_name"
+                      class="w-full h-full object-cover" fit="cover" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="inline-block px-2 py-1 mb-1 text-xs font-medium bg-red-100 text-red-700 rounded">
+                      {{ isUnavailable(item) ? "Tidak Tersedia" : "Stok Tidak Cukup" }}
+                    </span>
+                    <p class="font-semibold text-sm text-[#1A1919] opacity-70">
+                      {{ item.product_name }}
+                    </p>
+                    <p class="text-xs text-red-700 mb-2">
+                      {{ outOfStockMessage(item) }}
+                    </p>
+                    <div class="flex items-center gap-2">
+                      <button v-if="canAdjustToStock(item)"
+                        class="px-3 py-1 text-xs bg-[#E9322B] text-white rounded-md hover:bg-[#C4282B] transition cursor-pointer"
+                        @click="adjustToStock(item)">
+                        Sesuaikan jadi {{ item.available_stock }}
+                      </button>
+                      <button
+                        class="px-3 py-1 text-xs text-[#E9322B] border border-[#E9322B] rounded-md hover:bg-red-50 transition cursor-pointer"
+                        @click="removeCartItem(item.variant_id)">
+                        Hapus
                       </button>
                     </div>
                   </div>
@@ -245,6 +260,8 @@
 </template>
 
 <script setup lang="ts">
+import type { CartItemResponse } from "~/types/cart";
+
 const {
   cartData,
   isLoading,
@@ -263,21 +280,28 @@ const {
 
 const router = useRouter();
 
-const allCartItems = computed(() => {
-  if (!cartData.value) return [];
+const inStockItems = computed(() => cartData.value?.cart || []);
+const outOfStockItems = computed(() => cartData.value?.outOfStock || []);
 
-  const normal = (cartData.value.cart || []).map((item) => ({
-    ...item,
-    isInvalid: false,
-  }));
+const isUnavailable = (item: CartItemResponse) => !!item.reason;
 
-  const invalid = (cartData.value.outOfStock || []).map((item) => ({
-    ...item,
-    isInvalid: true,
-  }));
+const outOfStockMessage = (item: CartItemResponse) => {
+  if (isUnavailable(item)) return "Produk ini sudah tidak tersedia.";
+  if (item.available_stock > 0) {
+    return `Stok tersisa ${item.available_stock}, di keranjang ${item.qty}.`;
+  }
+  return "Stok produk ini sedang habis.";
+};
 
-  return [...normal, ...invalid];
-});
+const canAdjustToStock = (item: CartItemResponse) =>
+  !isUnavailable(item) &&
+  item.available_stock > 0 &&
+  item.available_stock < item.qty;
+
+const adjustToStock = async (item: CartItemResponse) => {
+  if (!canAdjustToStock(item)) return;
+  await updateCartItem(item.variant_id, item.available_stock);
+};
 
 const selectedCount = computed(() => checkoutCart.value.length);
 
@@ -312,7 +336,9 @@ const formatPrice = (price: number) => {
 const onChangeNote = async (event: Event, variantId: number) => {
   const target = event.target as HTMLTextAreaElement;
   const note = target.value.trim() || null;
-  await updateCartItem(variantId, 0, note);
+  const item = cartData.value?.cart.find((i) => i.variant_id === variantId);
+  if (!item) return;
+  await updateCartItem(variantId, item.qty, note);
 };
 
 const removeCartItem = async (variantId: number) => {
