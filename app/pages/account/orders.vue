@@ -204,7 +204,7 @@
                         order.status !== 'CANCELLED'
                       "
                       :disabled="isOrderPaying(order.id)"
-                      @click="openPaymentModal(order)"
+                      @click="payOrder(order)"
                       class="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 bg-[#E9322B] text-white rounded-lg text-sm sm:text-base md:text-lg font-medium hover:bg-[#D32A24] transition hover:cursor-pointer"
                     >
                       {{ isOrderPaying(order.id) ? "Memproses..." : "Bayar" }}
@@ -244,59 +244,6 @@
       </div>
     </div>
     <Footer />
-
-    <!-- Payment Method Selection Modal -->
-    <Teleport to="body">
-      <div
-        v-if="showPaymentModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        @click.self="showPaymentModal = false"
-      >
-        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-xl">
-          <h3 class="text-lg font-semibold text-[#1A1919] mb-2">Pilih Metode Pembayaran</h3>
-          <p class="text-sm text-[#7B7B7B] mb-4">Pilih metode pembayaran untuk melanjutkan</p>
-          <div class="space-y-3">
-            <label
-              v-for="gw in paymentMethods"
-              :key="gw.key"
-              class="flex items-center gap-3 p-4 border rounded-lg transition"
-              :class="[
-                selectedPaymentMethod === gw.key ? 'border-[#E9322B] bg-[#E9322B14]' : 'border-[#E6E9F0]',
-                gw.active ? 'cursor-pointer hover:border-[#E9322B]' : 'opacity-50'
-              ]"
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                :value="gw.key"
-                v-model="selectedPaymentMethod"
-                :disabled="!gw.active"
-                class="accent-[#E9322B]"
-              />
-              <div>
-                <span class="text-sm font-medium text-[#1A1919] capitalize">{{ gw.label }}</span>
-                <p class="text-xs text-[#ACACAC]">{{ gw.description }}</p>
-              </div>
-            </label>
-          </div>
-          <div class="flex gap-3 mt-6">
-            <button
-              @click="showPaymentModal = false"
-              class="flex-1 px-4 py-2.5 border border-[#E6E9F0] text-[#7B7B7B] rounded-lg text-sm font-medium hover:bg-gray-50 transition hover:cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              @click="proceedPayment"
-              :disabled="!selectedPaymentMethod"
-              class="flex-1 px-4 py-2.5 bg-[#E9322B] text-white rounded-lg text-sm font-medium hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              Lanjutkan
-            </button>
-          </div>
-        </div>
-      </div>
-    </Teleport>
 
     <!-- Cancel Order Confirmation Modal -->
     <ConfirmModal
@@ -347,22 +294,6 @@ const activeTab = ref<"unpaid" | "paid" | "cancelled">(
 const processingPaymentOrderId = ref<number | null>(null);
 const isPolling = ref(false);
 
-const allPaymentMethods = [
-  { key: "midtrans", label: "Midtrans", description: "Kartu Kredit / Transfer / E-Wallet" },
-  { key: "xendit", label: "Xendit", description: "Virtual Account / Retail / E-Wallet" },
-  { key: "doku", label: "DOKU", description: "Virtual Account / QRIS / E-Wallet / Kartu Kredit" },
-];
-const showPaymentModal = ref(false);
-const payingOrderId = ref<number | null>(null);
-const activeGateways = ref<string[]>([]);
-const selectedPaymentMethod = ref<string>("");
-
-const paymentMethods = computed(() =>
-  allPaymentMethods.map((m) => ({
-    ...m,
-    active: activeGateways.value.includes(m.key),
-  })),
-);
 
 const isXenditInvoiceUrl = (value?: string | null) => {
   return typeof value === "string" && /^https?:\/\/.+xendit\.co/i.test(value);
@@ -390,37 +321,29 @@ const getOrderPaymentGateway = (order: any) => {
 
 const isOrderPaying = (orderId: number) => processingPaymentOrderId.value === orderId;
 
-const openPaymentModal = async (order: any) => {
+// The customer doesn't choose a gateway: pay with the one active in the CMS,
+// keeping the order's original gateway while it is still active.
+const payOrder = async (order: any) => {
   const gateway = getOrderPaymentGateway(order);
-  payingOrderId.value = order.id;
+  let activeGateways: string[];
   try {
-    const gateways = await getActivePaymentGateways();
-    activeGateways.value = gateways;
+    activeGateways = await getActivePaymentGateways();
   } catch {
-    activeGateways.value = ["midtrans"];
+    activeGateways = ["midtrans"];
   }
 
-  const gatewayStillActive = gateway && activeGateways.value.includes(gateway);
-  selectedPaymentMethod.value = gatewayStillActive
-    ? gateway
-    : activeGateways.value[0] || "";
-  showPaymentModal.value = true;
-};
+  const paymentMethod =
+    gateway && activeGateways.includes(gateway)
+      ? gateway
+      : activeGateways[0] || "midtrans";
 
-const proceedPayment = async () => {
-  if (!payingOrderId.value || !selectedPaymentMethod.value) return;
-  const orderId = payingOrderId.value;
-  const paymentMethod = selectedPaymentMethod.value;
-
-  showPaymentModal.value = false;
   if (paymentMethod === "xendit") {
-    await handlePayXendit(orderId);
+    await handlePayXendit(order.id);
   } else if (paymentMethod === "doku") {
-    await handlePayDoku(orderId);
+    await handlePayDoku(order.id);
   } else {
-    await handlePay(orderId, paymentMethod);
+    await handlePay(order.id, paymentMethod);
   }
-  payingOrderId.value = null;
 };
 
 // Keep activeTab in sync with the URL query param
