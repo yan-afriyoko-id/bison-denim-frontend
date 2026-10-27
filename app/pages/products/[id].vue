@@ -327,7 +327,7 @@
                   }}</span>
                   <button
                     @click="increaseQuantity"
-                    :disabled="quantity >= currentStock"
+                    :disabled="quantity >= maxAddable"
                     class="hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg
@@ -341,7 +341,7 @@
                       <path
                         d="M19 12.998H13V18.998H11V12.998H5V10.998H11V4.99805H13V10.998H19V12.998Z"
                         :fill="
-                          quantity >= currentStock ? '#C1C1C1' : '#1E1E1E'
+                          quantity >= maxAddable ? '#C1C1C1' : '#1E1E1E'
                         "
                       />
                     </svg>
@@ -367,6 +367,13 @@
               </p>
               <p v-else class="text-xs sm:text-sm text-[#E9322B] font-semibold mt-2">
                 Stok Habis
+              </p>
+              <p
+                v-if="qtyInCart > 0"
+                class="text-xs sm:text-sm mt-1"
+                :class="maxAddable === 0 ? 'text-[#E9322B]' : 'text-[#ACACAC]'"
+              >
+                Sudah ada {{ qtyInCart }} di keranjang Anda.
               </p>
 
               <!-- Store Location Card -->
@@ -860,6 +867,7 @@ const { getPublicStores } = useStoreApi();
 const {
   addToCart,
   loadCart,
+  getCartQty,
   togglePopupCart,
   clearSelectionForCheckout,
   setSelectedForCheckout,
@@ -937,6 +945,14 @@ const handleBuy = async () => {
     return;
   }
 
+  if (maxAddable.value === 0) {
+    showToast(
+      `Stok tersisa sudah ada di keranjang Anda (${qtyInCart.value})`,
+      "error",
+    );
+    return;
+  }
+
   // Check if location is selected (if required)
   if (!selectedLocation.value && (locationOptions.value?.length || 0) > 0) {
     showToast("Silakan pilih lokasi pengiriman toko terlebih dahulu", "error");
@@ -969,7 +985,8 @@ const handleBuy = async () => {
       ? parseInt(selectedLocation.value)
       : null;
 
-    await addToCart(variantId, quantity.value, null, storeId);
+    const added = await addToCart(variantId, quantity.value, null, storeId);
+    if (!added) return;
     await loadCart();
 
     clearSelectionForCheckout();
@@ -992,6 +1009,14 @@ const handleAddToCart = async () => {
   }
   if (currentStock.value === 0) {
     showToast("Stok produk tidak tersedia", "error");
+    return;
+  }
+
+  if (maxAddable.value === 0) {
+    showToast(
+      `Stok tersisa sudah ada di keranjang Anda (${qtyInCart.value})`,
+      "error",
+    );
     return;
   }
 
@@ -1022,9 +1047,8 @@ const handleAddToCart = async () => {
     const storeId = selectedLocation.value
       ? parseInt(selectedLocation.value)
       : null;
-    await addToCart(variantId, quantity.value, null, storeId);
-
-    togglePopupCart();
+    const added = await addToCart(variantId, quantity.value, null, storeId);
+    if (added) togglePopupCart();
   } catch (error) {
     console.error("Error adding to cart:", error);
     showToast(
@@ -1916,7 +1940,7 @@ const selectMarketplace = (value: string) => {
 const quantity = ref(1);
 
 const increaseQuantity = () => {
-  if (quantity.value < currentStock.value) {
+  if (quantity.value < maxAddable.value) {
     quantity.value++;
   }
 };
@@ -2023,6 +2047,27 @@ const currentStock = computed(() => {
   );
 });
 
+const targetVariant = computed(() => {
+  if (selectedVariant.value) return selectedVariant.value;
+  if (dynamicAttributes.value.length > 0) return null;
+  return (
+    allVariants.value.find((v) => v.status === "ACTIVE" && (v.stock || 0) > 0) ??
+    null
+  );
+});
+
+const qtyInCart = computed(() => getCartQty(targetVariant.value?.id));
+
+const maxAddable = computed(() =>
+  Math.max(0, currentStock.value - qtyInCart.value),
+);
+
+watch(maxAddable, (max) => {
+  if (quantity.value > max) {
+    quantity.value = Math.max(1, max);
+  }
+});
+
 // Check if buttons should be disabled
 const isButtonDisabled = computed(() => {
   // If product has variants, variant must be selected
@@ -2030,8 +2075,8 @@ const isButtonDisabled = computed(() => {
     return true;
   }
 
-  // If stock is 0, disable buttons
-  if (currentStock.value === 0) {
+  // If stock is 0, or all remaining stock is already in the cart, disable buttons
+  if (currentStock.value === 0 || maxAddable.value === 0) {
     return true;
   }
 

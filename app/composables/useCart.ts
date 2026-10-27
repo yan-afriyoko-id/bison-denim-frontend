@@ -20,6 +20,9 @@ export const useCart = () => {
     },
   );
 
+  const getQtyErrorMessage = (err: any, fallback: string): string =>
+    err?.data?.errors?.qty?.[0] || fallback;
+
   const loadCart = async () => {
     if (!auth.isAuthenticated.value) {
       cartData.value = null;
@@ -35,7 +38,12 @@ export const useCart = () => {
       if (!response.success)
         throw new Error(response.message || "Gagal load cart");
 
-      cartData.value = response.data;
+      const data = response.data;
+      cartData.value = {
+        cart: data.cart || [],
+        outOfStock: data.out_of_stock || [],
+        calculation: data.calculation,
+      };
     } catch (err) {
       console.error("Load cart error:", err);
       showToast("Gagal memuat keranjang", "error");
@@ -54,7 +62,8 @@ export const useCart = () => {
   ) => {
     if (!auth.isAuthenticated.value) {
       showToast("Silahkan login terlebih dahulu", "error");
-      return navigateTo("/login");
+      await navigateTo("/login");
+      return false;
     }
 
     isLoading.value = true;
@@ -76,8 +85,14 @@ export const useCart = () => {
 
       await loadCart();
       showToast("Produk ditambahkan ke keranjang", "success");
+      return true;
     } catch (err) {
-      showToast("Gagal menambah ke keranjang", "error");
+      showToast(
+        getQtyErrorMessage(err, "Gagal menambah ke keranjang"),
+        "error",
+      );
+      await loadCart();
+      return false;
     } finally {
       isLoading.value = false;
     }
@@ -88,7 +103,7 @@ export const useCart = () => {
     qty: number,
     note: string | null = null,
   ) => {
-    if (!auth.isAuthenticated.value) return;
+    if (!auth.isAuthenticated.value) return false;
 
     isLoading.value = true;
     try {
@@ -101,8 +116,11 @@ export const useCart = () => {
       if (!response.success) throw new Error(response.message);
 
       await loadCart();
+      return true;
     } catch (err) {
-      showToast("Gagal update item", "error");
+      showToast(getQtyErrorMessage(err, "Gagal update item"), "error");
+      await loadCart();
+      return false;
     } finally {
       isLoading.value = false;
     }
@@ -231,6 +249,19 @@ export const useCart = () => {
     return !cartData.value?.cart?.length;
   });
 
+  const getCartQty = (variantId: number | null | undefined): number => {
+    if (!variantId || !cartData.value) return 0;
+    const item = [
+      ...(cartData.value.cart || []),
+      ...(cartData.value.outOfStock || []),
+    ].find((i) => i.variant_id === variantId);
+    return item?.qty || 0;
+  };
+
+  const hasOutOfStockItems = computed(
+    () => (cartData.value?.outOfStock?.length || 0) > 0,
+  );
+
   watch(
     () => auth.isAuthenticated.value,
     (isAuth) => {
@@ -257,6 +288,8 @@ export const useCart = () => {
     closePopupCart,
     getCartItemCount,
     isCartEmpty,
+    getCartQty,
+    hasOutOfStockItems,
     selectedForCheckout: readonly(selectedForCheckout),
     checkoutCart,
     checkoutCalculation,
