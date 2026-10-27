@@ -352,74 +352,6 @@
                 <span v-else class="text-xs sm:text-sm text-[#7B7B7B] italic">Tidak dapat diubah</span>
               </div>
             </div>
-
-            <!-- Voucher Section -->
-            <div v-if="!isReadonlyMode" class="bg-white border border-[#E6E9F0] rounded-[10px] p-4 sm:p-5 md:p-7.5">
-              <div class="space-y-2">
-                <div class="flex justify-between items-center mt-5">
-                  <h2 class="text-lg font-semibold mb-2">Voucher</h2>
-                  <button @click="showVoucherModal = true"
-                    class="text-sm sm:text-base text-white bg-black px-2 sm:px-2 py-1 rounded-md font-medium hover:bg-[#1f1f1f] hover:cursor-pointer whitespace-nowrap shrink-0 transition-colors">
-                    {{ selectedVoucher ? "Ubah Voucher" : "Pilih Voucher" }}
-                  </button>
-                </div>
-                <div v-if="voucherError"
-                  class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 mt-2">
-                  {{ voucherError }}
-                </div>
-                <div class="flex gap-2">
-                  <input v-model="voucherCode" type="text" placeholder="Masukkan kode voucher"
-                    class="bg-white flex-1 border border-[#E6E9F0] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#E6E9F0]" />
-
-                  <button @click="applyVoucherCode" :disabled="isApplyingVoucher || !voucherCode"
-                    class="px-4 py-2 rounded-md bg-black text-white text-sm font-medium border border-black shadow-sm hover:bg-[#1f1f1f] hover:shadow-md transition-colors disabled:bg-gray-600 disabled:border-gray-500 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer">
-                    Terapkan
-                  </button>
-                </div>
-                <div v-if="selectedVoucher"
-                  class="border border-[#E6E9F0] bg-[#FFF7F7] rounded-lg px-4 py-3 text-sm flex flex-col gap-2">
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-2">
-                        <span class="text-base sm:text-lg font-semibold text-[#1A1919] break-words">
-                          {{ selectedVoucher?.name }}
-                        </span>
-                        <span
-                          class="text-xs sm:text-sm font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded">
-                          <span v-if="
-                            selectedVoucher?.discount_type === 'PERCENTAGE'
-                          ">
-                            {{ Number(selectedVoucher?.discount_value) }}%
-                          </span>
-                          <span v-else>
-                            Rp{{
-                              Number(
-                                selectedVoucher?.discount_value,
-                              ).toLocaleString("id-ID")
-                            }}
-                          </span>
-                        </span>
-                      </div>
-                      <p class="text-xs sm:text-sm text-[#7B7B7B] mt-1 leading-relaxed break-words">
-                        {{ selectedVoucher.description || "" }}
-                      </p>
-                    </div>
-                    <div class="shrink-0">
-                      <button @click="removeVoucher" class="text-[#E9322B] hover:underline hover:cursor-pointer">
-                        Hapus
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="flex justify-between items-center mt-1">
-                    <span class="text-xs text-[#7B7B7B]">Diskon</span>
-                    <span class="text-sm font-semibold text-[#1A1919]">
-                      -{{ formatPrice(discountAmount) }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <!-- Right Column -->
           <div class="lg:col-span-1 space-y-5 sm:space-y-6 md:space-y-7.5">
@@ -428,6 +360,74 @@
               <h2 class="text-xl sm:text-2xl font-semibold text-[#1A1919] mb-4 sm:mb-5">
                 Detail Pembayaran
               </h2>
+
+              <!-- Voucher Section -->
+              <div v-if="!isReadonlyMode" class="border-b border-[#E6E9F0] pb-4 sm:pb-5 mb-4 sm:mb-5">
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center gap-2">
+                    <h3 class="text-sm sm:text-base font-semibold text-[#1A1919]">Voucher</h3>
+                    <button @click="showVoucherModal = true"
+                      class="text-sm sm:text-base text-white bg-black px-2 sm:px-2 py-1 rounded-md font-medium hover:bg-[#1f1f1f] hover:cursor-pointer whitespace-nowrap shrink-0 transition-colors">
+                      {{ selectedVoucher ? "Ubah Voucher" : "Pilih Voucher" }}
+                    </button>
+                  </div>
+                  <div v-if="voucherError"
+                    class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 mt-2">
+                    {{ voucherError }}
+                  </div>
+                  <div class="flex gap-2">
+                    <input v-model="voucherCode" type="text" placeholder="Masukkan kode voucher"
+                      class="bg-white flex-1 min-w-0 border border-[#E6E9F0] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#E6E9F0]" />
+
+                    <button @click="applyVoucherCode" :disabled="isApplyingVoucher || !voucherCode"
+                      class="shrink-0 px-4 py-2 rounded-md bg-black text-white text-sm font-medium border border-black shadow-sm hover:bg-[#1f1f1f] hover:shadow-md transition-colors disabled:bg-gray-600 disabled:border-gray-500 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer">
+                      Terapkan
+                    </button>
+                  </div>
+                  <div v-if="selectedVoucher"
+                    class="border border-[#E6E9F0] bg-[#FFF7F7] rounded-lg px-4 py-3 text-sm flex flex-col gap-2">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-base sm:text-lg font-semibold text-[#1A1919] break-words">
+                            {{ selectedVoucher?.name }}
+                          </span>
+                          <span
+                            class="text-xs sm:text-sm font-semibold text-[#E9322B] bg-[#FFE6E6] border border-[#E9322B] px-2 py-1 rounded">
+                            <span v-if="
+                              selectedVoucher?.discount_type === 'PERCENTAGE'
+                            ">
+                              {{ Number(selectedVoucher?.discount_value) }}%
+                            </span>
+                            <span v-else>
+                              Rp{{
+                                Number(
+                                  selectedVoucher?.discount_value,
+                                ).toLocaleString("id-ID")
+                              }}
+                            </span>
+                          </span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-[#7B7B7B] mt-1 leading-relaxed break-words">
+                          {{ selectedVoucher.description || "" }}
+                        </p>
+                      </div>
+                      <div class="shrink-0">
+                        <button @click="removeVoucher" class="text-[#E9322B] hover:underline hover:cursor-pointer">
+                          Hapus
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-1">
+                      <span class="text-xs text-[#7B7B7B]">Diskon</span>
+                      <span class="text-sm font-semibold text-[#1A1919]">
+                        -{{ formatPrice(discountAmount) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div class="space-y-1.5 mb-3 sm:mb-4">
                 <div class="flex justify-between text-sm sm:text-base text-[#7B7B7B]">
@@ -498,26 +498,16 @@
                 </div>
               </div>
 
-              <!-- Payment Method Selection -->
-              <div v-if="!isReadonlyMode" class="mb-4">
+              <!-- Payment Method (set in the CMS) -->
+              <div v-if="!isReadonlyMode && selectedPaymentMethod" class="mb-4">
                 <h3 class="text-sm font-semibold text-[#1A1919] mb-3">
-                  Pilih Metode Pembayaran
+                  Metode Pembayaran
                 </h3>
-                <div class="space-y-2">
-                  <label v-for="gw in paymentMethods" :key="gw.key"
-                    class="flex items-center gap-3 p-3 border rounded-lg transition" :class="[
-                      selectedGateway === gw.key ? 'border-[#E9322B] bg-[#E9322B14]' : 'border-[#E6E9F0]',
-                      gw.active ? 'cursor-pointer hover:border-[#E9322B]' : 'opacity-50'
-                    ]">
-                    <input type="radio" name="paymentGateway" :value="gw.key" v-model="selectedGateway"
-                      :disabled="!gw.active" class="accent-[#E9322B]" />
-                    <div>
-                      <span class="text-sm font-medium text-[#1A1919] capitalize">{{ gw.label }}</span>
-                      <p class="text-xs text-[#ACACAC]">
-                        {{ gw.description }}
-                      </p>
-                    </div>
-                  </label>
+                <div class="p-3 border border-[#E6E9F0] rounded-lg">
+                  <span class="text-sm font-medium text-[#1A1919]">{{ selectedPaymentMethod.label }}</span>
+                  <p class="text-xs text-[#ACACAC]">
+                    {{ selectedPaymentMethod.description }}
+                  </p>
                 </div>
               </div>
 
@@ -814,13 +804,11 @@ const allPaymentMethods = [
   { key: "doku", label: "DOKU", description: "Virtual Account / QRIS / E-Wallet / Kartu Kredit" },
 ];
 const activeGateways = ref<string[]>([]);
+// The gateway isn't chosen by the customer: it is the one active in the CMS.
 const selectedGateway = ref<string>("");
 
-const paymentMethods = computed(() =>
-  allPaymentMethods.map((m) => ({
-    ...m,
-    active: activeGateways.value.includes(m.key),
-  })),
+const selectedPaymentMethod = computed(() =>
+  allPaymentMethods.find((m) => m.key === selectedGateway.value),
 );
 const showNoteModal = ref(false);
 const currentNoteVariantId = ref<number | null>(null);
