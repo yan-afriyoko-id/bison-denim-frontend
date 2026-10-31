@@ -1,9 +1,6 @@
 <template>
   <div
-    :class="[
-      'rounded-lg overflow-hidden shadow-[2px_4px_8px_0px_#0000000F] transition group hover:cursor-pointer h-full flex flex-col',
-      size === 'large' ? 'w-full lg:w-[268px]' : 'w-full lg:w-59.5',
-    ]"
+    class="w-full rounded-lg overflow-hidden shadow-[2px_4px_8px_0px_#0000000F] transition group hover:cursor-pointer h-full flex flex-col"
   >
     <!-- Image Container -->
     <div
@@ -27,7 +24,7 @@
       <div>
         <!-- Product Name -->
         <h3
-          class="font-medium text-[#848484] mb-2 sm:mb-2.5 md:mb-3.5 line-clamp-2 text-xs sm:text-sm min-h-[32px] sm:min-h-[40px] md:min-h-13"
+          class="font-medium text-[#848484] mb-2 sm:mb-2.5 md:mb-3.5 line-clamp-2 text-xs sm:text-sm min-h-[32px] sm:min-h-[40px]"
         >
           {{ name }}
         </h3>

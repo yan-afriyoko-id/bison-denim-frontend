@@ -35,6 +35,7 @@ export interface CartItemResponse {
     id: number;
     name: string;
     city_id: number | null;
+    district_id?: number | null;
     city: string | null;
     province: string | null;
   } | null;

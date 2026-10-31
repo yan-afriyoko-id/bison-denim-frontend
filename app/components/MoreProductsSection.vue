@@ -48,7 +48,7 @@
             :discount="product.discount"
             :newArrival="product.newArrival"
             size="large"
-            class="shrink-0"
+            class="shrink-0 w-[268px]"
           />
         </div>
       </div>
