@@ -2,8 +2,15 @@
   <main class="bg-white">
     <div class="min-h-screen flex flex-col">
       <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 md:px-[31px] py-6 sm:py-8 md:py-10 flex-1">
+        <!-- Redirecting to the payment gateway -->
+        <div v-if="isRedirectingToPayment" class="text-center py-10 sm:py-16">
+          <p class="text-sm sm:text-base text-[#7B7B7B]">
+            Memproses pembayaran, mohon tunggu...
+          </p>
+        </div>
+
         <!-- Loading State -->
-        <div v-if="isLoadingCart" class="text-center py-10">
+        <div v-else-if="isLoadingCart" class="text-center py-10">
           <p class="text-sm sm:text-base text-[#7B7B7B]">
             Memuat data pembayaran...
           </p>
@@ -87,9 +94,13 @@
                         : ""
                     }}
                   </p>
-                  <p v-else class="text-xs sm:text-sm text-[#7B7B7B]">
-                    Belum ada alamat yang dipilih
-                  </p>
+                  <div v-else class="text-xs sm:text-sm text-[#E9322B]">
+                    <p>Belum ada alamat pengiriman. Tambahkan alamat untuk melanjutkan pembayaran.</p>
+                    <button v-if="!isReadonlyMode" type="button" @click="promptAddress"
+                      class="mt-2 px-3 py-1.5 rounded-md bg-[#E9322B] text-white font-medium hover:bg-[#C4282B] transition cursor-pointer">
+                      Tambah Alamat
+                    </button>
+                  </div>
                 </div>
 
                 <button v-if="!isReadonlyMode" @click="openAddressModal"
@@ -512,7 +523,7 @@
               </div>
 
               <button v-if="!isReadonlyMode" @click="handlePayment"
-                :disabled="isSubmitting || !canSubmit || !selectedGateway"
+                :disabled="isSubmitting || !selectedGateway"
                 class="w-full bg-[#E9322B] text-white py-2 sm:py-2.5 rounded-lg font-medium text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-2.5 hover:bg-[#C4282B] transition hover:cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed">
                 <div v-if="!isSubmitting" class="w-5 h-5 sm:w-[26px] sm:h-[26px] shrink-0">
                   <svg class="w-full h-full" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -733,6 +744,9 @@ const isLoadingCart = ref(true);
 const isLoadingAddresses = ref(false);
 const isLoadingOrder = ref(false);
 const isSubmitting = ref(false);
+// Set once the order exists and the cart is being cleared before leaving for the
+// payment page, so the emptied cart doesn't flash the "Keranjang Kosong" state.
+const isRedirectingToPayment = ref(false);
 const errorMessage = ref("");
 
 const isFetchingShipping = ref(false);
@@ -1138,9 +1152,11 @@ onMounted(async () => {
   await fetchApplicableVouchers();
 });
 watch(
-  () => shippingForm.value.city_id,
-  async (newCity, oldCity) => {
-    if (newCity && newCity !== oldCity) {
+  () => shippingForm.value.district_id,
+  async (newDistrict, oldDistrict) => {
+    if (newDistrict && newDistrict !== oldDistrict) {
+      // Costs quoted for the previous address no longer apply.
+      shippingPerStore.value = {};
       await fetchShippingCostPerStore();
     }
   },
@@ -1326,7 +1342,7 @@ const handleSaveAddress = async (addressData: any) => {
       return;
     }
 
-    if (shippingForm.value.city_id) {
+    if (shippingForm.value.district_id) {
       await fetchShippingCostPerStore();
     }
 
@@ -1497,8 +1513,9 @@ const allCouriers =
   "jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana";
 
 const fetchShippingCostPerStore = async () => {
-  const cityId = shippingForm.value.city_id;
-  if (!cityId || !groupedByStore.value.length) return;
+  // RajaOngkir's cost endpoint works on district (kecamatan) IDs, not city IDs.
+  const destinationDistrictId = shippingForm.value.district_id;
+  if (!destinationDistrictId || !groupedByStore.value.length) return;
   const allStoresValid = groupedByStore.value.every((group) => {
     const key = group.store_id ?? "null";
     const ship = shippingPerStore.value[key];
@@ -1516,7 +1533,8 @@ const fetchShippingCostPerStore = async () => {
 
   for (const group of groupedByStore.value) {
     const storeId = group.store_id ?? "null";
-    const origin = group.items[0]?.store?.city_id;
+    // Without a store district the API falls back to the configured origin.
+    const origin = group.items[0]?.store?.district_id ?? undefined;
 
     let totalWeight = 0;
     let freeWeight = 0;
@@ -1533,7 +1551,7 @@ const fetchShippingCostPerStore = async () => {
     const weightFree = Math.max(Math.ceil(freeWeight), 1000);
 
     const { data, error } = await getShippingCost(
-      cityId,
+      destinationDistrictId,
       weightTotal,
       allCouriers,
       origin,
@@ -1556,7 +1574,7 @@ const fetchShippingCostPerStore = async () => {
     let freeShippingDiscount = 0;
     if (freeWeight > 0) {
       const { data: freeData } = await getShippingCost(
-        cityId,
+        destinationDistrictId,
         weightFree,
         allCouriers,
         origin,
@@ -1718,25 +1736,59 @@ const totalBill = computed(() => {
   return Math.max(0, total).toLocaleString("id-ID");
 });
 
-const canSubmit = computed(() => {
-  if (
-    !checkoutCart.value.length ||
-    !shippingForm.value.first_name ||
-    !shippingForm.value.email ||
-    !shippingForm.value.phone ||
-    !shippingForm.value.address ||
-    !shippingForm.value.city ||
-    !shippingForm.value.province ||
-    !shippingForm.value.postal_code
-  )
-    return false;
-  for (const storeGroup of groupedByStore.value) {
-    const storeId = storeGroup.store_id ?? "null";
-    const c = shippingPerStore.value[storeId];
-    if (!c?.agent) return false;
+// Shipping cost is calculated per district, so an address without one can't be used.
+const hasCompleteAddress = computed(
+  () =>
+    !!(
+      shippingForm.value.first_name &&
+      shippingForm.value.email &&
+      shippingForm.value.phone &&
+      shippingForm.value.address &&
+      shippingForm.value.city &&
+      shippingForm.value.province &&
+      shippingForm.value.postal_code &&
+      shippingForm.value.district_id
+    ),
+);
+
+const storeWithoutCourier = computed(() =>
+  groupedByStore.value.find(
+    (storeGroup) => !shippingPerStore.value[storeGroup.store_id ?? "null"]?.agent,
+  ),
+);
+
+const canSubmit = computed(
+  () =>
+    checkoutCart.value.length > 0 &&
+    hasCompleteAddress.value &&
+    !storeWithoutCourier.value,
+);
+
+// Opens the form that lets the customer fix whatever blocks checkout.
+const promptAddress = () => {
+  if (!addresses.value.length) {
+    openNewAddressModal();
+  } else if (shippingForm.value.address && addresses.value[selectedAddressIndex.value]) {
+    openEditAddressModal(selectedAddressIndex.value);
+  } else {
+    openAddressModal();
   }
-  return true;
-});
+};
+
+const explainCannotSubmit = () => {
+  if (!shippingForm.value.address) {
+    alert("Silakan tambahkan alamat pengiriman terlebih dahulu.");
+    promptAddress();
+  } else if (!hasCompleteAddress.value) {
+    alert(
+      "Alamat pengiriman belum lengkap (nama, email, nomor HP, provinsi, kota, kecamatan dan kode pos wajib diisi). Silakan lengkapi alamat terlebih dahulu.",
+    );
+    promptAddress();
+  } else if (storeWithoutCourier.value) {
+    alert(`Silakan pilih kurir pengiriman untuk toko ${storeWithoutCourier.value.store_name}.`);
+    openShippingModalForStore(storeWithoutCourier.value.store_id);
+  }
+};
 
 const totalAmount = computed<number>(() => {
   if (!checkoutCart.value.length) return 0;
@@ -1810,6 +1862,7 @@ const payWithXenditReadonly = async (orderId: number) => {
     }
     window.location.href = invoice_url;
   } catch (err) {
+    isRedirectingToPayment.value = false;
     console.error("Xendit error:", err);
     alert("Gagal memulai pembayaran Xendit");
   }
@@ -1823,6 +1876,7 @@ const payWithDoku = async (orderId: number, variantIdsToRemove: number[] = []) =
       alert("Gagal mendapatkan halaman pembayaran");
       return;
     }
+    isRedirectingToPayment.value = true;
     for (const variantId of variantIdsToRemove) {
       await removeFromCart(variantId);
     }
@@ -1831,6 +1885,7 @@ const payWithDoku = async (orderId: number, variantIdsToRemove: number[] = []) =
     }
     window.location.href = payment_url;
   } catch (err: any) {
+    isRedirectingToPayment.value = false;
     console.error("DOKU error:", err);
     alert(err?.data?.message || "Gagal memulai pembayaran DOKU");
   }
@@ -1845,6 +1900,7 @@ const payWithMidtransWithCart = async (
 
     const { snap_token } = await getSnapToken(orderId, selectedGateway.value || null);
     if (isXenditInvoiceUrl(snap_token)) {
+      isRedirectingToPayment.value = true;
       for (const variantId of variantIdsToRemove) {
         await removeFromCart(variantId);
       }
@@ -1861,6 +1917,7 @@ const payWithMidtransWithCart = async (
           payment_type: result?.payment_type,
           gross_amount: result?.gross_amount,
         });
+        isRedirectingToPayment.value = true;
         for (const variantId of variantIdsToRemove) {
           await removeFromCart(variantId);
         }
@@ -1868,6 +1925,7 @@ const payWithMidtransWithCart = async (
         await navigateTo("/account/orders?tab=paid");
       },
       onPending: async () => {
+        isRedirectingToPayment.value = true;
         for (const variantId of variantIdsToRemove) {
           await removeFromCart(variantId);
         }
@@ -1897,12 +1955,14 @@ const payWithXendit = async (orderId: number, variantIdsToRemove: number[]) => {
       alert("Gagal mendapatkan invoice pembayaran");
       return;
     }
+    isRedirectingToPayment.value = true;
     for (const variantId of variantIdsToRemove) {
       await removeFromCart(variantId);
     }
     await loadCart();
     window.location.href = invoice_url;
   } catch (err) {
+    isRedirectingToPayment.value = false;
     console.error("Xendit error:", err);
     alert("Gagal memulai pembayaran Xendit");
   }
@@ -1940,7 +2000,7 @@ const handlePayment = async () => {
   }
 
   if (!canSubmit.value) {
-    alert("Mohon lengkapi semua field yang wajib diisi.");
+    explainCannotSubmit();
     return;
   }
 
@@ -2054,6 +2114,7 @@ const handlePayment = async () => {
         if (gw === "xendit") {
           const redirectUrl = window.location.origin + "/account/orders?tab=paid";
           const { invoice_url } = await createPaymentGroup(createdOrderIds, gw, redirectUrl);
+          isRedirectingToPayment.value = true;
           for (const variantId of variantIdsToRemove) {
             await removeFromCart(variantId);
           }
@@ -2066,6 +2127,7 @@ const handlePayment = async () => {
             alert("Gagal mendapatkan halaman pembayaran");
             return;
           }
+          isRedirectingToPayment.value = true;
           for (const variantId of variantIdsToRemove) {
             await removeFromCart(variantId);
           }
@@ -2089,6 +2151,7 @@ const handlePayment = async () => {
                   gross_amount: result?.gross_amount,
                 });
               }
+              isRedirectingToPayment.value = true;
               for (const variantId of variantIdsToRemove) {
                 await removeFromCart(variantId);
               }
@@ -2096,6 +2159,7 @@ const handlePayment = async () => {
               await navigateTo("/account/orders?tab=paid");
             },
             onPending: async () => {
+              isRedirectingToPayment.value = true;
               for (const variantId of variantIdsToRemove) {
                 await removeFromCart(variantId);
               }
@@ -2113,6 +2177,7 @@ const handlePayment = async () => {
           });
         }
       } catch (err) {
+        isRedirectingToPayment.value = false;
         console.error(err);
         alert("Gagal memulai pembayaran grup. Silakan coba lagi.");
       }

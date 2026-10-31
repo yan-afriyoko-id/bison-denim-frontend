@@ -97,7 +97,7 @@
                   :discount="product.discount_percent || 0"
                   :newArrival="product.is_new_arrival || false"
                   size="large"
-                  class="shrink-0"
+                  class="shrink-0 w-[268px]"
                 />
               </div>
             </div>
