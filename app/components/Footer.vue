@@ -29,11 +29,6 @@
                 {{ footerPhone }}
               </a>
             </li>
-            <li>
-              <NuxtLink to="/about" class="link-underline-anim text-[14px] font-medium text-black leading-snug no-underline">
-                Send us an email
-              </NuxtLink>
-            </li>
           </ul>
         </div>
 
@@ -115,7 +110,7 @@ const { getPublicConfig } = useConfigApi();
 const { appName, loadAppIdentity } = useAppIdentity();
 
 const socials = ref<Record<string, string | null>>({});
-const footerPhone = ref("+62 21 75922823");
+const footerPhone = ref("087709281298");
 
 const phoneLink = computed(() => {
   const sanitized = footerPhone.value.replace(/[^\d+]/g, "");
@@ -134,6 +129,7 @@ onMounted(async () => {
   await loadAppIdentity();
 
   const keys = [
+    "social_whatsapp",
     "store_phone",
     "social_instagram",
     "social_tiktok",
@@ -156,7 +152,9 @@ onMounted(async () => {
     }
   }
 
-  if (configMap.store_phone) footerPhone.value = configMap.store_phone;
+  // WhatsApp number is editable in CMS (Settings > Social); show it in local 08xx format
+  const phone = configMap.social_whatsapp || configMap.store_phone;
+  if (phone) footerPhone.value = phone.replace(/[^\d]/g, "").replace(/^62/, "0");
 
   socials.value = {
     social_instagram: configMap.social_instagram || null,

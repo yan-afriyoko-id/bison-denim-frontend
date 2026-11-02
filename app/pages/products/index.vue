@@ -632,6 +632,7 @@
                   :reviews="product.review_count || 0"
                   :discount="product.discount_percent || 0"
                   :newArrival="product.is_new_arrival || false"
+                  :soldOut="product.is_available === false"
                   size="small"
                 />
               </NuxtLink>
@@ -1285,6 +1286,7 @@ const transformProduct = (product: Product) => {
     average_rating: product.average_rating || 0,
     review_count: product.review_count || 0,
     is_new_arrival: product.is_new_arrival || false,
+    is_available: product.is_available,
   };
 };
 

@@ -5,16 +5,29 @@
     <!-- Image Container -->
     <div
       :class="[
-        'overflow-hidden w-full',
+        'relative overflow-hidden w-full',
         size === 'large' ? 'aspect-square' : 'aspect-square',
       ]"
     >
       <NuxtImg
         :src="image || '/placeholder.svg'"
         :alt="name"
-        :class="['w-full h-full object-cover group-hover:scale-110 transition']"
+        :class="[
+          'w-full h-full object-cover group-hover:scale-110 transition',
+          soldOut && 'opacity-60 grayscale',
+        ]"
         fit="cover"
       />
+      <div
+        v-if="soldOut"
+        class="absolute inset-0 flex items-center justify-center"
+      >
+        <span
+          class="bg-black/80 text-white text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider px-3 py-1 sm:px-4 sm:py-1.5 rounded-full"
+        >
+          Sold Out
+        </span>
+      </div>
     </div>
 
     <!-- Content -->
@@ -118,6 +131,7 @@ interface Props {
   reviews?: number;
   discount?: number;
   newArrival?: boolean;
+  soldOut?: boolean;
   size?: "small" | "large";
 }
 
@@ -127,6 +141,7 @@ const props = withDefaults(defineProps<Props>(), {
   reviews: 0,
   discount: 0,
   newArrival: false,
+  soldOut: false,
   size: "small",
   finalPrice: 0,
 });

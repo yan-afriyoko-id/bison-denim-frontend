@@ -4,7 +4,7 @@
     :href="waLink"
     target="_blank"
     rel="noopener noreferrer"
-    class="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-medium text-sm px-4 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+    class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-medium text-sm px-4 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
     aria-label="Hubungi kami via WhatsApp"
   >
     <svg
@@ -39,38 +39,19 @@ const waMessage = computed(() =>
 const waLink = computed(() => {
   const phoneNumber = storePhone.value;
   if (!phoneNumber) return "#";
-  const sanitized = phoneNumber.replace(/[^\d]/g, "");
+  const sanitized = phoneNumber.replace(/[^\d]/g, "").replace(/^0/, "62");
   return `https://wa.me/${sanitized}?text=${waMessage.value}`;
 });
 
 onMounted(async () => {
-  const [storeRes, socialRes] = await Promise.allSettled([
-    getPublicConfig("store_phone"),
+  const [whatsappRes, storeRes] = await Promise.allSettled([
     getPublicConfig("social_whatsapp"),
+    getPublicConfig("store_phone"),
   ]);
 
-  // Prefer store_phone, fallback to social_whatsapp only if store_phone is empty or too short
-  let phoneValue = storeRes.status === "fulfilled" && storeRes.value?.data?.value
-    ? storeRes.value.data.value
-    : socialRes.status === "fulfilled" && socialRes.value?.data?.value
-      ? socialRes.value.data.value
-      : '';
-
-  // Ensure we have a sufficiently long phone number
-  if (!phoneValue || phoneValue.length < 12) {
-    // If store_phone was empty or too short, try social_whatsapp
-    const socialValue = socialRes.status === "fulfilled" && socialRes.value?.data?.value
-      ? socialRes.value.data.value
-      : '';
-    if (socialValue && (phoneValue === '' || socialValue.length > phoneValue.length)) {
-      phoneValue = socialValue;
-    }
-  }
-
-  // If still empty or invalid, use default full Indonesian mobile prefix
-  if (!phoneValue || phoneValue.length < 12) {
-    phoneValue = '6281234567890'; // Default fallback full number
-  }
-  storePhone.value = phoneValue;
+  // WhatsApp number is editable in CMS (Settings > Social); store_phone is the fallback
+  const valueOf = (res: PromiseSettledResult<any>) =>
+    res.status === "fulfilled" ? res.value?.data?.data?.value || "" : "";
+  storePhone.value = valueOf(whatsappRes) || valueOf(storeRes);
 });
 </script>

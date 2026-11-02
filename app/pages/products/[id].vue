@@ -747,6 +747,7 @@
                 :reviews="relatedProduct.review_count || 0"
                 :discount="relatedProduct.discount_percent ?? 0"
                 :newArrival="relatedProduct.is_new_arrival || false"
+                :soldOut="relatedProduct.is_available === false"
                 size="large"
               />
             </NuxtLink>

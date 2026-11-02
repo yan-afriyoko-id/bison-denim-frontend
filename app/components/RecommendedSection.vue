@@ -76,6 +76,7 @@
                   :reviews="product.review_count || 0"
                   :discount="product.discount_percent || 0"
                   :newArrival="product.is_new_arrival || false"
+                  :soldOut="product.is_available === false"
                   size="large"
                 />
               </div>
@@ -96,6 +97,7 @@
                   :reviews="product.review_count || 0"
                   :discount="product.discount_percent || 0"
                   :newArrival="product.is_new_arrival || false"
+                  :soldOut="product.is_available === false"
                   size="large"
                   class="shrink-0 w-[268px]"
                 />

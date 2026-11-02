@@ -75,6 +75,8 @@ export interface Product {
   average_rating?: number | null
   review_count?: number | null
   is_new_arrival?: boolean
+  total_stock?: number
+  is_available?: boolean
   base_strike_price?: number | null
   discount?: number | null
   sort?: number | null
